@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F63F52161E48A954006DAF83 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52151E48A954006DAF83 /* AccountManager.swift */; };
+		F63F52171E48A954006DAF83 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52151E48A954006DAF83 /* AccountManager.swift */; };
+		F63F52181E48A954006DAF83 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52151E48A954006DAF83 /* AccountManager.swift */; };
+		F63F52191E48A954006DAF83 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52151E48A954006DAF83 /* AccountManager.swift */; };
 		F68A943A1E48988F002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94301E48988F002B15B6 /* CloudStore.framework */; };
 		F68A94411E48988F002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94581E4898F2002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A944F1E4898F2002B15B6 /* CloudStore.framework */; };
@@ -94,6 +98,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F63F52151E48A954006DAF83 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		F68A94301E48988F002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94331E48988F002B15B6 /* CloudStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudStore.h; sourceTree = "<group>"; };
 		F68A94341E48988F002B15B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -208,6 +213,14 @@
 			name = Store;
 			sourceTree = "<group>";
 		};
+		F63F52141E48A93D006DAF83 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				F63F52151E48A954006DAF83 /* AccountManager.swift */,
+			);
+			name = Account;
+			sourceTree = "<group>";
+		};
 		F68A94261E48988F002B15B6 = {
 			isa = PBXGroup;
 			children = (
@@ -235,6 +248,7 @@
 		F68A94321E48988F002B15B6 /* CloudStore */ = {
 			isa = PBXGroup;
 			children = (
+				F63F52141E48A93D006DAF83 /* Account */,
 				F68A94DB1E48A7E0002B15B6 /* Store */,
 				F68A94DC1E48A7E7002B15B6 /* Supporting FIles */,
 			);
@@ -656,6 +670,7 @@
 			files = (
 				F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */,
 				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
+				F63F52161E48A954006DAF83 /* AccountManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -674,6 +689,7 @@
 			files = (
 				F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */,
 				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
+				F63F52171E48A954006DAF83 /* AccountManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,6 +708,7 @@
 			files = (
 				F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */,
 				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
+				F63F52181E48A954006DAF83 /* AccountManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,6 +718,7 @@
 			files = (
 				F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */,
 				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
+				F63F52191E48A954006DAF83 /* AccountManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
