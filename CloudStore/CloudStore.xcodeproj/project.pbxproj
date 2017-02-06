@@ -8,14 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		F68A943A1E48988F002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94301E48988F002B15B6 /* CloudStore.framework */; };
-		F68A943F1E48988F002B15B6 /* CloudStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */; };
 		F68A94411E48988F002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94581E4898F2002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A944F1E4898F2002B15B6 /* CloudStore.framework */; };
 		F68A94661E489A1A002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F68A94671E489A1F002B15B6 /* CloudStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */; };
 		F68A94751E489A57002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94841E489A79002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A947B1E489A79002B15B6 /* CloudStore.framework */; };
-		F68A94921E489AA1002B15B6 /* CloudStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */; };
 		F68A94931E489AA4002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94951E489E53002B15B6 /* CloudAPI.framework */; };
 		F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94961E489E53002B15B6 /* PureXML.framework */; };
@@ -41,6 +38,20 @@
 		F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DD1E48A7FA002B15B6 /* Store.swift */; };
+		F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DD1E48A7FA002B15B6 /* Store.swift */; };
+		F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DD1E48A7FA002B15B6 /* Store.swift */; };
+		F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DD1E48A7FA002B15B6 /* Store.swift */; };
+		F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DE1E48A7FA002B15B6 /* FileStore.swift */; };
+		F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DE1E48A7FA002B15B6 /* FileStore.swift */; };
+		F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DE1E48A7FA002B15B6 /* FileStore.swift */; };
+		F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DE1E48A7FA002B15B6 /* FileStore.swift */; };
+		F68A94EA1E48A83F002B15B6 /* TestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E81E48A83F002B15B6 /* TestCase.swift */; };
+		F68A94EB1E48A83F002B15B6 /* TestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E81E48A83F002B15B6 /* TestCase.swift */; };
+		F68A94EC1E48A83F002B15B6 /* TestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E81E48A83F002B15B6 /* TestCase.swift */; };
+		F68A94ED1E48A83F002B15B6 /* FileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */; };
+		F68A94EE1E48A83F002B15B6 /* FileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */; };
+		F68A94EF1E48A83F002B15B6 /* FileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,7 +98,6 @@
 		F68A94331E48988F002B15B6 /* CloudStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudStore.h; sourceTree = "<group>"; };
 		F68A94341E48988F002B15B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F68A94391E48988F002B15B6 /* CloudStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudStoreTests.swift; sourceTree = "<group>"; };
 		F68A94401E48988F002B15B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F68A944F1E4898F2002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94571E4898F2002B15B6 /* CloudStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,6 +116,10 @@
 		F68A94C51E48A45E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/watchOS/SQLite.framework; sourceTree = "<group>"; };
 		F68A94C81E48A46E002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/Mac/CloudAPI.framework; sourceTree = "<group>"; };
 		F68A94C91E48A46E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/Mac/SQLite.framework; sourceTree = "<group>"; };
+		F68A94DD1E48A7FA002B15B6 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		F68A94DE1E48A7FA002B15B6 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
+		F68A94E81E48A83F002B15B6 /* TestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCase.swift; sourceTree = "<group>"; };
+		F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +199,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F63F52131E48A8E0006DAF83 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94E81E48A83F002B15B6 /* TestCase.swift */,
+				F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */,
+			);
+			name = Store;
+			sourceTree = "<group>";
+		};
 		F68A94261E48988F002B15B6 = {
 			isa = PBXGroup;
 			children = (
@@ -212,8 +235,8 @@
 		F68A94321E48988F002B15B6 /* CloudStore */ = {
 			isa = PBXGroup;
 			children = (
-				F68A94331E48988F002B15B6 /* CloudStore.h */,
-				F68A94341E48988F002B15B6 /* Info.plist */,
+				F68A94DB1E48A7E0002B15B6 /* Store */,
+				F68A94DC1E48A7E7002B15B6 /* Supporting FIles */,
 			);
 			path = CloudStore;
 			sourceTree = "<group>";
@@ -221,8 +244,8 @@
 		F68A943D1E48988F002B15B6 /* CloudStoreTests */ = {
 			isa = PBXGroup;
 			children = (
-				F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */,
-				F68A94401E48988F002B15B6 /* Info.plist */,
+				F63F52131E48A8E0006DAF83 /* Store */,
+				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);
 			path = CloudStoreTests;
 			sourceTree = "<group>";
@@ -276,6 +299,32 @@
 				F68A94A21E489EA5002B15B6 /* PureXML.framework */,
 			);
 			name = macOS;
+			sourceTree = "<group>";
+		};
+		F68A94DB1E48A7E0002B15B6 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94DD1E48A7FA002B15B6 /* Store.swift */,
+				F68A94DE1E48A7FA002B15B6 /* FileStore.swift */,
+			);
+			name = Store;
+			sourceTree = "<group>";
+		};
+		F68A94DC1E48A7E7002B15B6 /* Supporting FIles */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94331E48988F002B15B6 /* CloudStore.h */,
+				F68A94341E48988F002B15B6 /* Info.plist */,
+			);
+			name = "Supporting FIles";
+			sourceTree = "<group>";
+		};
+		F68A94E71E48A829002B15B6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94401E48988F002B15B6 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -605,6 +654,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */,
+				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,7 +663,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F68A943F1E48988F002B15B6 /* CloudStoreTests.swift in Sources */,
+				F68A94ED1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
+				F68A94EA1E48A83F002B15B6 /* TestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +672,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */,
+				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,7 +681,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F68A94671E489A1F002B15B6 /* CloudStoreTests.swift in Sources */,
+				F68A94EE1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
+				F68A94EB1E48A83F002B15B6 /* TestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,6 +690,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */,
+				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,6 +699,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */,
+				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,7 +708,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F68A94921E489AA1002B15B6 /* CloudStoreTests.swift in Sources */,
+				F68A94EF1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
+				F68A94EC1E48A83F002B15B6 /* TestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -818,6 +878,7 @@
 		F68A94481E48988F002B15B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
@@ -831,6 +892,7 @@
 		F68A94491E48988F002B15B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
@@ -892,6 +954,7 @@
 		F68A94641E4898F2002B15B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
@@ -907,6 +970,7 @@
 		F68A94651E4898F2002B15B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
@@ -1020,6 +1084,7 @@
 		F68A94901E489A79002B15B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
@@ -1037,6 +1102,7 @@
 		F68A94911E489A79002B15B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
@@ -1070,6 +1136,7 @@
 				F68A94461E48988F002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A94471E48988F002B15B6 /* Build configuration list for PBXNativeTarget "iOSTests" */ = {
 			isa = XCConfigurationList;
@@ -1078,6 +1145,7 @@
 				F68A94491E48988F002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A94601E4898F2002B15B6 /* Build configuration list for PBXNativeTarget "tvOS" */ = {
 			isa = XCConfigurationList;
@@ -1086,6 +1154,7 @@
 				F68A94621E4898F2002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A94631E4898F2002B15B6 /* Build configuration list for PBXNativeTarget "tvOSTests" */ = {
 			isa = XCConfigurationList;
@@ -1094,6 +1163,7 @@
 				F68A94651E4898F2002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A94721E489A40002B15B6 /* Build configuration list for PBXNativeTarget "watchOS" */ = {
 			isa = XCConfigurationList;
@@ -1102,6 +1172,7 @@
 				F68A94741E489A40002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A948C1E489A79002B15B6 /* Build configuration list for PBXNativeTarget "macOS" */ = {
 			isa = XCConfigurationList;
@@ -1110,6 +1181,7 @@
 				F68A948E1E489A79002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F68A948F1E489A79002B15B6 /* Build configuration list for PBXNativeTarget "macOSTests" */ = {
 			isa = XCConfigurationList;
@@ -1118,6 +1190,7 @@
 				F68A94911E489A79002B15B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

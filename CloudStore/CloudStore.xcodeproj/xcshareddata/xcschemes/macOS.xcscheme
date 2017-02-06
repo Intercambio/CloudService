@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-               BuildableName = "macOS.framework"
+               BuildableName = "CloudStore.framework"
                BlueprintName = "macOS"
                ReferencedContainer = "container:CloudStore.xcodeproj">
             </BuildableReference>
@@ -34,7 +34,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F68A94821E489A79002B15B6"
-               BuildableName = "macOSTests.xctest"
+               BuildableName = "CloudStoreTests.xctest"
                BlueprintName = "macOSTests"
                ReferencedContainer = "container:CloudStore.xcodeproj">
             </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "macOS.framework"
+            BuildableName = "CloudStore.framework"
             BlueprintName = "macOS"
             ReferencedContainer = "container:CloudStore.xcodeproj">
          </BuildableReference>
@@ -66,7 +66,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "macOS.framework"
+            BuildableName = "CloudStore.framework"
             BlueprintName = "macOS"
             ReferencedContainer = "container:CloudStore.xcodeproj">
          </BuildableReference>
@@ -84,7 +84,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "macOS.framework"
+            BuildableName = "CloudStore.framework"
             BlueprintName = "macOS"
             ReferencedContainer = "container:CloudStore.xcodeproj">
          </BuildableReference>
