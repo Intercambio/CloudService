@@ -17,6 +17,30 @@
 		F68A94841E489A79002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A947B1E489A79002B15B6 /* CloudStore.framework */; };
 		F68A94921E489AA1002B15B6 /* CloudStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A943E1E48988F002B15B6 /* CloudStoreTests.swift */; };
 		F68A94931E489AA4002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94951E489E53002B15B6 /* CloudAPI.framework */; };
+		F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94961E489E53002B15B6 /* PureXML.framework */; };
+		F68A949C1E489E69002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949A1E489E69002B15B6 /* CloudAPI.framework */; };
+		F68A949D1E489E69002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949B1E489E69002B15B6 /* PureXML.framework */; };
+		F68A94A01E489E8C002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949F1E489E8C002B15B6 /* PureXML.framework */; };
+		F68A94A31E489EA5002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; };
+		F68A94C11E48A43E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C01E48A43E002B15B6 /* SQLite.framework */; };
+		F68A94C31E48A44E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C21E48A44E002B15B6 /* SQLite.framework */; };
+		F68A94C61E48A45E002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C41E48A45E002B15B6 /* CloudAPI.framework */; };
+		F68A94C71E48A45E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C51E48A45E002B15B6 /* SQLite.framework */; };
+		F68A94CA1E48A46E002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; };
+		F68A94CB1E48A46E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; };
+		F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C01E48A43E002B15B6 /* SQLite.framework */; };
+		F68A94CD1E48A49A002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94951E489E53002B15B6 /* CloudAPI.framework */; };
+		F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94961E489E53002B15B6 /* PureXML.framework */; };
+		F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C21E48A44E002B15B6 /* SQLite.framework */; };
+		F68A94D11E48A4C8002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949A1E489E69002B15B6 /* CloudAPI.framework */; };
+		F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949B1E489E69002B15B6 /* PureXML.framework */; };
+		F68A94D41E48A502002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; };
+		F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; };
+		F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; };
+		F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +67,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		F68A94D71E48A50C002B15B6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */,
+				F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */,
+				F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		F68A94301E48988F002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94331E48988F002B15B6 /* CloudStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudStore.h; sourceTree = "<group>"; };
@@ -55,6 +94,18 @@
 		F68A946D1E489A40002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A947B1E489A79002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94831E489A79002B15B6 /* CloudStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F68A94951E489E53002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/iOS/CloudAPI.framework; sourceTree = "<group>"; };
+		F68A94961E489E53002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/iOS/PureXML.framework; sourceTree = "<group>"; };
+		F68A949A1E489E69002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/tvOS/CloudAPI.framework; sourceTree = "<group>"; };
+		F68A949B1E489E69002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/tvOS/PureXML.framework; sourceTree = "<group>"; };
+		F68A949F1E489E8C002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/watchOS/PureXML.framework; sourceTree = "<group>"; };
+		F68A94A21E489EA5002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/Mac/PureXML.framework; sourceTree = "<group>"; };
+		F68A94C01E48A43E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/iOS/SQLite.framework; sourceTree = "<group>"; };
+		F68A94C21E48A44E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/tvOS/SQLite.framework; sourceTree = "<group>"; };
+		F68A94C41E48A45E002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/watchOS/CloudAPI.framework; sourceTree = "<group>"; };
+		F68A94C51E48A45E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/watchOS/SQLite.framework; sourceTree = "<group>"; };
+		F68A94C81E48A46E002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/Mac/CloudAPI.framework; sourceTree = "<group>"; };
+		F68A94C91E48A46E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/Mac/SQLite.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +113,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94C11E48A43E002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +124,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F68A943A1E48988F002B15B6 /* CloudStore.framework in Frameworks */,
+				F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94CD1E48A49A002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +134,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94C31E48A44E002B15B6 /* SQLite.framework in Frameworks */,
+				F68A949C1E489E69002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A949D1E489E69002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +145,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F68A94581E4898F2002B15B6 /* CloudStore.framework in Frameworks */,
+				F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94D11E48A4C8002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +155,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94C61E48A45E002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94C71E48A45E002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94A01E489E8C002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,6 +165,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68A94CA1E48A46E002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94CB1E48A46E002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94A31E489EA5002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +176,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F68A94841E489A79002B15B6 /* CloudStore.framework in Frameworks */,
+				F68A94D41E48A502002B15B6 /* CloudAPI.framework in Frameworks */,
+				F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */,
+				F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +191,7 @@
 				F68A94321E48988F002B15B6 /* CloudStore */,
 				F68A943D1E48988F002B15B6 /* CloudStoreTests */,
 				F68A94311E48988F002B15B6 /* Products */,
+				F68A94941E489E53002B15B6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -152,6 +225,57 @@
 				F68A94401E48988F002B15B6 /* Info.plist */,
 			);
 			path = CloudStoreTests;
+			sourceTree = "<group>";
+		};
+		F68A94941E489E53002B15B6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94A41E489EA8002B15B6 /* macOS */,
+				F68A94A11E489E8F002B15B6 /* watchOS */,
+				F68A949E1E489E6D002B15B6 /* tvOS */,
+				F68A94991E489E58002B15B6 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F68A94991E489E58002B15B6 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94C01E48A43E002B15B6 /* SQLite.framework */,
+				F68A94951E489E53002B15B6 /* CloudAPI.framework */,
+				F68A94961E489E53002B15B6 /* PureXML.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		F68A949E1E489E6D002B15B6 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94C21E48A44E002B15B6 /* SQLite.framework */,
+				F68A949A1E489E69002B15B6 /* CloudAPI.framework */,
+				F68A949B1E489E69002B15B6 /* PureXML.framework */,
+			);
+			name = tvOS;
+			sourceTree = "<group>";
+		};
+		F68A94A11E489E8F002B15B6 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94C41E48A45E002B15B6 /* CloudAPI.framework */,
+				F68A94C51E48A45E002B15B6 /* SQLite.framework */,
+				F68A949F1E489E8C002B15B6 /* PureXML.framework */,
+			);
+			name = watchOS;
+			sourceTree = "<group>";
+		};
+		F68A94A41E489EA8002B15B6 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				F68A94C81E48A46E002B15B6 /* CloudAPI.framework */,
+				F68A94C91E48A46E002B15B6 /* SQLite.framework */,
+				F68A94A21E489EA5002B15B6 /* PureXML.framework */,
+			);
+			name = macOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -217,6 +341,7 @@
 				F68A94351E48988F002B15B6 /* Sources */,
 				F68A94361E48988F002B15B6 /* Frameworks */,
 				F68A94371E48988F002B15B6 /* Resources */,
+				F68A94CF1E48A49E002B15B6 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -253,6 +378,7 @@
 				F68A94531E4898F2002B15B6 /* Sources */,
 				F68A94541E4898F2002B15B6 /* Frameworks */,
 				F68A94551E4898F2002B15B6 /* Resources */,
+				F68A94D31E48A4CD002B15B6 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -307,6 +433,7 @@
 				F68A947F1E489A79002B15B6 /* Sources */,
 				F68A94801E489A79002B15B6 /* Frameworks */,
 				F68A94811E489A79002B15B6 /* Resources */,
+				F68A94D71E48A50C002B15B6 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -330,8 +457,7 @@
 				TargetAttributes = {
 					F68A942F1E48988F002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = EJW69VRSSH;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					F68A94381E48988F002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -340,8 +466,7 @@
 					};
 					F68A944E1E4898F2002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = EJW69VRSSH;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					F68A94561E4898F2002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -350,13 +475,11 @@
 					};
 					F68A946C1E489A40002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = EJW69VRSSH;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					F68A947A1E489A79002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = EJW69VRSSH;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					F68A94821E489A79002B15B6 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -439,6 +562,43 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F68A94CF1E48A49E002B15B6 /* Carthage */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/PureXML.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/CloudAPI.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/SQLite.framework",
+			);
+			name = Carthage;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		F68A94D31E48A4CD002B15B6 /* Carthage */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/tvOS/PureXML.framework",
+				"$(SRCROOT)/../Carthage/Build/tvOS/CloudAPI.framework",
+				"$(SRCROOT)/../Carthage/Build/tvOS/SQLite.framework",
+			);
+			name = Carthage;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F68A942B1E48988F002B15B6 /* Sources */ = {
@@ -619,10 +779,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -639,10 +800,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -657,6 +819,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = im.intercambio.CloudStoreTests;
@@ -669,6 +832,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = im.intercambio.CloudStoreTests;
@@ -680,12 +844,14 @@
 		F68A94611E4898F2002B15B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -702,12 +868,14 @@
 		F68A94621E4898F2002B15B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -725,6 +893,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = im.intercambio.CloudStoreTests;
@@ -739,6 +908,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/tvOS/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = im.intercambio.CloudStoreTests;
@@ -755,10 +925,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/watchOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -778,10 +949,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/watchOS/";
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -798,13 +970,15 @@
 		F68A948D1E489A79002B15B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac/";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -821,13 +995,15 @@
 		F68A948E1E489A79002B15B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = EJW69VRSSH;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac/";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = CloudStore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -847,6 +1023,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
@@ -863,6 +1040,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = EJW69VRSSH;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac/";
 				INFOPLIST_FILE = CloudStoreTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
