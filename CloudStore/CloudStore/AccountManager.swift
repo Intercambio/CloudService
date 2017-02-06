@@ -37,7 +37,7 @@ public class Account: Equatable, Hashable {
 }
 
 public extension Notification.Name {
-    static let AccountManagerDidChange = Notification.Name(rawValue: "AccountManagerDidChange")
+    static let AccountManagerDidChange = Notification.Name(rawValue: "CloudStore.AccountManagerDidChange")
 }
 
 public class AccountManager {
@@ -46,7 +46,7 @@ public class AccountManager {
     let store: FileStore
     init(store: FileStore) {
         self.store = store
-        self.queue = DispatchQueue(label: "AccountManager")
+        self.queue = DispatchQueue(label: "CloudStore.AccountManager")
     }
     
     public var accounts: [Account] {
