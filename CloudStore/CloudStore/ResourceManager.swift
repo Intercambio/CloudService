@@ -34,6 +34,10 @@ public struct Resource: Equatable, Hashable {
         return storeResource.isCollection
     }
     
+    public var dirty: Bool {
+        return storeResource.dirty
+    }
+    
     public static func ==(lhs: Resource, rhs: Resource) -> Bool {
         return lhs.storeResource == rhs.storeResource
     }
@@ -69,31 +73,12 @@ public class ResourceManager: CloudAPIDelegate {
             let storeResource = try store.resource(of: account.storeAccount, at: path)
             else { return nil }
         
-        if storeResource.dirty {
-            updateResource(at: path) { error in
-                if error != nil {
-                    NSLog("Failed to update resource: \(error)")
-                }
-            }
-        }
-        
         return Resource(account: account, storeResource: storeResource)
     }
     
     public func content(at path: [String]) throws -> [Resource] {
-        guard
-            let storeResource = try store.resource(of: account.storeAccount, at: path)
-            else { return [] }
-        
-        if storeResource.dirty {
-            updateResource(at: path) { error in
-                if error != nil {
-                    NSLog("Failed to update resource: \(error)")
-                }
-            }
-        }
-        
         let content = try store.contents(of: account.storeAccount, at: path)
+        
         return content.map { (storeResource) in
             return Resource(account: account, storeResource: storeResource)
         }
