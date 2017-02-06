@@ -44,7 +44,7 @@ public struct Resource: Equatable, Hashable {
 }
 
 protocol ResourceManagerDelegate: class {
-    func passwordForResourceManager(_ manager: ResourceManager, with completionHandler: @escaping (String?)->Void) -> Void
+    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
 }
 
 public class ResourceManager: CloudAPIDelegate {
@@ -157,7 +157,7 @@ public class ResourceManager: CloudAPIDelegate {
     
     public func cloudAPI(_ api: CloudAPI, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let delegate = self.delegate {
-            delegate.passwordForResourceManager(self, with: { (password) in
+            delegate.resourceManager(self, needsPasswordWith: { (password) in
                 if let password = password {
                     completionHandler(.useCredential, URLCredential(user: self.account.username, password: password, persistence: .forSession))
                 } else {

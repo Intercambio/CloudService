@@ -19,6 +19,10 @@
 		F63F52221E48AA9A006DAF83 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52201E48AA9A006DAF83 /* URL.swift */; };
 		F63F52231E48AA9A006DAF83 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52201E48AA9A006DAF83 /* URL.swift */; };
 		F63F52241E48AA9A006DAF83 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52201E48AA9A006DAF83 /* URL.swift */; };
+		F63F52271E48AC34006DAF83 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* Service.swift */; };
+		F63F52281E48AC34006DAF83 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* Service.swift */; };
+		F63F52291E48AC34006DAF83 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* Service.swift */; };
+		F63F522A1E48AC34006DAF83 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* Service.swift */; };
 		F68A943A1E48988F002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94301E48988F002B15B6 /* CloudStore.framework */; };
 		F68A94411E48988F002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94581E4898F2002B15B6 /* CloudStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A944F1E4898F2002B15B6 /* CloudStore.framework */; };
@@ -109,6 +113,7 @@
 		F63F52151E48A954006DAF83 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceManager.swift; sourceTree = "<group>"; };
 		F63F52201E48AA9A006DAF83 /* URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
+		F63F52261E48AC34006DAF83 /* Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		F68A94301E48988F002B15B6 /* CloudStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94331E48988F002B15B6 /* CloudStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudStore.h; sourceTree = "<group>"; };
 		F68A94341E48988F002B15B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -274,6 +279,7 @@
 		F68A94321E48988F002B15B6 /* CloudStore */ = {
 			isa = PBXGroup;
 			children = (
+				F63F52261E48AC34006DAF83 /* Service.swift */,
 				F63F52141E48A93D006DAF83 /* Account */,
 				F63F52251E48AA9D006DAF83 /* Additions */,
 				F63F521A1E48A9D9006DAF83 /* Resource */,
@@ -701,6 +707,7 @@
 				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F52161E48A954006DAF83 /* AccountManager.swift in Sources */,
 				F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F63F52271E48AC34006DAF83 /* Service.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,6 +729,7 @@
 				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F52171E48A954006DAF83 /* AccountManager.swift in Sources */,
 				F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F63F52281E48AC34006DAF83 /* Service.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -743,6 +751,7 @@
 				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F52181E48A954006DAF83 /* AccountManager.swift in Sources */,
 				F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F63F52291E48AC34006DAF83 /* Service.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +764,7 @@
 				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F52191E48A954006DAF83 /* AccountManager.swift in Sources */,
 				F63F521F1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F63F522A1E48AC34006DAF83 /* Service.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
