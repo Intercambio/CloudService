@@ -1,5 +1,5 @@
 //
-//  Service.swift
+//  CloudService.swift
 //  CloudStore
 //
 //  Created by Tobias Kraentzer on 06.02.17.
@@ -9,13 +9,13 @@
 import Foundation
 import Dispatch
 
-public protocol ServiceDelegate: class {
-    func service(_ service: Service, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) -> Void
+public protocol CloudServiceDelegate: class {
+    func service(_ service: CloudService, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) -> Void
 }
 
-public class Service: ResourceManagerDelegate {
+public class CloudService: ResourceManagerDelegate {
     
-    public weak var delegate: ServiceDelegate?
+    public weak var delegate: CloudServiceDelegate?
     
     public let accountManager: AccountManager
     
