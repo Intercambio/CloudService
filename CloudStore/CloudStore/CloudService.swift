@@ -22,7 +22,7 @@ public let InsertedOrUpdatedResourcesKey = "CloudStore.InsertedOrUpdatedResource
 public let DeletedResourcesKey = "CloudStore.DeletedResourcesKey"
 
 public protocol CloudServiceDelegate: class {
-    func service<Account: StoreAccount>(_ service: CloudService, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) -> Void
+    func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) -> Void
 }
 
 public class CloudService {
@@ -92,13 +92,13 @@ public class CloudService {
     
     // MARK: - Resource Management
     
-    private var resourceManager: [Account:ResourceManager<Store>] = [:]
+    private var resourceManager: [Account:ResourceManager] = [:]
     
-    private func resourceManager(for account: Account) -> ResourceManager<Store> {
+    private func resourceManager(for account: Account) -> ResourceManager {
         if let manager = resourceManager[account] {
             return manager
         } else {
-            let manager = ResourceManager<Store>(store: store, account: account)
+            let manager = ResourceManager(store: store, account: account)
             manager.delegate = self
             resourceManager[account] = manager
             return manager
@@ -123,7 +123,7 @@ public class CloudService {
 
 extension CloudService: ResourceManagerDelegate {
     
-    func resourceManager<Store>(_ manager: ResourceManager<Store>, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
+    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
         DispatchQueue.main.async {
             if let delegate = self.delegate {
                 delegate.service(self,
@@ -135,7 +135,7 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager<Store>(_ manager: ResourceManager<Store>, didChange changeSet: Store.ChangeSet) {
+    func resourceManager(_ manager: ResourceManager, didChange changeSet: Store.ChangeSet) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(name: Notification.Name.CloudServiceDidChangeResources,

@@ -223,7 +223,6 @@
 			children = (
 				F68A94E81E48A83F002B15B6 /* TestCase.swift */,
 				F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */,
-				F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */,
 			);
 			name = Store;
 			sourceTree = "<group>";
@@ -283,6 +282,7 @@
 		F68A943D1E48988F002B15B6 /* CloudStoreTests */ = {
 			isa = PBXGroup;
 			children = (
+				F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */,
 				F63F52131E48A8E0006DAF83 /* Store */,
 				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);

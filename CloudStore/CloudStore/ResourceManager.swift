@@ -10,20 +10,20 @@ import Foundation
 import CloudAPI
 
 protocol ResourceManagerDelegate: class {
-    func resourceManager<Store>(_ manager: ResourceManager<Store>, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
-    func resourceManager<Store>(_ manager: ResourceManager<Store>, didChange changeset: Store.ChangeSet) -> Void
+    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
+    func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) -> Void
 }
 
-class ResourceManager<StoreType: Store>: CloudAPIDelegate {
+class ResourceManager: CloudAPIDelegate {
     
     weak var delegate: ResourceManagerDelegate?
     
-    let store: StoreType
-    let account: StoreType.Account
+    let store: FileStore
+    let account: FileStore.Account
     let queue: DispatchQueue
     let api: CloudAPI
     
-    init(store: StoreType, account: StoreType.Account) {
+    init(store: FileStore, account: FileStore.Account) {
         self.store = store
         self.account = account
         self.queue = DispatchQueue(label: "CloudStore.ResourceManager")
