@@ -44,6 +44,9 @@ class FileStoreTests: TestCase {
             
             XCTAssertTrue(store.accounts.contains(account))
             
+            let updatedAccount = try store.update(account, with: "Foo Bar")
+            XCTAssertEqual(updatedAccount.label, "Foo Bar")
+            
             try store.remove(account)
             XCTAssertFalse(store.accounts.contains(account))
             
