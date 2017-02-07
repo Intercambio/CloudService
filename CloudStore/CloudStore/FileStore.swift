@@ -9,43 +9,43 @@
 import Foundation
 import SQLite
 
-enum FileStoreError: Error {
+public enum FileStoreError: Error {
     case notSetup
     case internalError
 }
 
-struct FileStoreAccount: StoreAccount {
+public struct FileStoreAccount: StoreAccount {
     
-    let identifier: String
-    let url: URL
-    let username: String
-    let label: String?
+    public let identifier: String
+    public let url: URL
+    public let username: String
+    public let label: String?
     
-    static func ==(lhs: FileStoreAccount, rhs: FileStoreAccount) -> Bool {
+    public static func ==(lhs: FileStoreAccount, rhs: FileStoreAccount) -> Bool {
         return lhs.identifier == rhs.identifier
     }
     
-    var hashValue: Int {
+    public var hashValue: Int {
         return identifier.hashValue
     }
 }
 
-struct FileStoreResource: StoreResource {
+public struct FileStoreResource: StoreResource {
     
-    typealias Account = FileStoreAccount
+    public typealias Account = FileStoreAccount
     
-    let account: Account
-    let path: [String]
-    let dirty: Bool
+    public let account: Account
+    public let path: [String]
+    public let dirty: Bool
     
-    let isCollection: Bool
-    let version: String
+    public let isCollection: Bool
+    public let version: String
     
-    static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
+    public static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
         return lhs.account == rhs.account && lhs.path == rhs.path
     }
     
-    var hashValue: Int {
+    public var hashValue: Int {
         return account.hashValue ^ path.count
     }
 }
@@ -61,10 +61,10 @@ class FileStoreChangeSet: StoreChangeSet {
     var deleted: [Resource] = []
 }
 
-class FileStore: Store {
+public class FileStore: Store {
     
-    typealias Account = FileStoreAccount
-    typealias Resource = FileStoreResource
+    public typealias Account = FileStoreAccount
+    public typealias Resource = FileStoreResource
     typealias ChangeSet = FileStoreChangeSet
     
     private let queue: DispatchQueue = DispatchQueue(label: "FileStore")
