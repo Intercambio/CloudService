@@ -9,6 +9,7 @@
 import Foundation
 
 protocol StoreAccount: Equatable, Hashable {
+    var identifier: String { get }
     var username: String { get }
     var url: URL { get }
 }

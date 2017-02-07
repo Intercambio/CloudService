@@ -16,16 +16,16 @@ enum FileStoreError: Error {
 
 struct FileStoreAccount: StoreAccount {
     
-    let id: Int64
+    let identifier: String
     let url: URL
     let username: String
     
     static func ==(lhs: FileStoreAccount, rhs: FileStoreAccount) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.identifier == rhs.identifier
     }
     
     var hashValue: Int {
-        return id.hashValue
+        return identifier.hashValue
     }
 }
 
@@ -119,7 +119,7 @@ class FileStore: Store {
         var result: [Account] = []
         try db.transaction {
             let query = FileStoreSchema.account.select([
-                    FileStoreSchema.id,
+                    FileStoreSchema.identifier,
                     FileStoreSchema.url,
                     FileStoreSchema.username
                 ])
@@ -132,10 +132,10 @@ class FileStore: Store {
     }
     
     private func makeAcocunt(with row: SQLite.Row) throws -> Account {
-        let id = row.get(FileStoreSchema.id)
+        let identifier = row.get(FileStoreSchema.identifier)
         let url = row.get(FileStoreSchema.url)
         let username = row.get(FileStoreSchema.username)
-        return Account(id: id, url: url, username: username)
+        return Account(identifier: identifier, url: url, username: username)
     }
     
     func addAccount(with url: URL, username: String) throws -> Account {
@@ -146,10 +146,14 @@ class FileStore: Store {
             
             var account: Account? = nil
             try db.transaction {
+                let identifier = UUID().uuidString.lowercased()
                 let standardizedURL = url.standardized
-                let insert = FileStoreSchema.account.insert(FileStoreSchema.url <- standardizedURL, FileStoreSchema.username <- username)
-                let id = try db.run(insert)
-                account = Account(id: id, url: standardizedURL, username: username)
+                let insert = FileStoreSchema.account.insert(
+                    FileStoreSchema.identifier <- identifier,
+                    FileStoreSchema.url <- standardizedURL,
+                    FileStoreSchema.username <- username)
+                _ = try db.run(insert)
+                account = Account(identifier: identifier, url: standardizedURL, username: username)
                 
                 let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString)
                 let changeSet = FileStoreChangeSet()
@@ -171,8 +175,8 @@ class FileStore: Store {
                 else { throw FileStoreError.notSetup }
             
             try db.transaction {
-                try db.run(FileStoreSchema.account.filter(FileStoreSchema.id == account.id).delete())
-                try db.run(FileStoreSchema.resource.filter(FileStoreSchema.account_id == account.id).delete())
+                try db.run(FileStoreSchema.account.filter(FileStoreSchema.identifier == account.identifier).delete())
+                try db.run(FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier).delete())
             }
         }
     }
@@ -190,7 +194,7 @@ class FileStore: Store {
                 let href = self.makeHRef(with: path)
                 
                 let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_id == account.id &&
+                    FileStoreSchema.account_identifier == account.identifier &&
                     FileStoreSchema.href == href)
                 
                 if let row = try db.pluck(query) {
@@ -218,7 +222,7 @@ class FileStore: Store {
                 let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
                 
                 let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_id == account.id
+                    FileStoreSchema.account_identifier == account.identifier
                     && FileStoreSchema.href.like(hrefPattern)
                     && FileStoreSchema.depth == path.count + 1)
                 
@@ -281,11 +285,11 @@ class FileStore: Store {
         let href = self.makeHRef(with: path)
         let depth = path.count
         
-        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_id == account.id && FileStoreSchema.href == href)
+        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href == href)
         
         if try db.run(query.update(FileStoreSchema.dirty <- true)) == 0 {
             let insert = FileStoreSchema.resource.insert(
-                FileStoreSchema.account_id <- account.id,
+                FileStoreSchema.account_identifier <- account.identifier,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- depth,
                 FileStoreSchema.version <- "",
@@ -300,7 +304,7 @@ class FileStore: Store {
         let href = makeHRef(with: path)
         let query = FileStoreSchema.resource
                         .filter(
-                            FileStoreSchema.account_id == account.id
+                            FileStoreSchema.account_identifier == account.identifier
                             && FileStoreSchema.href == href
                             && FileStoreSchema.version == properties.version
                             && FileStoreSchema.dirty == false)
@@ -309,7 +313,7 @@ class FileStore: Store {
         } else {
             _ = try db.run(FileStoreSchema.resource.insert(
                 or: .replace,
-                FileStoreSchema.account_id <- account.id,
+                FileStoreSchema.account_identifier <- account.identifier,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- path.count,
                 FileStoreSchema.version <- properties.version,
@@ -327,7 +331,7 @@ class FileStore: Store {
         let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
         
         let query = FileStoreSchema.resource
-            .filter( FileStoreSchema.account_id == account.id && FileStoreSchema.href.like(hrefPattern) && FileStoreSchema.depth == path.count + 1)
+            .filter( FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href.like(hrefPattern) && FileStoreSchema.depth == path.count + 1)
             .order(FileStoreSchema.href.asc)
             .select(FileStoreSchema.href, FileStoreSchema.version)
         
@@ -362,7 +366,7 @@ class FileStore: Store {
         let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_id == account.id
+            FileStoreSchema.account_identifier == account.identifier
                 && FileStoreSchema.href.like(hrefPattern)
                 && FileStoreSchema.depth == path.count + 1)
         
@@ -372,14 +376,14 @@ class FileStore: Store {
     private func removeResource(at path: [String], of account: Account, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws {
         
         let href = self.makeHRef(with: path)
-        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_id == account.id && FileStoreSchema.href == href)
+        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href == href)
 
         if try db.run(query.delete()) > 0 {
             
             let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
             
             let query = FileStoreSchema.resource.filter(
-                FileStoreSchema.account_id == account.id
+                FileStoreSchema.account_identifier == account.identifier
                     && FileStoreSchema.href.like(hrefPattern)
                     && FileStoreSchema.depth == path.count + 1)
             
@@ -404,7 +408,7 @@ class FileStoreSchema {
     static let account = Table("account")
     static let resource = Table("resource")
     
-    static let id = Expression<Int64>("id")
+    static let identifier = Expression<String>("identifier")
     static let url = Expression<URL>("url")
     static let username = Expression<String>("username")
     static let dirty = Expression<Bool>("dirty")
@@ -412,7 +416,7 @@ class FileStoreSchema {
     static let depth = Expression<Int>("depth")
     static let version = Expression<String>("version")
     static let is_collection = Expression<Bool>("is_collection")
-    static let account_id = Expression<Int64>("account_id")
+    static let account_identifier = Expression<String>("account_identifier")
     
     let directory: URL
     required init(directory: URL) {
@@ -451,20 +455,20 @@ class FileStoreSchema {
     
     private func setup(_ db: SQLite.Connection) throws {
         try db.run(FileStoreSchema.account.create { t in
-            t.column(FileStoreSchema.id, primaryKey: true)
+            t.column(FileStoreSchema.identifier, primaryKey: true)
             t.column(FileStoreSchema.url)
             t.column(FileStoreSchema.username)
         })
         try db.run(FileStoreSchema.account.createIndex(FileStoreSchema.url))
         try db.run(FileStoreSchema.resource.create { t in
-            t.column(FileStoreSchema.account_id)
+            t.column(FileStoreSchema.account_identifier)
             t.column(FileStoreSchema.href)
             t.column(FileStoreSchema.depth)
             t.column(FileStoreSchema.is_collection)
             t.column(FileStoreSchema.version)
             t.column(FileStoreSchema.dirty)
-            t.unique([FileStoreSchema.account_id, FileStoreSchema.href])
-            t.foreignKey(FileStoreSchema.account_id, references: FileStoreSchema.account, FileStoreSchema.id, update: .cascade, delete: .cascade)
+            t.unique([FileStoreSchema.account_identifier, FileStoreSchema.href])
+            t.foreignKey(FileStoreSchema.account_identifier, references: FileStoreSchema.account, FileStoreSchema.identifier, update: .cascade, delete: .cascade)
         })
         try db.run(FileStoreSchema.resource.createIndex(FileStoreSchema.href))
         try db.run(FileStoreSchema.resource.createIndex(FileStoreSchema.depth))
