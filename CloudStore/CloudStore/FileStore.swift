@@ -19,6 +19,7 @@ struct FileStoreAccount: StoreAccount {
     let identifier: String
     let url: URL
     let username: String
+    let label: String?
     
     static func ==(lhs: FileStoreAccount, rhs: FileStoreAccount) -> Bool {
         return lhs.identifier == rhs.identifier
@@ -121,7 +122,8 @@ class FileStore: Store {
             let query = FileStoreSchema.account.select([
                     FileStoreSchema.identifier,
                     FileStoreSchema.url,
-                    FileStoreSchema.username
+                    FileStoreSchema.username,
+                    FileStoreSchema.label
                 ])
             for row in try db.prepare(query) {
                 let account = try self.makeAcocunt(with: row)
@@ -135,7 +137,28 @@ class FileStore: Store {
         let identifier = row.get(FileStoreSchema.identifier)
         let url = row.get(FileStoreSchema.url)
         let username = row.get(FileStoreSchema.username)
-        return Account(identifier: identifier, url: url, username: username)
+        let label = row.get(FileStoreSchema.label)
+        return Account(identifier: identifier, url: url, username: username, label: label)
+    }
+    
+    func update(_ account: FileStoreAccount, with label: String?) throws -> FileStoreAccount {
+        return try queue.sync {
+            guard
+                let db = self.db
+                else { throw FileStoreError.notSetup }
+            var account: Account = account
+            try db.transaction {
+                let update = FileStoreSchema.account
+                    .filter(FileStoreSchema.identifier == account.identifier)
+                    .update(FileStoreSchema.label <- label)
+                _ = try db.run(update)
+                account = Account(identifier: account.identifier,
+                                  url: account.url,
+                                  username: account.username,
+                                  label: label)
+            }
+            return account
+        }
     }
     
     func addAccount(with url: URL, username: String) throws -> Account {
@@ -153,7 +176,7 @@ class FileStore: Store {
                     FileStoreSchema.url <- standardizedURL,
                     FileStoreSchema.username <- username)
                 _ = try db.run(insert)
-                account = Account(identifier: identifier, url: standardizedURL, username: username)
+                account = Account(identifier: identifier, url: standardizedURL, username: username, label: nil)
                 
                 let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString)
                 let changeSet = FileStoreChangeSet()
@@ -417,6 +440,7 @@ class FileStoreSchema {
     static let version = Expression<String>("version")
     static let is_collection = Expression<Bool>("is_collection")
     static let account_identifier = Expression<String>("account_identifier")
+    static let label = Expression<String?>("label")
     
     let directory: URL
     required init(directory: URL) {
@@ -458,6 +482,7 @@ class FileStoreSchema {
             t.column(FileStoreSchema.identifier, primaryKey: true)
             t.column(FileStoreSchema.url)
             t.column(FileStoreSchema.username)
+            t.column(FileStoreSchema.label)
         })
         try db.run(FileStoreSchema.account.createIndex(FileStoreSchema.url))
         try db.run(FileStoreSchema.resource.create { t in

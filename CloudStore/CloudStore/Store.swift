@@ -12,6 +12,7 @@ protocol StoreAccount: Equatable, Hashable {
     var identifier: String { get }
     var username: String { get }
     var url: URL { get }
+    var label: String? { get }
 }
 
 protocol StoreResourceProperties {
@@ -39,6 +40,7 @@ protocol Store {
     
     var accounts: [Account] { get }
     func addAccount(with url: URL, username: String) throws -> Account
+    func update(_ account: Account, with label: String?) throws -> Account
     func remove(_ account: Account) throws -> Void
     
     func resource(of account: Account, at path: [String]) throws -> Resource?
