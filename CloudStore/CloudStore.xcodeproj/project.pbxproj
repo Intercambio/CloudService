@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F612928B1E4C88CA00051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F612928A1E4C88CA00051B24 /* KeyChain.framework */; };
+		F61292C11E4C9AB300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C01E4C9AB300051B24 /* KeyChain.framework */; };
+		F61292C31E4C9AC300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C21E4C9AC300051B24 /* KeyChain.framework */; };
+		F61292C51E4C9AD300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; };
+		F61292C61E4C9AE700051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; };
+		F61292C71E4C9AED00051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C01E4C9AB300051B24 /* KeyChain.framework */; };
+		F61292C81E4C9AF500051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; };
+		F61292C91E4C9AFD00051B24 /* KeyChain.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
 		F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
 		F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
@@ -103,12 +111,17 @@
 				F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */,
 				F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */,
 				F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */,
+				F61292C91E4C9AFD00051B24 /* KeyChain.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F612928A1E4C88CA00051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/iOS/KeyChain.framework; sourceTree = "<group>"; };
+		F61292C01E4C9AB300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/tvOS/KeyChain.framework; sourceTree = "<group>"; };
+		F61292C21E4C9AC300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/watchOS/KeyChain.framework; sourceTree = "<group>"; };
+		F61292C41E4C9AD300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/Mac/KeyChain.framework; sourceTree = "<group>"; };
 		F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceManager.swift; sourceTree = "<group>"; };
 		F63F52201E48AA9A006DAF83 /* URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		F63F52261E48AC34006DAF83 /* CloudService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
@@ -146,6 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F612928B1E4C88CA00051B24 /* KeyChain.framework in Frameworks */,
 				F68A94C11E48A43E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */,
@@ -160,6 +174,7 @@
 				F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94CD1E48A49A002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */,
+				F61292C61E4C9AE700051B24 /* KeyChain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +182,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F61292C11E4C9AB300051B24 /* KeyChain.framework in Frameworks */,
 				F68A94C31E48A44E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A949C1E489E69002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A949D1E489E69002B15B6 /* PureXML.framework in Frameworks */,
@@ -181,6 +197,7 @@
 				F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94D11E48A4C8002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */,
+				F61292C71E4C9AED00051B24 /* KeyChain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +205,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F61292C31E4C9AC300051B24 /* KeyChain.framework in Frameworks */,
 				F68A94C61E48A45E002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94C71E48A45E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94A01E489E8C002B15B6 /* PureXML.framework in Frameworks */,
@@ -198,6 +216,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F61292C51E4C9AD300051B24 /* KeyChain.framework in Frameworks */,
 				F68A94CA1E48A46E002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94CB1E48A46E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94A31E489EA5002B15B6 /* PureXML.framework in Frameworks */,
@@ -212,6 +231,7 @@
 				F68A94D41E48A502002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */,
+				F61292C81E4C9AF500051B24 /* KeyChain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +323,7 @@
 		F68A94991E489E58002B15B6 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				F612928A1E4C88CA00051B24 /* KeyChain.framework */,
 				F68A94C01E48A43E002B15B6 /* SQLite.framework */,
 				F68A94951E489E53002B15B6 /* CloudAPI.framework */,
 				F68A94961E489E53002B15B6 /* PureXML.framework */,
@@ -313,6 +334,7 @@
 		F68A949E1E489E6D002B15B6 /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				F61292C01E4C9AB300051B24 /* KeyChain.framework */,
 				F68A94C21E48A44E002B15B6 /* SQLite.framework */,
 				F68A949A1E489E69002B15B6 /* CloudAPI.framework */,
 				F68A949B1E489E69002B15B6 /* PureXML.framework */,
@@ -323,6 +345,7 @@
 		F68A94A11E489E8F002B15B6 /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				F61292C21E4C9AC300051B24 /* KeyChain.framework */,
 				F68A94C41E48A45E002B15B6 /* CloudAPI.framework */,
 				F68A94C51E48A45E002B15B6 /* SQLite.framework */,
 				F68A949F1E489E8C002B15B6 /* PureXML.framework */,
@@ -333,6 +356,7 @@
 		F68A94A41E489EA8002B15B6 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				F61292C41E4C9AD300051B24 /* KeyChain.framework */,
 				F68A94C81E48A46E002B15B6 /* CloudAPI.framework */,
 				F68A94C91E48A46E002B15B6 /* SQLite.framework */,
 				F68A94A21E489EA5002B15B6 /* PureXML.framework */,
@@ -661,6 +685,7 @@
 				"$(SRCROOT)/../Carthage/Build/iOS/PureXML.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/CloudAPI.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/SQLite.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/KeyChain.framework",
 			);
 			name = Carthage;
 			outputPaths = (
@@ -678,6 +703,7 @@
 				"$(SRCROOT)/../Carthage/Build/tvOS/PureXML.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/CloudAPI.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/SQLite.framework",
+				"$(SRCROOT)/../Carthage/Build/tvOS/KeyChain.framework",
 			);
 			name = Carthage;
 			outputPaths = (

@@ -49,3 +49,9 @@ protocol Store {
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?) throws -> ChangeSet
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?, content: [String:StoreResourceProperties]?) throws -> ChangeSet
 }
+
+extension StoreResource {
+    public var remoteURL: URL {
+        return account.url.appendingPathComponent(path.joined(separator: "/"))
+    }
+}
