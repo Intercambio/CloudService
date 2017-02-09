@@ -37,6 +37,7 @@ public struct FileStoreResource: StoreResource {
     public let account: Account
     public let path: [String]
     public let dirty: Bool
+    public let updated: Date?
     
     public let isCollection: Bool
     public let version: String
@@ -224,7 +225,8 @@ public class FileStore: Store {
                     let isCollection = row.get(FileStoreSchema.is_collection)
                     let dirty = row.get(FileStoreSchema.dirty)
                     let version = row.get(FileStoreSchema.version)
-                    resource = Resource(account: account, path: path, dirty: dirty, isCollection: isCollection, version: version)
+                    let updated = row.get(FileStoreSchema.updated)
+                    resource = Resource(account: account, path: path, dirty: dirty, updated: updated, isCollection: isCollection, version: version)
                 }
             }
             return resource
@@ -253,8 +255,9 @@ public class FileStore: Store {
                     let isCollection = row.get(FileStoreSchema.is_collection)
                     let path = self.makePath(with: row.get(FileStoreSchema.href))
                     let dirty = row.get(FileStoreSchema.dirty)
+                    let updated = row.get(FileStoreSchema.updated)
                     let version = row.get(FileStoreSchema.version)
-                    let resource = Resource(account: account, path: path, dirty: dirty, isCollection: isCollection, version: version)
+                    let resource = Resource(account: account, path: path, dirty: dirty, updated: updated, isCollection: isCollection, version: version)
                     result.append(resource)
                 }
             }
@@ -334,15 +337,17 @@ public class FileStore: Store {
         if try db.pluck(query) != nil {
             return false
         } else {
+            let now = Date()
             _ = try db.run(FileStoreSchema.resource.insert(
                 or: .replace,
                 FileStoreSchema.account_identifier <- account.identifier,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- path.count,
+                FileStoreSchema.updated <- now,
                 FileStoreSchema.version <- properties.version,
                 FileStoreSchema.is_collection <- properties.isCollection,
                 FileStoreSchema.dirty <- dirty))
-            let resource = Resource(account: account, path: path, dirty: dirty, isCollection: properties.isCollection, version: properties.version)
+            let resource = Resource(account: account, path: path, dirty: dirty, updated: now, isCollection: properties.isCollection, version: properties.version)
             changeSet.insertedOrUpdated.append(resource)
             return true
         }
@@ -411,7 +416,7 @@ public class FileStore: Store {
                     && FileStoreSchema.depth == path.count + 1)
             
             let mightBeACollection = try db.run(query.delete()) > 0
-            let resource = Resource(account: account, path: path, dirty: false, isCollection: mightBeACollection, version: UUID().uuidString)
+            let resource = Resource(account: account, path: path, dirty: false, updated: nil, isCollection: mightBeACollection, version: UUID().uuidString)
             changeSet.deleted.append(resource)
         }
     }
@@ -441,6 +446,7 @@ class FileStoreSchema {
     static let is_collection = Expression<Bool>("is_collection")
     static let account_identifier = Expression<String>("account_identifier")
     static let label = Expression<String?>("label")
+    static let updated = Expression<Date?>("updated")
     
     let directory: URL
     required init(directory: URL) {
@@ -492,6 +498,7 @@ class FileStoreSchema {
             t.column(FileStoreSchema.is_collection)
             t.column(FileStoreSchema.version)
             t.column(FileStoreSchema.dirty)
+            t.column(FileStoreSchema.updated)
             t.unique([FileStoreSchema.account_identifier, FileStoreSchema.href])
             t.foreignKey(FileStoreSchema.account_identifier, references: FileStoreSchema.account, FileStoreSchema.identifier, update: .cascade, delete: .cascade)
         })
