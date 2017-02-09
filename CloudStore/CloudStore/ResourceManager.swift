@@ -34,39 +34,39 @@ class ResourceManager: CloudAPIDelegate {
     func updateResource(at path: [String], completion: ((Error?) -> Void)?) {
         let url = account.url.appendingPathComponent(path.joined(separator: "/"))
         self.api.retrieveProperties(of: url) { (result, error) in
-
-            guard
-                let resources = result?.resources
-                else { return }
-            
-            var properties: StoreResourceProperties? = nil
-            var content: [String:StoreResourceProperties] = [:]
-            
-            for resource in resources {
-                guard
-                    let resourcePath = resource.url.pathComponents(relativeTo: self.account.url),
-                    let etag = resource.etag
-                    else { continue }
-                
-                let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection, version: etag)
-                
-                if resourcePath == path {
-                    properties = resourceProperties
-                } else if resourcePath.starts(with: path)
-                    && resourcePath.count == path.count + 1 {
-                    let name = resourcePath[path.count]
-                    content[name] = resourceProperties
-                }
-            }
-            
             do {
-                let changeSet = try self.store.update(resourceAt: path, of: self.account, with: properties, content: content)
                 guard
-                    let delegate = self.delegate
-                    else { return }
-                delegate.resourceManager(self, didChange: changeSet)
+                    let resources = result?.resources
+                    else { throw error ?? CloudServiceError.internalError }
+                
+                var properties: StoreResourceProperties? = nil
+                var content: [String:StoreResourceProperties] = [:]
+                
+                for resource in resources {
+                    guard
+                        let resourcePath = resource.url.pathComponents(relativeTo: self.account.url),
+                        let etag = resource.etag
+                        else { continue }
+                    
+                    let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection, version: etag)
+                    
+                    if resourcePath == path {
+                        properties = resourceProperties
+                    } else if resourcePath.starts(with: path)
+                        && resourcePath.count == path.count + 1 {
+                        let name = resourcePath[path.count]
+                        content[name] = resourceProperties
+                    }
+                }
+                
+                let changeSet = try self.store.update(resourceAt: path, of: self.account, with: properties, content: content)
+                if let delegate = self.delegate {
+                    delegate.resourceManager(self, didChange: changeSet)
+                }
+                
+                completion?(nil)
             } catch {
-                NSLog("Failed ot update store: \(error)")
+                completion?(error)
             }
         }
     }

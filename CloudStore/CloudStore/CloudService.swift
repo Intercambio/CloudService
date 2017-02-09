@@ -10,6 +10,10 @@ import Foundation
 import Dispatch
 import KeyChain
 
+public enum CloudServiceError: Error {
+    case internalError
+}
+
 extension Notification.Name {
     public static let CloudServiceDidAddAccount = Notification.Name(rawValue: "CloudStore.CloudServiceDidAddAccount")
     public static let CloudServiceDidUdpateAccount = Notification.Name(rawValue: "CloudStore.CloudServiceDidUdpateAccount")
