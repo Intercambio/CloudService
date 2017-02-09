@@ -25,6 +25,7 @@ public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
     var account: Account { get }
     var path: [String] { get }
     var dirty: Bool { get }
+    var updated: Date? { get }
 }
 
 public protocol StoreChangeSet {

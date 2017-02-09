@@ -40,4 +40,12 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
     func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) {
         
     }
+
+    func serviceDidBeginActivity(_ service: CloudService) {
+        
+    }
+    
+    func serviceDidEndActivity(_ service: CloudService) {
+        
+    }
 }

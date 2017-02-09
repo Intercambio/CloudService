@@ -121,7 +121,8 @@ class FileStoreTests: TestCase {
                 XCTAssertEqual(resource.version, "123")
                 XCTAssertFalse(resource.isCollection)
                 XCTAssertFalse(resource.dirty)
-            
+                XCTAssertNotNil(resource.updated)
+                
                 var parentPath = path
                 parentPath.removeLast()
                 let content = try store.contents(of: account, at: parentPath)
