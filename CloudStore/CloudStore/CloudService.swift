@@ -8,6 +8,7 @@
 
 import Foundation
 import Dispatch
+import KeyChain
 
 extension Notification.Name {
     public static let CloudServiceDidAddAccount = Notification.Name(rawValue: "CloudStore.CloudServiceDidAddAccount")
@@ -34,10 +35,12 @@ public class CloudService {
     public weak var delegate: CloudServiceDelegate?
 
     private let store: Store
+    private let keyChain: KeyChain
     private let queue: DispatchQueue
     
-    public init(directory: URL) {
+    public init(directory: URL, keyChain: KeyChain) {
         self.store = FileStore(directory: directory)
+        self.keyChain = keyChain
         self.queue = DispatchQueue(label: "CloudService")
     }
     
@@ -55,6 +58,8 @@ public class CloudService {
     
     public func addAccount(with url: URL, username: String) throws -> Account {
         let account = try store.addAccount(with: url, username: username)
+        let item = KeyChainItem(identifier: account.identifier, invisible: false, options: [:])
+        try keyChain.add(item)
         
         let center = NotificationCenter.default
         center.post(name: Notification.Name.CloudServiceDidAddAccount,
@@ -81,6 +86,9 @@ public class CloudService {
     
     public func remove(_ account: Account) throws {
         try store.remove(account)
+        
+        let item = try keyChain.item(with: account.identifier)
+        try keyChain.remove(item)
         
         let center = NotificationCenter.default
         center.post(name: Notification.Name.CloudServiceDidRemoveAccount,
@@ -119,18 +127,47 @@ public class CloudService {
             manager.updateResource(at: path, completion: completion)
         }
     }
+    
+    // MARK: - Manage Credentials
+    
+    public func password(for account: CloudService.Account) -> String? {
+        do {
+            return try keyChain.passwordForItem(with: account.identifier)
+        } catch {
+            return nil
+        }
+    }
+    
+    public func setPassword(_ password: String?, for account: CloudService.Account) {
+        do {
+            try keyChain.setPassword(password, forItemWith: account.identifier)
+        } catch {
+            NSLog("Failed to update the password: \(error)")
+        }
+    }
+    
+    public func requestPassword(for account: CloudService.Account, completion: @escaping (String?) -> Void) -> Void {
+        DispatchQueue.main.async {
+            if let delegate = self.delegate {
+                delegate.service(self, needsPasswordFor: account) { password in
+                    self.setPassword(password, for: account)
+                    completion(password)
+                }
+            } else {
+                completion(nil)
+            }
+        }
+    }
 }
 
 extension CloudService: ResourceManagerDelegate {
     
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
-        DispatchQueue.main.async {
-            if let delegate = self.delegate {
-                delegate.service(self,
-                                 needsPasswordFor: manager.account,
-                                 completionHandler: completionHandler)
-            } else {
-                completionHandler(nil)
+        if let password = password(for: manager.account) {
+            completionHandler(password)
+        } else {
+            requestPassword(for: manager.account) { password in
+                completionHandler(password)
             }
         }
     }

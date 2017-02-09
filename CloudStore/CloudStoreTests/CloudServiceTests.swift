@@ -8,6 +8,7 @@
 
 import XCTest
 import CloudStore
+import KeyChain
 
 class CloudServiceTests: TestCase, CloudServiceDelegate {
     
@@ -20,7 +21,8 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
             let directory = self.directory
             else { XCTFail(); return }
         
-        let service = CloudService(directory: directory)
+        let keyChain = KeyChain(serviceName: "CloudServiceTests")
+        let service = CloudService(directory: directory, keyChain: keyChain)
         service.delegate = self
         
         let expectation = self.expectation(description: "Start")

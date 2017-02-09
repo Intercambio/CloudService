@@ -1,3 +1,4 @@
 github "Intercambio/PureXML" ~> 1.2
 github "Intercambio/CloudAPI" ~> 0.1
+github "Intercambio/KeyChain" ~> 1.2
 github "stephencelis/SQLite.swift" ~> 0.11
