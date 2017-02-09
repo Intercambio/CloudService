@@ -75,6 +75,30 @@ class FileStoreTests: TestCase {
         }
     }
     
+    func testRemoteURL() {
+        guard
+            let store = self.store
+            else { XCTFail(); return }
+        
+        do {
+            let url = URL(string: "https://example.com/api/")!
+            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            
+            let path = ["a", "b", "c"]
+            let properties = Properties(isCollection: false, version: "123")
+            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            
+            let resource = try store.resource(of: account, at: path)
+            XCTAssertNotNil(resource)
+            if let resource = resource {
+                let remoteURL = resource.remoteURL
+                XCTAssertEqual(remoteURL.absoluteString, "https://example.com/api/a/b/c")
+            }
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
     func testInsertResource() {
         guard
             let store = self.store
