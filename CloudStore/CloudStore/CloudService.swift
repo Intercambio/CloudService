@@ -24,6 +24,8 @@ public let DeletedResourcesKey = "CloudStore.DeletedResourcesKey"
 
 public protocol CloudServiceDelegate: class {
     func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) -> Void
+    func serviceDidBeginActivity(_ service: CloudService) -> Void
+    func serviceDidEndActivity(_ service: CloudService) -> Void
 }
 
 public class CloudService {
@@ -122,9 +124,13 @@ public class CloudService {
     }
     
     public func updateResource(at path: [String], of account: Account, completion: ((Error?) -> Void)?) {
-        queue.async {
+        return queue.async {
+            self.beginActivity()
             let manager = self.resourceManager(for: account)
-            manager.updateResource(at: path, completion: completion)
+            manager.updateResource(at: path) { error in
+                completion?(error)
+                self.endActivity()
+            }
         }
     }
     
@@ -157,6 +163,32 @@ public class CloudService {
                 completion(nil)
             }
         }
+    }
+    
+    // MARK: - Activity
+    
+    private var runningActives: Int = 0 {
+        didSet {
+            if oldValue != runningActives {
+                if oldValue == 0 {
+                    DispatchQueue.main.async {
+                        self.delegate?.serviceDidBeginActivity(self)
+                    }
+                } else if runningActives == 0 {
+                    DispatchQueue.main.async {
+                        self.delegate?.serviceDidEndActivity(self)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func beginActivity() {
+        runningActives += 1
+    }
+    
+    private func endActivity() {
+        runningActives -= 1
     }
 }
 
