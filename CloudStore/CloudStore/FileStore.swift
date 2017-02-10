@@ -42,6 +42,10 @@ public struct FileStoreResource: StoreResource {
     public let isCollection: Bool
     public let version: String
     
+    public let contentType: String?
+    public let contentLength: Int?
+    public let modified: Date?
+    
     public static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
         return lhs.account == rhs.account && lhs.path == rhs.path
     }
@@ -54,6 +58,9 @@ public struct FileStoreResource: StoreResource {
 struct FileStoreResourceProperties: StoreResourceProperties {
     let isCollection: Bool
     let version: String
+    let contentType: String?
+    let contentLength: Int?
+    let modified: Date?
 }
 
 class FileStoreChangeSet: StoreChangeSet {
@@ -179,7 +186,7 @@ public class FileStore: Store {
                 _ = try db.run(insert)
                 account = Account(identifier: identifier, url: standardizedURL, username: username, label: nil)
                 
-                let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString)
+                let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString, contentType: nil, contentLength: nil, modified: nil)
                 let changeSet = FileStoreChangeSet()
                 _ = try self.updateResource(at: [], of: account!, with: properties, dirty: true, timestamp: nil, in: db, with: changeSet)
             }
@@ -226,7 +233,18 @@ public class FileStore: Store {
                     let dirty = row.get(FileStoreSchema.dirty)
                     let version = row.get(FileStoreSchema.version)
                     let updated = row.get(FileStoreSchema.updated)
-                    resource = Resource(account: account, path: path, dirty: dirty, updated: updated, isCollection: isCollection, version: version)
+                    let contentType = row.get(FileStoreSchema.content_type)
+                    let contentLength = row.get(FileStoreSchema.content_length)
+                    let modified = row.get(FileStoreSchema.modified)
+                    resource = Resource(account: account,
+                                        path: path,
+                                        dirty: dirty,
+                                        updated: updated,
+                                        isCollection: isCollection,
+                                        version: version,
+                                        contentType: contentType,
+                                        contentLength: contentLength,
+                                        modified: modified)
                 }
             }
             return resource
@@ -257,7 +275,18 @@ public class FileStore: Store {
                     let dirty = row.get(FileStoreSchema.dirty)
                     let updated = row.get(FileStoreSchema.updated)
                     let version = row.get(FileStoreSchema.version)
-                    let resource = Resource(account: account, path: path, dirty: dirty, updated: updated, isCollection: isCollection, version: version)
+                    let contentType = row.get(FileStoreSchema.content_type)
+                    let contentLength = row.get(FileStoreSchema.content_length)
+                    let modified = row.get(FileStoreSchema.modified)
+                    let resource = Resource(account: account,
+                                            path: path,
+                                            dirty: dirty,
+                                            updated: updated,
+                                            isCollection: isCollection,
+                                            version: version,
+                                            contentType: contentType,
+                                            contentLength: contentLength,
+                                            modified: modified)
                     result.append(resource)
                 }
             }
@@ -337,7 +366,15 @@ public class FileStore: Store {
                             && FileStoreSchema.version == properties.version
                             && FileStoreSchema.dirty == false)
         if try db.run(query.update(FileStoreSchema.updated <- timestamp)) > 0 {
-            let resource = Resource(account: account, path: path, dirty: dirty, updated: timestamp, isCollection: properties.isCollection, version: properties.version)
+            let resource = Resource(account: account,
+                                    path: path,
+                                    dirty: dirty,
+                                    updated: timestamp,
+                                    isCollection: properties.isCollection,
+                                    version: properties.version,
+                                    contentType: properties.contentType,
+                                    contentLength: properties.contentLength,
+                                    modified: properties.modified)
             changeSet.insertedOrUpdated.append(resource)
             return false
         } else {
@@ -349,8 +386,19 @@ public class FileStore: Store {
                 FileStoreSchema.updated <- timestamp,
                 FileStoreSchema.version <- properties.version,
                 FileStoreSchema.is_collection <- properties.isCollection,
-                FileStoreSchema.dirty <- dirty))
-            let resource = Resource(account: account, path: path, dirty: dirty, updated: timestamp, isCollection: properties.isCollection, version: properties.version)
+                FileStoreSchema.dirty <- dirty,
+                FileStoreSchema.content_type <- properties.contentType,
+                FileStoreSchema.content_length <- properties.contentLength,
+                FileStoreSchema.modified <- properties.modified))
+            let resource = Resource(account: account,
+                                    path: path,
+                                    dirty: dirty,
+                                    updated: timestamp,
+                                    isCollection: properties.isCollection,
+                                    version: properties.version,
+                                    contentType: properties.contentType,
+                                    contentLength: properties.contentLength,
+                                    modified: properties.modified)
             changeSet.insertedOrUpdated.append(resource)
             return true
         }
@@ -419,7 +467,7 @@ public class FileStore: Store {
                     && FileStoreSchema.depth == path.count + 1)
             
             let mightBeACollection = try db.run(query.delete()) > 0
-            let resource = Resource(account: account, path: path, dirty: false, updated: nil, isCollection: mightBeACollection, version: UUID().uuidString)
+            let resource = Resource(account: account, path: path, dirty: false, updated: nil, isCollection: mightBeACollection, version: UUID().uuidString, contentType: nil, contentLength: nil, modified: nil)
             changeSet.deleted.append(resource)
         }
     }
@@ -450,6 +498,9 @@ class FileStoreSchema {
     static let account_identifier = Expression<String>("account_identifier")
     static let label = Expression<String?>("label")
     static let updated = Expression<Date?>("updated")
+    static let modified = Expression<Date?>("modified")
+    static let content_type = Expression<String?>("content_type")
+    static let content_length = Expression<Int?>("content_length")
     
     let directory: URL
     required init(directory: URL) {
@@ -502,6 +553,9 @@ class FileStoreSchema {
             t.column(FileStoreSchema.version)
             t.column(FileStoreSchema.dirty)
             t.column(FileStoreSchema.updated)
+            t.column(FileStoreSchema.modified)
+            t.column(FileStoreSchema.content_type)
+            t.column(FileStoreSchema.content_length)
             t.unique([FileStoreSchema.account_identifier, FileStoreSchema.href])
             t.foreignKey(FileStoreSchema.account_identifier, references: FileStoreSchema.account, FileStoreSchema.identifier, update: .cascade, delete: .cascade)
         })
