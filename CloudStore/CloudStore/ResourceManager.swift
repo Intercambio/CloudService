@@ -48,7 +48,11 @@ class ResourceManager: CloudAPIDelegate {
                         let etag = resource.etag
                         else { continue }
                     
-                    let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection, version: etag)
+                    let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection,
+                                                                         version: etag,
+                                                                         contentType: resource.contentType,
+                                                                         contentLength: resource.contentLength,
+                                                                         modified: resource.modified)
                     
                     if resourcePath == path {
                         properties = resourceProperties

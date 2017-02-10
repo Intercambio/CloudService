@@ -18,6 +18,9 @@ public protocol StoreAccount: Equatable, Hashable {
 public protocol StoreResourceProperties {
     var isCollection: Bool { get }
     var version: String { get }
+    var contentType: String? { get }
+    var contentLength: Int? { get }
+    var modified: Date? { get }
 }
 
 public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
