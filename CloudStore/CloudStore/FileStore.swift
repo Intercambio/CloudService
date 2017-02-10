@@ -181,7 +181,7 @@ public class FileStore: Store {
                 
                 let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString)
                 let changeSet = FileStoreChangeSet()
-                _ = try self.updateResource(at: [], of: account!, with: properties, dirty: true, in: db, with: changeSet)
+                _ = try self.updateResource(at: [], of: account!, with: properties, dirty: true, timestamp: nil, in: db, with: changeSet)
             }
             
             guard
@@ -279,9 +279,12 @@ public class FileStore: Store {
             let changeSet = FileStoreChangeSet()
             
             try db.transaction {
+                
+                let timestamp = Date()
+                
                 if let properties = properties {
                     
-                    if try self.updateResource(at: path, of: account, with: properties, in: db, with: changeSet) {
+                    if try self.updateResource(at: path, of: account, with: properties, timestamp: timestamp, in: db, with: changeSet) {
                         
                         var parentPath = path
                         while parentPath.count > 0 {
@@ -291,7 +294,7 @@ public class FileStore: Store {
                         
                         if properties.isCollection == true {
                             if let content = content {
-                                try self.updateCollection(at: path, of: account, with: content, in: db, with: changeSet)
+                                try self.updateCollection(at: path, of: account, with: content, timestamp: timestamp, in: db, with: changeSet)
                             }
                         } else {
                             try self.clearCollection(at: path, of: account, in: db, with: changeSet)
@@ -325,8 +328,7 @@ public class FileStore: Store {
         }
     }
     
-    private func updateResource(at path: [String], of account: Account, with properties: StoreResourceProperties, dirty: Bool = false, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws -> Bool {
-        
+    private func updateResource(at path: [String], of account: Account, with properties: StoreResourceProperties, dirty: Bool = false, timestamp: Date?, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws -> Bool {
         let href = makeHRef(with: path)
         let query = FileStoreSchema.resource
                         .filter(
@@ -334,26 +336,27 @@ public class FileStore: Store {
                             && FileStoreSchema.href == href
                             && FileStoreSchema.version == properties.version
                             && FileStoreSchema.dirty == false)
-        if try db.pluck(query) != nil {
+        if try db.run(query.update(FileStoreSchema.updated <- timestamp)) > 0 {
+            let resource = Resource(account: account, path: path, dirty: dirty, updated: timestamp, isCollection: properties.isCollection, version: properties.version)
+            changeSet.insertedOrUpdated.append(resource)
             return false
         } else {
-            let now = Date()
             _ = try db.run(FileStoreSchema.resource.insert(
                 or: .replace,
                 FileStoreSchema.account_identifier <- account.identifier,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- path.count,
-                FileStoreSchema.updated <- now,
+                FileStoreSchema.updated <- timestamp,
                 FileStoreSchema.version <- properties.version,
                 FileStoreSchema.is_collection <- properties.isCollection,
                 FileStoreSchema.dirty <- dirty))
-            let resource = Resource(account: account, path: path, dirty: dirty, updated: now, isCollection: properties.isCollection, version: properties.version)
+            let resource = Resource(account: account, path: path, dirty: dirty, updated: timestamp, isCollection: properties.isCollection, version: properties.version)
             changeSet.insertedOrUpdated.append(resource)
             return true
         }
     }
     
-    private func updateCollection(at path: [String], of account: Account, with content: [String:StoreResourceProperties], in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws {
+    private func updateCollection(at path: [String], of account: Account, with content: [String:StoreResourceProperties], timestamp: Date?, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws {
         
         let href = self.makeHRef(with: path)
         let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
@@ -382,7 +385,7 @@ public class FileStore: Store {
         for (name, properties) in insertOrUpdate {
             var childPath = path
             childPath.append(name)
-            _ = try self.updateResource(at: childPath, of: account, with: properties, dirty: properties.isCollection, in: db, with: changeSet)
+            _ = try self.updateResource(at: childPath, of: account, with: properties, dirty: properties.isCollection, timestamp: timestamp, in: db, with: changeSet)
             if properties.isCollection == false {
                 _ = try self.clearCollection(at: childPath, of: account, in: db, with: changeSet)
             }
