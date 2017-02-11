@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<d:multistatus
+    xmlns:d="DAV:"
+    xmlns:s="http://sabredav.org/ns"
+    xmlns:oc="http://owncloud.org/ns"
+    xmlns:nc="http://nextcloud.org/ns">
+    <d:response>
+        <d:href>/webdav/Noten/</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Sun, 15 Jan 2017 10:27:13 GMT</d:getlastmodified>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:quota-used-bytes>114548737</d:quota-used-bytes>
+                <d:quota-available-bytes>-3</d:quota-available-bytes>
+                <d:getetag>587b4e820026f</d:getetag>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/webdav/Noten/%20St.%20James%20Infirmary.pdf</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Fri, 17 Jul 2015 15:18:09 GMT</d:getlastmodified>
+                <d:getcontentlength>38059</d:getcontentlength>
+                <d:resourcetype/>
+                <d:getetag>daf566feead4f993a07c2acf71dae583</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/webdav/Noten/1-01%20Bb%20Major.mp3</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Sun, 27 Jul 2014 11:47:32 GMT</d:getlastmodified>
+                <d:getcontentlength>6541680</d:getcontentlength>
+                <d:resourcetype/>
+                <d:getetag>a8c3715d7850faf018d13901ec81b445</d:getetag>
+                <d:getcontenttype>audio/mpeg</d:getcontenttype>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/webdav/Noten/1octaveblues.pdf</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Wed, 11 Sep 2013 10:48:02 GMT</d:getlastmodified>
+                <d:getcontentlength>27048</d:getcontentlength>
+                <d:resourcetype/>
+                <d:getetag>cf523440910f98a4993a922b230377fd</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/webdav/Noten/557JazzStandards.PDF</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Sun, 19 Dec 2010 08:12:00 GMT</d:getlastmodified>
+                <d:getcontentlength>37788493</d:getcontentlength>
+                <d:resourcetype/>
+                <d:getetag>d489bf7139ac507cf4b83306ebab8c0c</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/webdav/Noten/All_of_Me.pdf</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getlastmodified>Sun, 28 Aug 2016 07:12:59 GMT</d:getlastmodified>
+                <d:getcontentlength>304633</d:getcontentlength>
+                <d:resourcetype/>
+                <d:getetag>f1e82bce5496bae57d3c36b4f1a37408</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>

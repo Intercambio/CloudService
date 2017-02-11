@@ -1,13 +1,12 @@
 //
 //  ResourceManager.swift
-//  CloudStore
+//  CloudService
 //
 //  Created by Tobias Kraentzer on 24.01.17.
 //  Copyright © 2017 Tobias Kräntzer. All rights reserved.
 //
 
 import Foundation
-import CloudAPI
 
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void

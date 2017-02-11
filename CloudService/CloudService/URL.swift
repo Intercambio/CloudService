@@ -1,6 +1,6 @@
 //
 //  URL.swift
-//  CloudStore
+//  CloudService
 //
 //  Created by Tobias Kräntzer on 02.02.17.
 //  Copyright © 2017 Tobias Kräntzer. All rights reserved.

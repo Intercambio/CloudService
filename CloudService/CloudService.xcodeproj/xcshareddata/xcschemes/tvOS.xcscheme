@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F68A944E1E4898F2002B15B6"
-               BuildableName = "CloudStore.framework"
+               BuildableName = "CloudService.framework"
                BlueprintName = "tvOS"
-               ReferencedContainer = "container:CloudStore.xcodeproj">
+               ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,9 +34,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F68A94561E4898F2002B15B6"
-               BuildableName = "CloudStoreTests.xctest"
+               BuildableName = "CloudServiceTests.xctest"
                BlueprintName = "tvOSTests"
-               ReferencedContainer = "container:CloudStore.xcodeproj">
+               ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -44,9 +44,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A944E1E4898F2002B15B6"
-            BuildableName = "CloudStore.framework"
+            BuildableName = "CloudService.framework"
             BlueprintName = "tvOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A944E1E4898F2002B15B6"
-            BuildableName = "CloudStore.framework"
+            BuildableName = "CloudService.framework"
             BlueprintName = "tvOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -84,9 +84,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A944E1E4898F2002B15B6"
-            BuildableName = "CloudStore.framework"
+            BuildableName = "CloudService.framework"
             BlueprintName = "tvOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
