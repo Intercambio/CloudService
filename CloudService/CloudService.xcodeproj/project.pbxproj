@@ -8,6 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		F608C3F81E4F291B00410948 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F612928A1E4C88CA00051B24 /* KeyChain.framework */; };
+		F608C3FD1E4F2B0500410948 /* CloudAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FA1E4F2B0500410948 /* CloudAPI.swift */; };
+		F608C3FE1E4F2B0500410948 /* CloudAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FA1E4F2B0500410948 /* CloudAPI.swift */; };
+		F608C3FF1E4F2B0500410948 /* CloudAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FA1E4F2B0500410948 /* CloudAPI.swift */; };
+		F608C4001E4F2B0500410948 /* CloudAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FA1E4F2B0500410948 /* CloudAPI.swift */; };
+		F608C4011E4F2B0500410948 /* CloudAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */; };
+		F608C4021E4F2B0500410948 /* CloudAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */; };
+		F608C4031E4F2B0500410948 /* CloudAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */; };
+		F608C4041E4F2B0500410948 /* CloudAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */; };
+		F608C4051E4F2B0500410948 /* CloudAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */; };
+		F608C4061E4F2B0500410948 /* CloudAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */; };
+		F608C4071E4F2B0500410948 /* CloudAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */; };
+		F608C4081E4F2B0500410948 /* CloudAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */; };
+		F608C40D1E4F2B4100410948 /* CloudAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40A1E4F2B4100410948 /* CloudAPITests.swift */; };
+		F608C40E1E4F2B4100410948 /* CloudAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40A1E4F2B4100410948 /* CloudAPITests.swift */; };
+		F608C40F1E4F2B4100410948 /* CloudAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40A1E4F2B4100410948 /* CloudAPITests.swift */; };
+		F608C4101E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */; };
+		F608C4111E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */; };
+		F608C4121E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */; };
+		F608C4131E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
+		F608C4141E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
+		F608C4151E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
 		F612928B1E4C88CA00051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F612928A1E4C88CA00051B24 /* KeyChain.framework */; };
 		F61292C11E4C9AB300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C01E4C9AB300051B24 /* KeyChain.framework */; };
 		F61292C31E4C9AC300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C21E4C9AC300051B24 /* KeyChain.framework */; };
@@ -34,28 +55,20 @@
 		F68A94751E489A57002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94841E489A79002B15B6 /* CloudService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A947B1E489A79002B15B6 /* CloudService.framework */; };
 		F68A94931E489AA4002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94951E489E53002B15B6 /* CloudAPI.framework */; };
 		F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94961E489E53002B15B6 /* PureXML.framework */; };
-		F68A949C1E489E69002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949A1E489E69002B15B6 /* CloudAPI.framework */; };
 		F68A949D1E489E69002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949B1E489E69002B15B6 /* PureXML.framework */; };
 		F68A94A01E489E8C002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949F1E489E8C002B15B6 /* PureXML.framework */; };
 		F68A94A31E489EA5002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; };
 		F68A94C11E48A43E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C01E48A43E002B15B6 /* SQLite.framework */; };
 		F68A94C31E48A44E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C21E48A44E002B15B6 /* SQLite.framework */; };
-		F68A94C61E48A45E002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C41E48A45E002B15B6 /* CloudAPI.framework */; };
 		F68A94C71E48A45E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C51E48A45E002B15B6 /* SQLite.framework */; };
-		F68A94CA1E48A46E002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; };
 		F68A94CB1E48A46E002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; };
 		F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C01E48A43E002B15B6 /* SQLite.framework */; };
-		F68A94CD1E48A49A002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94951E489E53002B15B6 /* CloudAPI.framework */; };
 		F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94961E489E53002B15B6 /* PureXML.framework */; };
 		F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C21E48A44E002B15B6 /* SQLite.framework */; };
-		F68A94D11E48A4C8002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949A1E489E69002B15B6 /* CloudAPI.framework */; };
 		F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A949B1E489E69002B15B6 /* PureXML.framework */; };
-		F68A94D41E48A502002B15B6 /* CloudAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; };
 		F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; };
 		F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; };
-		F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C81E48A46E002B15B6 /* CloudAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94C91E48A46E002B15B6 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F68A94A21E489EA5002B15B6 /* PureXML.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68A94DD1E48A7FA002B15B6 /* Store.swift */; };
@@ -108,7 +121,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F68A94D81E48A512002B15B6 /* CloudAPI.framework in CopyFiles */,
 				F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */,
 				F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */,
 				F61292C91E4C9AFD00051B24 /* KeyChain.framework in CopyFiles */,
@@ -118,6 +130,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F608C3FA1E4F2B0500410948 /* CloudAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPI.swift; sourceTree = "<group>"; };
+		F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPIRequest.swift; sourceTree = "<group>"; };
+		F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPIResponse.swift; sourceTree = "<group>"; };
+		F608C40A1E4F2B4100410948 /* CloudAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPITests.swift; sourceTree = "<group>"; };
+		F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPIResponseTests.swift; sourceTree = "<group>"; };
+		F608C40C1E4F2B4100410948 /* propfind.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = propfind.xml; sourceTree = "<group>"; };
 		F612928A1E4C88CA00051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/iOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C01E4C9AB300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/tvOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C21E4C9AC300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/watchOS/KeyChain.framework; sourceTree = "<group>"; };
@@ -135,17 +153,13 @@
 		F68A946D1E489A40002B15B6 /* CloudService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A947B1E489A79002B15B6 /* CloudService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94831E489A79002B15B6 /* CloudServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F68A94951E489E53002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/iOS/CloudAPI.framework; sourceTree = "<group>"; };
 		F68A94961E489E53002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/iOS/PureXML.framework; sourceTree = "<group>"; };
-		F68A949A1E489E69002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/tvOS/CloudAPI.framework; sourceTree = "<group>"; };
 		F68A949B1E489E69002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/tvOS/PureXML.framework; sourceTree = "<group>"; };
 		F68A949F1E489E8C002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/watchOS/PureXML.framework; sourceTree = "<group>"; };
 		F68A94A21E489EA5002B15B6 /* PureXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PureXML.framework; path = ../Carthage/Build/Mac/PureXML.framework; sourceTree = "<group>"; };
 		F68A94C01E48A43E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/iOS/SQLite.framework; sourceTree = "<group>"; };
 		F68A94C21E48A44E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/tvOS/SQLite.framework; sourceTree = "<group>"; };
-		F68A94C41E48A45E002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/watchOS/CloudAPI.framework; sourceTree = "<group>"; };
 		F68A94C51E48A45E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/watchOS/SQLite.framework; sourceTree = "<group>"; };
-		F68A94C81E48A46E002B15B6 /* CloudAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudAPI.framework; path = ../Carthage/Build/Mac/CloudAPI.framework; sourceTree = "<group>"; };
 		F68A94C91E48A46E002B15B6 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = ../Carthage/Build/Mac/SQLite.framework; sourceTree = "<group>"; };
 		F68A94DD1E48A7FA002B15B6 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Store.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F68A94DE1E48A7FA002B15B6 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FileStore.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -161,7 +175,6 @@
 			files = (
 				F612928B1E4C88CA00051B24 /* KeyChain.framework in Frameworks */,
 				F68A94C11E48A43E002B15B6 /* SQLite.framework in Frameworks */,
-				F68A94971E489E53002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94981E489E53002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,7 +185,6 @@
 			files = (
 				F68A943A1E48988F002B15B6 /* CloudService.framework in Frameworks */,
 				F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */,
-				F68A94CD1E48A49A002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */,
 				F608C3F81E4F291B00410948 /* KeyChain.framework in Frameworks */,
 			);
@@ -184,7 +196,6 @@
 			files = (
 				F61292C11E4C9AB300051B24 /* KeyChain.framework in Frameworks */,
 				F68A94C31E48A44E002B15B6 /* SQLite.framework in Frameworks */,
-				F68A949C1E489E69002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A949D1E489E69002B15B6 /* PureXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,7 +206,6 @@
 			files = (
 				F68A94581E4898F2002B15B6 /* CloudService.framework in Frameworks */,
 				F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */,
-				F68A94D11E48A4C8002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */,
 				F61292C71E4C9AED00051B24 /* KeyChain.framework in Frameworks */,
 			);
@@ -206,7 +216,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F61292C31E4C9AC300051B24 /* KeyChain.framework in Frameworks */,
-				F68A94C61E48A45E002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94C71E48A45E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94A01E489E8C002B15B6 /* PureXML.framework in Frameworks */,
 			);
@@ -217,7 +226,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F61292C51E4C9AD300051B24 /* KeyChain.framework in Frameworks */,
-				F68A94CA1E48A46E002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94CB1E48A46E002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94A31E489EA5002B15B6 /* PureXML.framework in Frameworks */,
 			);
@@ -228,7 +236,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F68A94841E489A79002B15B6 /* CloudService.framework in Frameworks */,
-				F68A94D41E48A502002B15B6 /* CloudAPI.framework in Frameworks */,
 				F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */,
 				F61292C81E4C9AF500051B24 /* KeyChain.framework in Frameworks */,
@@ -238,6 +245,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F608C3F91E4F2AF300410948 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				F608C3FA1E4F2B0500410948 /* CloudAPI.swift */,
+				F608C3FB1E4F2B0500410948 /* CloudAPIRequest.swift */,
+				F608C3FC1E4F2B0500410948 /* CloudAPIResponse.swift */,
+			);
+			name = API;
+			sourceTree = "<group>";
+		};
+		F608C4091E4F2B2900410948 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				F608C40A1E4F2B4100410948 /* CloudAPITests.swift */,
+				F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */,
+				F608C40C1E4F2B4100410948 /* propfind.xml */,
+			);
+			name = API;
+			sourceTree = "<group>";
+		};
 		F63F52131E48A8E0006DAF83 /* Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -292,6 +319,7 @@
 			children = (
 				F63F52261E48AC34006DAF83 /* CloudService.swift */,
 				F63F52251E48AA9D006DAF83 /* Additions */,
+				F608C3F91E4F2AF300410948 /* API */,
 				F63F521A1E48A9D9006DAF83 /* Resource */,
 				F68A94DB1E48A7E0002B15B6 /* Store */,
 				F68A94DC1E48A7E7002B15B6 /* Supporting FIles */,
@@ -303,6 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */,
+				F608C4091E4F2B2900410948 /* API */,
 				F63F52131E48A8E0006DAF83 /* Store */,
 				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);
@@ -325,7 +354,6 @@
 			children = (
 				F612928A1E4C88CA00051B24 /* KeyChain.framework */,
 				F68A94C01E48A43E002B15B6 /* SQLite.framework */,
-				F68A94951E489E53002B15B6 /* CloudAPI.framework */,
 				F68A94961E489E53002B15B6 /* PureXML.framework */,
 			);
 			name = iOS;
@@ -336,7 +364,6 @@
 			children = (
 				F61292C01E4C9AB300051B24 /* KeyChain.framework */,
 				F68A94C21E48A44E002B15B6 /* SQLite.framework */,
-				F68A949A1E489E69002B15B6 /* CloudAPI.framework */,
 				F68A949B1E489E69002B15B6 /* PureXML.framework */,
 			);
 			name = tvOS;
@@ -346,7 +373,6 @@
 			isa = PBXGroup;
 			children = (
 				F61292C21E4C9AC300051B24 /* KeyChain.framework */,
-				F68A94C41E48A45E002B15B6 /* CloudAPI.framework */,
 				F68A94C51E48A45E002B15B6 /* SQLite.framework */,
 				F68A949F1E489E8C002B15B6 /* PureXML.framework */,
 			);
@@ -357,7 +383,6 @@
 			isa = PBXGroup;
 			children = (
 				F61292C41E4C9AD300051B24 /* KeyChain.framework */,
-				F68A94C81E48A46E002B15B6 /* CloudAPI.framework */,
 				F68A94C91E48A46E002B15B6 /* SQLite.framework */,
 				F68A94A21E489EA5002B15B6 /* PureXML.framework */,
 			);
@@ -635,6 +660,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4131E4F2B4100410948 /* propfind.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,6 +675,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4141E4F2B4100410948 /* propfind.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,6 +697,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4151E4F2B4100410948 /* propfind.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,7 +711,6 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/PureXML.framework",
-				"$(SRCROOT)/../Carthage/Build/iOS/CloudAPI.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/SQLite.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/KeyChain.framework",
 			);
@@ -701,7 +728,6 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/tvOS/PureXML.framework",
-				"$(SRCROOT)/../Carthage/Build/tvOS/CloudAPI.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/SQLite.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/KeyChain.framework",
 			);
@@ -720,9 +746,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F63F52211E48AA9A006DAF83 /* URL.swift in Sources */,
+				F608C4051E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */,
+				F608C3FD1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F608C4011E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F63F52271E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -731,8 +760,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4101E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
 				F68A94ED1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EA1E48A83F002B15B6 /* TestCase.swift in Sources */,
+				F608C40D1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
 				F6C54CC91E49F1E800B22181 /* CloudServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -742,9 +773,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F63F52221E48AA9A006DAF83 /* URL.swift in Sources */,
+				F608C4061E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */,
+				F608C3FE1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F608C4021E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F63F52281E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -753,8 +787,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4111E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
 				F68A94EE1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EB1E48A83F002B15B6 /* TestCase.swift in Sources */,
+				F608C40E1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
 				F6C54CCA1E49F1E800B22181 /* CloudServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -764,9 +800,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F63F52231E48AA9A006DAF83 /* URL.swift in Sources */,
+				F608C4071E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */,
+				F608C3FF1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F608C4031E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F63F52291E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -776,9 +815,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F63F52241E48AA9A006DAF83 /* URL.swift in Sources */,
+				F608C4081E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */,
+				F608C4001E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521F1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F608C4041E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F63F522A1E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -787,8 +829,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4121E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
 				F68A94EF1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EC1E48A83F002B15B6 /* TestCase.swift in Sources */,
+				F608C40F1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
 				F6C54CCB1E49F1E800B22181 /* CloudServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

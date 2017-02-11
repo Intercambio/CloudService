@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import CloudAPI
 
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
