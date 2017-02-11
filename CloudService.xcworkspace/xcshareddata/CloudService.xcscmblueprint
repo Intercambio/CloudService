@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "3C36C959339B0F1CDC02476165DF6221D77B1753",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "3C36C959339B0F1CDC02476165DF6221D77B1753" : 9223372036854775807,
+    "D27CF701B1FD4A68F6F99B36CDDAAC30094EE410" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "263462AE-95DD-44BB-87D2-2D9DEC75F6DA",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "3C36C959339B0F1CDC02476165DF6221D77B1753" : "CloudStore\/",
+    "D27CF701B1FD4A68F6F99B36CDDAAC30094EE410" : "..\/.."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "CloudService",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "CloudService.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "ssh:\/\/github.com\/Intercambio\/CloudStore.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3C36C959339B0F1CDC02476165DF6221D77B1753"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Intercambio\/nube.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D27CF701B1FD4A68F6F99B36CDDAAC30094EE410"
+    }
+  ]
+}

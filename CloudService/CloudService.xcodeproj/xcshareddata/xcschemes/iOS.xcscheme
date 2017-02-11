@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-               BuildableName = "CloudStore.framework"
-               BlueprintName = "macOS"
-               ReferencedContainer = "container:CloudStore.xcodeproj">
+               BlueprintIdentifier = "F68A942F1E48988F002B15B6"
+               BuildableName = "CloudService.framework"
+               BlueprintName = "iOS"
+               ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,20 +33,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F68A94821E489A79002B15B6"
-               BuildableName = "CloudStoreTests.xctest"
-               BlueprintName = "macOSTests"
-               ReferencedContainer = "container:CloudStore.xcodeproj">
+               BlueprintIdentifier = "F68A94381E48988F002B15B6"
+               BuildableName = "CloudServiceTests.xctest"
+               BlueprintName = "iOSTests"
+               ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "CloudStore.framework"
-            BlueprintName = "macOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            BlueprintIdentifier = "F68A942F1E48988F002B15B6"
+            BuildableName = "CloudService.framework"
+            BlueprintName = "iOS"
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -65,10 +65,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "CloudStore.framework"
-            BlueprintName = "macOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            BlueprintIdentifier = "F68A942F1E48988F002B15B6"
+            BuildableName = "CloudService.framework"
+            BlueprintName = "iOS"
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -83,10 +83,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F68A947A1E489A79002B15B6"
-            BuildableName = "CloudStore.framework"
-            BlueprintName = "macOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            BlueprintIdentifier = "F68A942F1E48988F002B15B6"
+            BuildableName = "CloudService.framework"
+            BlueprintName = "iOS"
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

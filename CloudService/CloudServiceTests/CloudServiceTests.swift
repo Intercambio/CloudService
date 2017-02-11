@@ -1,13 +1,13 @@
 //
 //  CloudServiceTests.swift
-//  CloudStore
+//  CloudService
 //
 //  Created by Tobias Kraentzer on 07.02.17.
 //  Copyright © 2017 Tobias Kräntzer. All rights reserved.
 //
 
 import XCTest
-import CloudStore
+import CloudService
 import KeyChain
 
 class CloudServiceTests: TestCase, CloudServiceDelegate {

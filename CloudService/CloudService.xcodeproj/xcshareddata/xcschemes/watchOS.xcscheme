@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F68A946C1E489A40002B15B6"
-               BuildableName = "CloudStore.framework"
+               BuildableName = "CloudService.framework"
                BlueprintName = "watchOS"
-               ReferencedContainer = "container:CloudStore.xcodeproj">
+               ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A946C1E489A40002B15B6"
-            BuildableName = "CloudStore.framework"
+            BuildableName = "CloudService.framework"
             BlueprintName = "watchOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -65,9 +65,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F68A946C1E489A40002B15B6"
-            BuildableName = "CloudStore.framework"
+            BuildableName = "CloudService.framework"
             BlueprintName = "watchOS"
-            ReferencedContainer = "container:CloudStore.xcodeproj">
+            ReferencedContainer = "container:CloudService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
