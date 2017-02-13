@@ -34,37 +34,23 @@ class ResourceManager: CloudAPIDelegate {
         let url = account.url.appendingPathComponent(path.joined(separator: "/"))
         self.api.retrieveProperties(of: url) { (result, error) in
             do {
-                guard
-                    let resources = result?.resources
-                    else { throw error ?? CloudServiceError.internalError }
-                
-                var properties: StoreResourceProperties? = nil
-                var content: [String:StoreResourceProperties] = [:]
-                
-                for resource in resources {
-                    guard
-                        let resourcePath = resource.url.pathComponents(relativeTo: self.account.url),
-                        let etag = resource.etag
-                        else { continue }
-                    
-                    let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection,
-                                                                         version: etag,
-                                                                         contentType: resource.contentType,
-                                                                         contentLength: resource.contentLength,
-                                                                         modified: resource.modified)
-                    
-                    if resourcePath == path {
-                        properties = resourceProperties
-                    } else if resourcePath.starts(with: path)
-                        && resourcePath.count == path.count + 1 {
-                        let name = resourcePath[path.count]
-                        content[name] = resourceProperties
+                if let error = error {
+                    switch error {
+                    case CloudAPIHTTPError.status(let code, _) where code == 404:
+                        let changeSet = try self.removeResource(at: path)
+                        if let delegate = self.delegate {
+                            delegate.resourceManager(self, didChange: changeSet)
+                        }
+                    default:
+                        throw error
                     }
-                }
-                
-                let changeSet = try self.store.update(resourceAt: path, of: self.account, with: properties, content: content)
-                if let delegate = self.delegate {
-                    delegate.resourceManager(self, didChange: changeSet)
+                } else if let response = result {
+                    let changeSet = try self.updateResource(at: path, with: response)
+                    if let delegate = self.delegate {
+                        delegate.resourceManager(self, didChange: changeSet)
+                    }
+                } else {
+                    throw CloudServiceError.internalError
                 }
                 
                 completion?(nil)
@@ -72,6 +58,39 @@ class ResourceManager: CloudAPIDelegate {
                 completion?(error)
             }
         }
+    }
+    
+    private func updateResource(at path: [String], with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
+        
+        var properties: StoreResourceProperties? = nil
+        var content: [String:StoreResourceProperties] = [:]
+        
+        for resource in response.resources {
+            guard
+                let resourcePath = resource.url.pathComponents(relativeTo: self.account.url),
+                let etag = resource.etag
+                else { continue }
+            
+            let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection,
+                                                                 version: etag,
+                                                                 contentType: resource.contentType,
+                                                                 contentLength: resource.contentLength,
+                                                                 modified: resource.modified)
+            
+            if resourcePath == path {
+                properties = resourceProperties
+            } else if resourcePath.starts(with: path)
+                && resourcePath.count == path.count + 1 {
+                let name = resourcePath[path.count]
+                content[name] = resourceProperties
+            }
+        }
+
+        return try store.update(resourceAt: path, of: self.account, with: properties, content: content)
+    }
+    
+    private func removeResource(at path: [String]) throws -> FileStore.ChangeSet {
+        return try store.update(resourceAt: path, of: account, with: nil)
     }
     
     // MARK: - CloudAPIDelegate
