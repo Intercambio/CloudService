@@ -17,9 +17,10 @@ extension URL {
             baseURL.port == port
             else { return nil }
         
+        let basePath = baseURL.pathComponents.count == 0 ? ["/"] : baseURL.pathComponents
         var path = pathComponents
-        if path.starts(with: baseURL.pathComponents) {
-            path.removeFirst(baseURL.pathComponents.count)
+        if path.starts(with: basePath) {
+            path.removeFirst(basePath.count)
             return path
         } else {
             return nil

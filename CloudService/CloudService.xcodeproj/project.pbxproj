@@ -29,6 +29,19 @@
 		F608C4131E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
 		F608C4141E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
 		F608C4151E4F2B4100410948 /* propfind.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C40C1E4F2B4100410948 /* propfind.xml */; };
+		F608C41E1E52129100410948 /* ResourceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C41D1E52129100410948 /* ResourceManagerTests.swift */; };
+		F608C41F1E52129100410948 /* ResourceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C41D1E52129100410948 /* ResourceManagerTests.swift */; };
+		F608C4201E52129100410948 /* ResourceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F608C41D1E52129100410948 /* ResourceManagerTests.swift */; };
+		F608C4221E5215B000410948 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F608C4211E5215B000410948 /* OHHTTPStubs.framework */; };
+		F608C4241E5215D900410948 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F608C4231E5215D900410948 /* OHHTTPStubs.framework */; };
+		F608C4261E5215ED00410948 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F608C4251E5215ED00410948 /* OHHTTPStubs.framework */; };
+		F608C4271E5215F800410948 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F608C4251E5215ED00410948 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F608C4291E5216B400410948 /* resource_manager_test_existing.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C4281E5216B400410948 /* resource_manager_test_existing.xml */; };
+		F608C42A1E5216B400410948 /* resource_manager_test_existing.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C4281E5216B400410948 /* resource_manager_test_existing.xml */; };
+		F608C42B1E5216B400410948 /* resource_manager_test_existing.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C4281E5216B400410948 /* resource_manager_test_existing.xml */; };
+		F608C42D1E521A3900410948 /* resource_manager_test_removed.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */; };
+		F608C42E1E521A3900410948 /* resource_manager_test_removed.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */; };
+		F608C42F1E521A3900410948 /* resource_manager_test_removed.xml in Resources */ = {isa = PBXBuildFile; fileRef = F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */; };
 		F612928B1E4C88CA00051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F612928A1E4C88CA00051B24 /* KeyChain.framework */; };
 		F61292C11E4C9AB300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C01E4C9AB300051B24 /* KeyChain.framework */; };
 		F61292C31E4C9AC300051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C21E4C9AC300051B24 /* KeyChain.framework */; };
@@ -124,6 +137,7 @@
 				F68A94D91E48A512002B15B6 /* SQLite.framework in CopyFiles */,
 				F68A94DA1E48A512002B15B6 /* PureXML.framework in CopyFiles */,
 				F61292C91E4C9AFD00051B24 /* KeyChain.framework in CopyFiles */,
+				F608C4271E5215F800410948 /* OHHTTPStubs.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +150,12 @@
 		F608C40A1E4F2B4100410948 /* CloudAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPITests.swift; sourceTree = "<group>"; };
 		F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudAPIResponseTests.swift; sourceTree = "<group>"; };
 		F608C40C1E4F2B4100410948 /* propfind.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = propfind.xml; sourceTree = "<group>"; };
+		F608C41D1E52129100410948 /* ResourceManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceManagerTests.swift; sourceTree = "<group>"; };
+		F608C4211E5215B000410948 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../../Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		F608C4231E5215D900410948 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../../Build/tvOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		F608C4251E5215ED00410948 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = ../../../Build/Mac/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		F608C4281E5216B400410948 /* resource_manager_test_existing.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = resource_manager_test_existing.xml; sourceTree = "<group>"; };
+		F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = resource_manager_test_removed.xml; sourceTree = "<group>"; };
 		F612928A1E4C88CA00051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/iOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C01E4C9AB300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/tvOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C21E4C9AC300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/watchOS/KeyChain.framework; sourceTree = "<group>"; };
@@ -183,6 +203,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4221E5215B000410948 /* OHHTTPStubs.framework in Frameworks */,
 				F68A943A1E48988F002B15B6 /* CloudService.framework in Frameworks */,
 				F68A94CC1E48A49A002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94CE1E48A49A002B15B6 /* PureXML.framework in Frameworks */,
@@ -204,6 +225,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4241E5215D900410948 /* OHHTTPStubs.framework in Frameworks */,
 				F68A94581E4898F2002B15B6 /* CloudService.framework in Frameworks */,
 				F68A94D01E48A4C8002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94D21E48A4C8002B15B6 /* PureXML.framework in Frameworks */,
@@ -235,6 +257,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F608C4261E5215ED00410948 /* OHHTTPStubs.framework in Frameworks */,
 				F68A94841E489A79002B15B6 /* CloudService.framework in Frameworks */,
 				F68A94D51E48A502002B15B6 /* SQLite.framework in Frameworks */,
 				F68A94D61E48A502002B15B6 /* PureXML.framework in Frameworks */,
@@ -263,6 +286,16 @@
 				F608C40C1E4F2B4100410948 /* propfind.xml */,
 			);
 			name = API;
+			sourceTree = "<group>";
+		};
+		F608C41C1E52127D00410948 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				F608C41D1E52129100410948 /* ResourceManagerTests.swift */,
+				F608C4281E5216B400410948 /* resource_manager_test_existing.xml */,
+				F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */,
+			);
+			name = Resource;
 			sourceTree = "<group>";
 		};
 		F63F52131E48A8E0006DAF83 /* Store */ = {
@@ -333,6 +366,7 @@
 				F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */,
 				F608C4091E4F2B2900410948 /* API */,
 				F63F52131E48A8E0006DAF83 /* Store */,
+				F608C41C1E52127D00410948 /* Resource */,
 				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);
 			path = CloudServiceTests;
@@ -352,6 +386,7 @@
 		F68A94991E489E58002B15B6 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				F608C4211E5215B000410948 /* OHHTTPStubs.framework */,
 				F612928A1E4C88CA00051B24 /* KeyChain.framework */,
 				F68A94C01E48A43E002B15B6 /* SQLite.framework */,
 				F68A94961E489E53002B15B6 /* PureXML.framework */,
@@ -362,6 +397,7 @@
 		F68A949E1E489E6D002B15B6 /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				F608C4231E5215D900410948 /* OHHTTPStubs.framework */,
 				F61292C01E4C9AB300051B24 /* KeyChain.framework */,
 				F68A94C21E48A44E002B15B6 /* SQLite.framework */,
 				F68A949B1E489E69002B15B6 /* PureXML.framework */,
@@ -382,6 +418,7 @@
 		F68A94A41E489EA8002B15B6 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				F608C4251E5215ED00410948 /* OHHTTPStubs.framework */,
 				F61292C41E4C9AD300051B24 /* KeyChain.framework */,
 				F68A94C91E48A46E002B15B6 /* SQLite.framework */,
 				F68A94A21E489EA5002B15B6 /* PureXML.framework */,
@@ -661,6 +698,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4131E4F2B4100410948 /* propfind.xml in Resources */,
+				F608C42D1E521A3900410948 /* resource_manager_test_removed.xml in Resources */,
+				F608C4291E5216B400410948 /* resource_manager_test_existing.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,6 +715,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4141E4F2B4100410948 /* propfind.xml in Resources */,
+				F608C42E1E521A3900410948 /* resource_manager_test_removed.xml in Resources */,
+				F608C42A1E5216B400410948 /* resource_manager_test_existing.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -698,6 +739,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4151E4F2B4100410948 /* propfind.xml in Resources */,
+				F608C42F1E521A3900410948 /* resource_manager_test_removed.xml in Resources */,
+				F608C42B1E5216B400410948 /* resource_manager_test_existing.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,6 +756,7 @@
 				"$(SRCROOT)/../Carthage/Build/iOS/PureXML.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/SQLite.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/KeyChain.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/OHHTTPStubs.framework",
 			);
 			name = Carthage;
 			outputPaths = (
@@ -730,6 +774,7 @@
 				"$(SRCROOT)/../Carthage/Build/tvOS/PureXML.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/SQLite.framework",
 				"$(SRCROOT)/../Carthage/Build/tvOS/KeyChain.framework",
+				"$(SRCROOT)/../Carthage/Build/tvOS/OHHTTPStubs.framework",
 			);
 			name = Carthage;
 			outputPaths = (
@@ -761,6 +806,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4101E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F608C41E1E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94ED1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EA1E48A83F002B15B6 /* TestCase.swift in Sources */,
 				F608C40D1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
@@ -788,6 +834,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4111E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F608C41F1E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94EE1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EB1E48A83F002B15B6 /* TestCase.swift in Sources */,
 				F608C40E1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
@@ -830,6 +877,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4121E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F608C4201E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94EF1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EC1E48A83F002B15B6 /* TestCase.swift in Sources */,
 				F608C40F1E4F2B4100410948 /* CloudAPITests.swift in Sources */,
