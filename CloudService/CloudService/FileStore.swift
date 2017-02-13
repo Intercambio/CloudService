@@ -11,6 +11,8 @@ import SQLite
 
 public enum FileStoreError: Error {
     case notSetup
+    case versionMismatch
+    case resourceDoesNotExist
     case internalError
 }
 
@@ -45,6 +47,8 @@ public struct FileStoreResource: StoreResource {
     public let contentType: String?
     public let contentLength: Int?
     public let modified: Date?
+    
+    public let fileURL: URL?
     
     public static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
         return lhs.account == rhs.account && lhs.path == rhs.path
@@ -244,7 +248,8 @@ public class FileStore: Store {
                                         version: version,
                                         contentType: contentType,
                                         contentLength: contentLength,
-                                        modified: modified)
+                                        modified: modified,
+                                        fileURL: nil)
                 }
             }
             return resource
@@ -286,7 +291,8 @@ public class FileStore: Store {
                                             version: version,
                                             contentType: contentType,
                                             contentLength: contentLength,
-                                            modified: modified)
+                                            modified: modified,
+                                            fileURL: nil)
                     result.append(resource)
                 }
             }
@@ -337,6 +343,63 @@ public class FileStore: Store {
             return changeSet
         }
     }
+    
+    func save(fileAt url: URL, version: String, forResourceAt path: [String], of account: Account) throws -> FileStoreResource {
+        return try queue.sync {
+            guard
+                let db = self.db
+                else { throw FileStoreError.notSetup }
+            
+            var resource: FileStoreResource? = nil
+            
+            try db.transaction {
+                
+                let href = self.makeHRef(with: path)
+                let fileURL = self.makeLocalFileURL(with: path)
+                
+                let query = FileStoreSchema.resource.filter(
+                    FileStoreSchema.account_identifier == account.identifier &&
+                        FileStoreSchema.href == href)
+                
+                if let row = try db.pluck(query) {
+                    let isCollection = row.get(FileStoreSchema.is_collection)
+                    let dirty = row.get(FileStoreSchema.dirty)
+                    let expectedVersion = row.get(FileStoreSchema.version)
+                    let updated = row.get(FileStoreSchema.updated)
+                    let contentType = row.get(FileStoreSchema.content_type)
+                    let contentLength = row.get(FileStoreSchema.content_length)
+                    let modified = row.get(FileStoreSchema.modified)
+                    resource = Resource(account: account,
+                                        path: path,
+                                        dirty: dirty,
+                                        updated: updated,
+                                        isCollection: isCollection,
+                                        version: expectedVersion,
+                                        contentType: contentType,
+                                        contentLength: contentLength,
+                                        modified: modified,
+                                        fileURL: fileURL)
+
+                    if expectedVersion == version {
+                        let manager = FileManager.default
+                        let directory = fileURL.deletingLastPathComponent()
+                        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                        try manager.moveItem(at: url, to: fileURL)
+                    } else {
+                        throw FileStoreError.versionMismatch
+                    }
+                } else {
+                    throw FileStoreError.resourceDoesNotExist
+                }
+            }
+            
+            guard
+                let result = resource
+                else { throw FileStoreError.internalError }
+            
+            return result
+        }
+    }
 
     private func invalidateCollection(at path: [String], of account: Account, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws {
         
@@ -374,7 +437,8 @@ public class FileStore: Store {
                                     version: properties.version,
                                     contentType: properties.contentType,
                                     contentLength: properties.contentLength,
-                                    modified: properties.modified)
+                                    modified: properties.modified,
+                                    fileURL: nil)
             changeSet.insertedOrUpdated.append(resource)
             return false
         } else {
@@ -398,7 +462,8 @@ public class FileStore: Store {
                                     version: properties.version,
                                     contentType: properties.contentType,
                                     contentLength: properties.contentLength,
-                                    modified: properties.modified)
+                                    modified: properties.modified,
+                                    fileURL: nil)
             changeSet.insertedOrUpdated.append(resource)
             return true
         }
@@ -467,7 +532,16 @@ public class FileStore: Store {
                     && FileStoreSchema.depth == path.count + 1)
             
             let mightBeACollection = try db.run(query.delete()) > 0
-            let resource = Resource(account: account, path: path, dirty: false, updated: nil, isCollection: mightBeACollection, version: UUID().uuidString, contentType: nil, contentLength: nil, modified: nil)
+            let resource = Resource(account: account,
+                                    path: path,
+                                    dirty: false,
+                                    updated: nil,
+                                    isCollection: mightBeACollection,
+                                    version: UUID().uuidString,
+                                    contentType: nil,
+                                    contentLength: nil,
+                                    modified: nil,
+                                    fileURL: nil)
             changeSet.deleted.append(resource)
         }
     }
@@ -479,6 +553,11 @@ public class FileStore: Store {
     private func makePath(with href: String) -> [String] {
         let path: [String] = href.components(separatedBy: "/")
         return Array(path.dropFirst(1))
+    }
+    
+    private func makeLocalFileURL(with path: [String]) -> URL {
+        let baseDirectory = directory.appendingPathComponent("files", isDirectory: true)
+        return baseDirectory.appendingPathComponent(path.joined(separator: "/"))
     }
 }
 
@@ -502,6 +581,8 @@ class FileStoreSchema {
     static let content_type = Expression<String?>("content_type")
     static let content_length = Expression<Int?>("content_length")
     
+    
+    
     let directory: URL
     required init(directory: URL) {
         self.directory = directory
@@ -512,6 +593,7 @@ class FileStoreSchema {
         
         switch readCurrentVersion() {
         case 0:
+            try createDirectories()
             try setup(db)
             try writeCurrentVersion(1)
         default:
@@ -563,8 +645,16 @@ class FileStoreSchema {
         try db.run(FileStoreSchema.resource.createIndex(FileStoreSchema.depth))
     }
     
+    private func createDirectories() throws {
+        try FileManager.default.createDirectory(at: fileLocation, withIntermediateDirectories: true, attributes: nil)
+    }
+    
     private var databaseLocation: URL {
         return directory.appendingPathComponent("db.sqlite", isDirectory: false)
+    }
+    
+    private var fileLocation: URL {
+        return directory.appendingPathComponent("files", isDirectory: true)
     }
     
     // MARK: Version

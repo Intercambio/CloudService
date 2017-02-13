@@ -360,6 +360,55 @@ class FileStoreTests: TestCase {
         }
     }
     
+    func testStoreFile() {
+        guard
+            let store = self.store
+            else { XCTFail(); return }
+        
+        do {
+            let url = URL(string: "https://example.com/api/")!
+            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let path = ["a", "b", "c"]
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            
+            _ = try store.update(resourceAt: path, of: account, with: properties)
+            
+            let resource = try store.save(fileAt: fileURL, version: "123", forResourceAt: path, of: account)
+            
+            XCTAssertNotNil(resource.fileURL)
+            
+            if let url = resource.fileURL {
+                let content = try String(contentsOf: url)
+                XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
+            }
+
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
+    func testSaveWrongFile() {
+        guard
+            let store = self.store
+            else { XCTFail(); return }
+        
+        do {
+            let url = URL(string: "https://example.com/api/")!
+            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let path = ["a", "b", "c"]
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            
+            _ = try store.update(resourceAt: path, of: account, with: properties)
+            
+            XCTAssertThrowsError(try store.save(fileAt: fileURL, version: "345", forResourceAt: path, of: account))
+            
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
     struct Properties: StoreResourceProperties {
         let isCollection: Bool
         let version: String
