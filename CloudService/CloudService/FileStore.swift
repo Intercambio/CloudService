@@ -82,17 +82,20 @@ class FileStoreChangeSet: StoreChangeSet {
     var deleted: [Resource] = []
 }
 
-public class FileStore: Store {
+public class FileStore: NSObject, Store, FileManagerDelegate {
     
     public typealias Account = FileStoreAccount
     public typealias Resource = FileStoreResource
     typealias ChangeSet = FileStoreChangeSet
     
     private let queue: DispatchQueue = DispatchQueue(label: "FileStore")
+    private let fileManager: FileManager = FileManager()
     
     let directory: URL
     init(directory: URL) {
         self.directory = directory
+        super.init()
+        fileManager.delegate = self
     }
     
     private var db: SQLite.Connection?
@@ -375,10 +378,9 @@ public class FileStore: Store {
                         
                         try db.run(query.update(FileStoreSchema.file_version <- version))
                         
-                        let manager = FileManager.default
                         let directory = fileURL.deletingLastPathComponent()
-                        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-                        try manager.moveItem(at: url, to: fileURL)
+                        try self.fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                        try self.fileManager.moveItem(at: url, to: fileURL)
                         
                         resource = Resource(account: resource.account,
                                             path: resource.path,
@@ -526,6 +528,9 @@ public class FileStore: Store {
                 && FileStoreSchema.depth == path.count + 1)
         
         _ = try db.run(query.delete())
+        
+        let fileURL = makeLocalFileURL(with: path, account: account)
+        try fileManager.removeItem(at: fileURL)
     }
     
     private func removeResource(at path: [String], of account: Account, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws {
@@ -534,6 +539,9 @@ public class FileStore: Store {
         let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href == href)
 
         if try db.run(query.delete()) > 0 {
+            
+            let fileURL = makeLocalFileURL(with: path, account: account)
+            try fileManager.removeItem(at: fileURL)
             
             let hrefPattern = path.count == 0 ? "/%" : "\(href)/%"
             
@@ -583,6 +591,16 @@ public class FileStore: Store {
         return fileURL
     }
     
+    // MARK: FileManagerDelegate
+    
+    public func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, removingItemAt URL: URL) -> Bool {
+        switch error {
+        case let error as NSError where error.domain == NSCocoaErrorDomain && error.code == NSFileNoSuchFileError:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 class FileStoreSchema {
