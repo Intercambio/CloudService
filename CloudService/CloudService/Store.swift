@@ -8,6 +8,12 @@
 
 import Foundation
 
+public enum StoreFileState {
+    case none
+    case outdated
+    case valid
+}
+
 public protocol StoreAccount: Equatable, Hashable {
     var identifier: String { get }
     var username: String { get }
@@ -30,7 +36,7 @@ public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
     var dirty: Bool { get }
     var updated: Date? { get }
     var fileURL: URL? { get }
-    var fileIsValid: Bool { get }
+    var fileState: StoreFileState { get }
 }
 
 public protocol StoreChangeSet {

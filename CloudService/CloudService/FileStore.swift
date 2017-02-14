@@ -51,8 +51,12 @@ public struct FileStoreResource: StoreResource {
     public let fileURL: URL?
     public let fileVersion: String?
     
-    public var fileIsValid: Bool {
-        return fileURL != nil && version == fileVersion
+    public var fileState: StoreFileState {
+        switch (version, fileVersion) {
+        case (_, nil): return .none
+        case (let version, let fileVersion) where version == fileVersion: return .valid
+        default: return .outdated
+        }
     }
     
     public static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
@@ -287,7 +291,7 @@ public class FileStore: Store {
         let contentLength = row.get(FileStoreSchema.content_length)
         let modified = row.get(FileStoreSchema.modified)
         
-        let fileURL = fileVersion != nil ? self.makeLocalFileURL(with: path, account: account) : nil
+        let fileURL = self.makeLocalFileURL(with: path, account: account)
         
         let resource = Resource(account: account,
                                 path: path,
@@ -459,6 +463,7 @@ public class FileStore: Store {
                 FileStoreSchema.content_type <- properties.contentType,
                 FileStoreSchema.content_length <- properties.contentLength,
                 FileStoreSchema.modified <- properties.modified))
+            let fileURL = self.makeLocalFileURL(with: path, account: account)
             let resource = Resource(account: account,
                                     path: path,
                                     dirty: dirty,
@@ -468,7 +473,7 @@ public class FileStore: Store {
                                     contentType: properties.contentType,
                                     contentLength: properties.contentLength,
                                     modified: properties.modified,
-                                    fileURL: nil,
+                                    fileURL: fileURL,
                                     fileVersion: nil)
             changeSet.insertedOrUpdated.append(resource)
             return true
