@@ -49,6 +49,11 @@ public struct FileStoreResource: StoreResource {
     public let modified: Date?
     
     public let fileURL: URL?
+    public let fileVersion: String?
+    
+    public var fileIsValid: Bool {
+        return fileURL != nil && version == fileVersion
+    }
     
     public static func ==(lhs: FileStoreResource, rhs: FileStoreResource) -> Bool {
         return lhs.account == rhs.account && lhs.path == rhs.path
@@ -221,36 +226,9 @@ public class FileStore: Store {
             guard
                 let db = self.db
                 else { throw FileStoreError.notSetup }
-            
             var resource: Resource? = nil
-            
             try db.transaction {
-                
-                let href = self.makeHRef(with: path)
-                
-                let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_identifier == account.identifier &&
-                    FileStoreSchema.href == href)
-                
-                if let row = try db.pluck(query) {
-                    let isCollection = row.get(FileStoreSchema.is_collection)
-                    let dirty = row.get(FileStoreSchema.dirty)
-                    let version = row.get(FileStoreSchema.version)
-                    let updated = row.get(FileStoreSchema.updated)
-                    let contentType = row.get(FileStoreSchema.content_type)
-                    let contentLength = row.get(FileStoreSchema.content_length)
-                    let modified = row.get(FileStoreSchema.modified)
-                    resource = Resource(account: account,
-                                        path: path,
-                                        dirty: dirty,
-                                        updated: updated,
-                                        isCollection: isCollection,
-                                        version: version,
-                                        contentType: contentType,
-                                        contentLength: contentLength,
-                                        modified: modified,
-                                        fileURL: nil)
-                }
+                resource = try self.resource(of: account, at: path, in: db)
             }
             return resource
         }
@@ -271,28 +249,11 @@ public class FileStore: Store {
                 
                 let query = FileStoreSchema.resource.filter(
                     FileStoreSchema.account_identifier == account.identifier
-                    && FileStoreSchema.href.like(hrefPattern)
-                    && FileStoreSchema.depth == path.count + 1)
+                        && FileStoreSchema.href.like(hrefPattern)
+                        && FileStoreSchema.depth == path.count + 1)
                 
                 for row in try db.prepare(query) {
-                    let isCollection = row.get(FileStoreSchema.is_collection)
-                    let path = self.makePath(with: row.get(FileStoreSchema.href))
-                    let dirty = row.get(FileStoreSchema.dirty)
-                    let updated = row.get(FileStoreSchema.updated)
-                    let version = row.get(FileStoreSchema.version)
-                    let contentType = row.get(FileStoreSchema.content_type)
-                    let contentLength = row.get(FileStoreSchema.content_length)
-                    let modified = row.get(FileStoreSchema.modified)
-                    let resource = Resource(account: account,
-                                            path: path,
-                                            dirty: dirty,
-                                            updated: updated,
-                                            isCollection: isCollection,
-                                            version: version,
-                                            contentType: contentType,
-                                            contentLength: contentLength,
-                                            modified: modified,
-                                            fileURL: nil)
+                    let resource = try self.makeResource(with: row, account: account)
                     result.append(resource)
                 }
             }
@@ -301,6 +262,47 @@ public class FileStore: Store {
         }
     }
     
+    private func resource(of account: Account, at path: [String], in db: SQLite.Connection) throws -> Resource? {
+        let href = self.makeHRef(with: path)
+        
+        let query = FileStoreSchema.resource.filter(
+            FileStoreSchema.account_identifier == account.identifier &&
+                FileStoreSchema.href == href)
+        
+        if let row = try db.pluck(query) {
+            return try self.makeResource(with: row, account: account)
+        } else {
+            return nil
+        }
+    }
+    
+    private func makeResource(with row: SQLite.Row, account: Account) throws -> Resource {
+        let path = makePath(with: row.get(FileStoreSchema.href))
+        let isCollection = row.get(FileStoreSchema.is_collection)
+        let dirty = row.get(FileStoreSchema.dirty)
+        let version = row.get(FileStoreSchema.version)
+        let fileVersion = row.get(FileStoreSchema.file_version)
+        let updated = row.get(FileStoreSchema.updated)
+        let contentType = row.get(FileStoreSchema.content_type)
+        let contentLength = row.get(FileStoreSchema.content_length)
+        let modified = row.get(FileStoreSchema.modified)
+        
+        let fileURL = fileVersion != nil ? self.makeLocalFileURL(with: path, account: account) : nil
+        
+        let resource = Resource(account: account,
+                                path: path,
+                                dirty: dirty,
+                                updated: updated,
+                                isCollection: isCollection,
+                                version: version,
+                                contentType: contentType,
+                                contentLength: contentLength,
+                                modified: modified,
+                                fileURL: fileURL,
+                                fileVersion: fileVersion)
+        return resource
+    }
+
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?) throws -> FileStoreChangeSet {
         return try update(resourceAt: path, of: account, with: properties, content: nil)
     }
@@ -344,60 +346,54 @@ public class FileStore: Store {
         }
     }
     
-    func save(fileAt url: URL, version: String, forResourceAt path: [String], of account: Account) throws -> FileStoreResource {
+    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource {
         return try queue.sync {
             guard
                 let db = self.db
                 else { throw FileStoreError.notSetup }
             
-            var resource: FileStoreResource? = nil
+            var resource: FileStoreResource = resource
             
             try db.transaction {
                 
-                let href = self.makeHRef(with: path)
-                let fileURL = self.makeLocalFileURL(with: path)
+                let href = self.makeHRef(with: resource.path)
+                let fileURL = self.makeLocalFileURL(with: resource)
                 
                 let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_identifier == account.identifier &&
-                        FileStoreSchema.href == href)
+                        FileStoreSchema.account_identifier == resource.account.identifier &&
+                        FileStoreSchema.href == href
+                )
                 
                 if let row = try db.pluck(query) {
-                    let isCollection = row.get(FileStoreSchema.is_collection)
-                    let dirty = row.get(FileStoreSchema.dirty)
-                    let expectedVersion = row.get(FileStoreSchema.version)
-                    let updated = row.get(FileStoreSchema.updated)
-                    let contentType = row.get(FileStoreSchema.content_type)
-                    let contentLength = row.get(FileStoreSchema.content_length)
-                    let modified = row.get(FileStoreSchema.modified)
-                    resource = Resource(account: account,
-                                        path: path,
-                                        dirty: dirty,
-                                        updated: updated,
-                                        isCollection: isCollection,
-                                        version: expectedVersion,
-                                        contentType: contentType,
-                                        contentLength: contentLength,
-                                        modified: modified,
-                                        fileURL: fileURL)
-
-                    if expectedVersion == version {
+                    if row.get(FileStoreSchema.version) != version {
+                        throw FileStoreError.versionMismatch
+                    } else {
+                        
+                        try db.run(query.update(FileStoreSchema.file_version <- version))
+                        
                         let manager = FileManager.default
                         let directory = fileURL.deletingLastPathComponent()
                         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
                         try manager.moveItem(at: url, to: fileURL)
-                    } else {
-                        throw FileStoreError.versionMismatch
+                        
+                        resource = Resource(account: resource.account,
+                                            path: resource.path,
+                                            dirty: resource.dirty,
+                                            updated: resource.updated,
+                                            isCollection: resource.isCollection,
+                                            version: resource.version,
+                                            contentType: resource.contentType,
+                                            contentLength: resource.contentLength,
+                                            modified: resource.modified,
+                                            fileURL: fileURL,
+                                            fileVersion: version)
                     }
                 } else {
                     throw FileStoreError.resourceDoesNotExist
                 }
             }
-            
-            guard
-                let result = resource
-                else { throw FileStoreError.internalError }
-            
-            return result
+
+            return resource
         }
     }
 
@@ -421,29 +417,38 @@ public class FileStore: Store {
     }
     
     private func updateResource(at path: [String], of account: Account, with properties: StoreResourceProperties, dirty: Bool = false, timestamp: Date?, in db: SQLite.Connection, with changeSet: FileStoreChangeSet) throws -> Bool {
+        
         let href = makeHRef(with: path)
         let query = FileStoreSchema.resource
-                        .filter(
-                            FileStoreSchema.account_identifier == account.identifier
-                            && FileStoreSchema.href == href
-                            && FileStoreSchema.version == properties.version
-                            && FileStoreSchema.dirty == false)
-        if try db.run(query.update(FileStoreSchema.updated <- timestamp)) > 0 {
-            let resource = Resource(account: account,
-                                    path: path,
-                                    dirty: dirty,
-                                    updated: timestamp,
-                                    isCollection: properties.isCollection,
-                                    version: properties.version,
-                                    contentType: properties.contentType,
-                                    contentLength: properties.contentLength,
-                                    modified: properties.modified,
-                                    fileURL: nil)
-            changeSet.insertedOrUpdated.append(resource)
+            .filter(
+                FileStoreSchema.account_identifier == account.identifier &&
+                FileStoreSchema.href == href
+        )
+        
+        // Resource is up to date, just updating the timestamp
+        if try db.run(query.filter(FileStoreSchema.dirty == false && FileStoreSchema.version == properties.version).update(FileStoreSchema.updated <- timestamp)) > 0 {
+            if let resource = try self.resource(of: account, at: path, in: db) {
+                changeSet.insertedOrUpdated.append(resource)
+            }
             return false
-        } else {
+        }
+        
+        // Updating the properties of the ressource
+        else if try db.run(query.update(FileStoreSchema.version <- properties.version,
+                                        FileStoreSchema.is_collection <- properties.isCollection,
+                                        FileStoreSchema.dirty <- dirty,
+                                        FileStoreSchema.content_type <- properties.contentType,
+                                        FileStoreSchema.content_length <- properties.contentLength,
+                                        FileStoreSchema.modified <- properties.modified)) > 0 {
+            if let resource = try self.resource(of: account, at: path, in: db) {
+                changeSet.insertedOrUpdated.append(resource)
+            }
+            return true
+        }
+        
+        // Insert new resource
+        else {
             _ = try db.run(FileStoreSchema.resource.insert(
-                or: .replace,
                 FileStoreSchema.account_identifier <- account.identifier,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- path.count,
@@ -463,7 +468,8 @@ public class FileStore: Store {
                                     contentType: properties.contentType,
                                     contentLength: properties.contentLength,
                                     modified: properties.modified,
-                                    fileURL: nil)
+                                    fileURL: nil,
+                                    fileVersion: nil)
             changeSet.insertedOrUpdated.append(resource)
             return true
         }
@@ -541,7 +547,8 @@ public class FileStore: Store {
                                     contentType: nil,
                                     contentLength: nil,
                                     modified: nil,
-                                    fileURL: nil)
+                                    fileURL: nil,
+                                    fileVersion: nil)
             changeSet.deleted.append(resource)
         }
     }
@@ -559,6 +566,18 @@ public class FileStore: Store {
         let baseDirectory = directory.appendingPathComponent("files", isDirectory: true)
         return baseDirectory.appendingPathComponent(path.joined(separator: "/"))
     }
+    
+    private func makeLocalFileURL(with resource: Resource) -> URL {
+        return makeLocalFileURL(with: resource.path, account: resource.account)
+    }
+    
+    private func makeLocalFileURL(with path: [String], account: Account) -> URL {
+        let storeBase = directory.appendingPathComponent("files", isDirectory: true)
+        let accountBase = storeBase.appendingPathComponent(account.identifier, isDirectory: true)
+        let fileURL = accountBase.appendingPathComponent(path.joined(separator: "/"))
+        return fileURL
+    }
+    
 }
 
 class FileStoreSchema {
@@ -573,6 +592,7 @@ class FileStoreSchema {
     static let href = Expression<String>("href")
     static let depth = Expression<Int>("depth")
     static let version = Expression<String>("version")
+    static let file_version = Expression<String?>("file_version")
     static let is_collection = Expression<Bool>("is_collection")
     static let account_identifier = Expression<String>("account_identifier")
     static let label = Expression<String?>("label")
@@ -633,6 +653,7 @@ class FileStoreSchema {
             t.column(FileStoreSchema.depth)
             t.column(FileStoreSchema.is_collection)
             t.column(FileStoreSchema.version)
+            t.column(FileStoreSchema.file_version)
             t.column(FileStoreSchema.dirty)
             t.column(FileStoreSchema.updated)
             t.column(FileStoreSchema.modified)

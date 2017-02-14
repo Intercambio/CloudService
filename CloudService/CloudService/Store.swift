@@ -30,6 +30,7 @@ public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
     var dirty: Bool { get }
     var updated: Date? { get }
     var fileURL: URL? { get }
+    var fileIsValid: Bool { get }
 }
 
 public protocol StoreChangeSet {
@@ -54,7 +55,7 @@ protocol Store {
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?) throws -> ChangeSet
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?, content: [String:StoreResourceProperties]?) throws -> ChangeSet
     
-    func save(fileAt url: URL, version: String, forResourceAt path: [String], of account: Account) throws -> Resource
+    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource
 }
 
 extension StoreResource {

@@ -360,7 +360,7 @@ class FileStoreTests: TestCase {
         }
     }
     
-    func testStoreFile() {
+    func testMoveFile() {
         guard
             let store = self.store
             else { XCTFail(); return }
@@ -371,16 +371,30 @@ class FileStoreTests: TestCase {
             let path = ["a", "b", "c"]
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
+            try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
             _ = try store.update(resourceAt: path, of: account, with: properties)
             
-            let resource = try store.save(fileAt: fileURL, version: "123", forResourceAt: path, of: account)
-            
-            XCTAssertNotNil(resource.fileURL)
-            
-            if let url = resource.fileURL {
-                let content = try String(contentsOf: url)
-                XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
+            if var resource = try store.resource(of: account, at: path) {
+                resource = try store.moveFile(at: tempFileURL, withVersion: "123", to: resource)
+                XCTAssertTrue(resource.fileIsValid)
+                XCTAssertNotNil(resource.fileURL)
+                if let url = resource.fileURL {
+                    let content = try String(contentsOf: url)
+                    XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
+                }
+                
+                let properties = Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil)
+                _ = try store.update(resourceAt: path, of: account, with: properties)
+                resource = try store.resource(of: account, at: path)!
+                
+                XCTAssertFalse(resource.fileIsValid)
+                XCTAssertNotNil(resource.fileURL)
+                
+            } else {
+                XCTFail()
             }
 
         } catch {
@@ -388,7 +402,7 @@ class FileStoreTests: TestCase {
         }
     }
     
-    func testSaveWrongFile() {
+    func testMoveFileVersionMissmatch() {
         guard
             let store = self.store
             else { XCTFail(); return }
@@ -399,10 +413,18 @@ class FileStoreTests: TestCase {
             let path = ["a", "b", "c"]
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
+            try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
             _ = try store.update(resourceAt: path, of: account, with: properties)
             
-            XCTAssertThrowsError(try store.save(fileAt: fileURL, version: "345", forResourceAt: path, of: account))
+            if let resource = try store.resource(of: account, at: path) {
+                XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource))
+                XCTAssertFalse(resource.fileIsValid)
+            } else {
+                XCTFail()
+            }
             
         } catch {
             XCTFail("\(error)")
