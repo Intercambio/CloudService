@@ -34,4 +34,8 @@ class CloudAPITests: XCTestCase, CloudAPIDelegate {
         }
     }
     
+    
+    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
+        
+    }
 }

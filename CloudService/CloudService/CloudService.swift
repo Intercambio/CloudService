@@ -217,4 +217,10 @@ extension CloudService: ResourceManagerDelegate {
                                    DeletedResourcesKey: changeSet.deleted])
         }
     }
+    
+    func resourceManager(_ manager: ResourceManager, startDownloadingResourceAt path: [String]) {
+    }
+    
+    func resourceManager(_ manager: ResourceManager, finishDownloadingResourceAt path: [String]) {
+    }
 }

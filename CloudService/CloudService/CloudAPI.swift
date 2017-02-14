@@ -25,14 +25,11 @@ public enum CloudAPIRequestDepth: String {
 }
 
 public protocol CloudAPIDelegate: class {
-    func cloudAPI(
-        _ api: CloudAPI,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
-    ) -> Void
+    func cloudAPI(_ api: CloudAPI, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) -> Void
+    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) -> Void
 }
 
-public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate {
+public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate {
     
     public weak var delegate: CloudAPIDelegate?
     
@@ -40,6 +37,11 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
+
+    private lazy var downloadSession: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.identifier)")
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
+    }()
     
     private lazy var dataSession: URLSession = {
         let configuration = URLSessionConfiguration.default
@@ -103,6 +105,20 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
+    private var pendingDownloads: [URL] = []
+    
+    public func download(_ url: URL) {
+        queue.async {
+            if self.pendingDownloads.contains(url) {
+                return
+            } else {
+                self.pendingDownloads.append(url)
+                let taks = self.downloadSession.downloadTask(with: url)
+                taks.resume()
+            }
+        }
+    }
+    
     // MARK: - URLSessionTaskDelegate
     
     public func urlSession(
@@ -118,4 +134,22 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if session == downloadSession {
+            
+        }
+    }
+    
+    // MARK: - URLSessionDownloadDelegate
+    
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        guard
+            let url = downloadTask.originalRequest?.url,
+            let delegate = self.delegate,
+            let response = downloadTask.response as? HTTPURLResponse
+            else { return }
+        
+        let etag = response.allHeaderFields["ETag"] as? String
+        delegate.cloudAPI(self, didFinishDownloading: url, etag: etag ?? "", to: location)
+    }
 }

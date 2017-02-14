@@ -11,6 +11,8 @@ import Foundation
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) -> Void
+    func resourceManager(_ manager: ResourceManager, startDownloadingResourceAt path: [String]) -> Void
+    func resourceManager(_ manager: ResourceManager, finishDownloadingResourceAt path: [String]) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -58,6 +60,10 @@ class ResourceManager: CloudAPIDelegate {
                 completion?(error)
             }
         }
+    }
+    
+    func downloadResource(at path: [String]) {
+        
     }
     
     private func updateResource(at path: [String], with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
@@ -118,5 +124,9 @@ class ResourceManager: CloudAPIDelegate {
                                             persistence: .forSession)
             completionHandler(.useCredential, credentials)
         }
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
+        
     }
 }
