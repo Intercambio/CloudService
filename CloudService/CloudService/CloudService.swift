@@ -172,6 +172,13 @@ public class CloudService {
         }
     }
     
+    public func downloadResource(at path: [String], of account: Account) {
+        queue.async {
+            let manager = self.resourceManager(for: account)
+            manager.downloadResource(at: path)
+        }
+    }
+    
     // MARK: - Manage Credentials
     
     public func password(for account: CloudService.Account) -> String? {
