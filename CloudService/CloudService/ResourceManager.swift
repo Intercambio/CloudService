@@ -25,6 +25,8 @@ class ResourceManager: CloudAPIDelegate {
     let queue: DispatchQueue
     lazy var api: CloudAPI = CloudAPI(identifier: self.account.url.absoluteString, delegate: self)
     
+    private var progresByHRef: [String:Progress] = [:]
+    
     init(store: FileStore, account: FileStore.Account) {
         self.store = store
         self.account = account
@@ -74,8 +76,46 @@ class ResourceManager: CloudAPIDelegate {
     }
     
     func downloadResource(at path: [String]) {
-        let url = account.url.appendingPathComponent(path.joined(separator: "/"))
-        self.api.download(url)
+        queue.async {
+            do {
+                _ = self.makeProgress(for: path)
+                
+                let url = self.account.url.appendingPathComponent(path.joined(separator: "/"))
+                self.api.download(url)
+                
+                if let resource = try self.store.resource(of: self.account, at: path) {
+                    self.delegate?.resourceManager(self, didStartDownloading: resource)
+                }
+            } catch {
+                NSLog("\(error)")
+            }
+        }
+    }
+    
+    func progress(for path: [String]) -> Progress? {
+        return queue.sync {
+            let href = makeHRef(with: path)
+            return progresByHRef[href]
+        }
+    }
+    
+    private func makeProgress(for path: [String]) -> Progress {
+        let href = makeHRef(with: path)
+        if let progress = progresByHRef[href] {
+            return progress
+        } else if path.count == 0 {
+            let progress = Progress()
+            progress.kind = ProgressKind.file
+            progress.totalUnitCount = -1
+            progresByHRef[href] = progress
+            return progress
+        } else {
+            let parentProgress = makeProgress(for: Array(path.dropLast(1)))
+            let progress = Progress(totalUnitCount: -1, parent: parentProgress, pendingUnitCount: 1)
+            progress.kind = ProgressKind.file
+            progresByHRef[href] = progress
+            return progress
+        }
     }
     
     private func updateResource(at path: [String], with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
@@ -111,6 +151,10 @@ class ResourceManager: CloudAPIDelegate {
         return try store.update(resourceAt: path, of: account, with: nil)
     }
     
+    private func makeHRef(with path: [String]) -> String {
+        return "/\(path.joined(separator: "/"))"
+    }
+    
     // MARK: - CloudAPIDelegate
     
     func cloudAPI(_ api: CloudAPI,
@@ -143,7 +187,15 @@ class ResourceManager: CloudAPIDelegate {
     }
     
     func cloudAPI(_ api: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
+        queue.async {
+            guard
+                let path = url.pathComponents(relativeTo: self.account.url)
+                else { return }
+            
+            let progress = self.makeProgress(for: path)
+            progress.completedUnitCount = totalBytesWritten
+            progress.totalUnitCount = totalBytesExpectedToWrite
+        }
     }
     
     func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
@@ -159,6 +211,10 @@ class ResourceManager: CloudAPIDelegate {
             } catch {
                 delegate?.resourceManager(self, didFailDownloading: resource, error: error)
             }
+            
+            let progress = self.makeProgress(for: path)
+            progress.totalUnitCount = progress.completedUnitCount
+            
         } catch {
             NSLog("Failed to sotre file: \(error)")
         }

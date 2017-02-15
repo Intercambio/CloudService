@@ -179,6 +179,13 @@ public class CloudService {
         }
     }
     
+    public func progressForResource(at path: [String], of account: Account) -> Progress? {
+        return queue.sync {
+            let manager = self.resourceManager(for: account)
+            return manager.progress(for: path)
+        }
+    }
+    
     // MARK: - Manage Credentials
     
     public func password(for account: CloudService.Account) -> String? {
