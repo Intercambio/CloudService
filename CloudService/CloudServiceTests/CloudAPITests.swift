@@ -7,18 +7,31 @@
 //
 
 import XCTest
+import OHHTTPStubs
 @testable import CloudService
 
 class CloudAPITests: XCTestCase, CloudAPIDelegate {
     
-    func testAPI() {
+    override func tearDown() {
+        OHHTTPStubs.removeAllStubs()
+        super.tearDown()
+    }
+    
+    // MARK: Tests
+    
+    func testRetrieveProperties() {
+        stub(condition: isHost("example.com") && isPath("/webdav")) { _ in
+            let stubPath = OHPathForFile("propfind.xml", type(of: self))
+            return fixture(filePath: stubPath!, status: 207, headers: ["Content-Type":"application/xml"])
+        }
         
         let api = CloudAPI(identifier: "123")
         api.delegate = self
         
         let expectation = self.expectation(description: "Response")
-        api.retrieveProperties(of: URL(string: "https://cloud.example.org/webdav/")!) { _, _ in
-            
+        api.retrieveProperties(of: URL(string: "https://example.com/webdav/")!) { response, error in
+            XCTAssertNil(error)
+            XCTAssertEqual(response?.resources.count, 6)
             expectation.fulfill()
         }
         waitForExpectations(timeout: 10.0, handler: nil)
