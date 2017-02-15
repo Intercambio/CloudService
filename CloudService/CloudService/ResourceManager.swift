@@ -22,14 +22,24 @@ class ResourceManager: CloudAPIDelegate {
     let store: FileStore
     let account: FileStore.Account
     let queue: DispatchQueue
-    let api: CloudAPI
+    lazy var api: CloudAPI = CloudAPI(identifier: self.account.url.absoluteString, delegate: self)
     
     init(store: FileStore, account: FileStore.Account) {
         self.store = store
         self.account = account
         self.queue = DispatchQueue(label: "CloudStore.ResourceManager")
-        self.api = CloudAPI(identifier: account.url.absoluteString)
-        self.api.delegate = self
+    }
+    
+    func resume(completion: ((Error?) -> Void)?) {
+        completion?(nil)
+    }
+    
+    func finishTasksAndInvalidate() {
+        api.finishTasksAndInvalidate()
+    }
+    
+    func invalidateAndCancel() {
+        api.invalidateAndCancel()
     }
     
     func updateResource(at path: [String], completion: ((Error?) -> Void)?) {

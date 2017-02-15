@@ -20,8 +20,7 @@ class CloudAPITests: XCTestCase, CloudAPIDelegate {
     // MARK: Tests
     
     func testRetrieveProperties() {
-        let api = CloudAPI(identifier: "CloudAPITests.testRetrieveProperties")
-        api.delegate = self
+        let api = CloudAPI(identifier: "CloudAPITests.testRetrieveProperties", delegate: self)
         
         defer {
             api.invalidateAndCancel()
@@ -43,8 +42,7 @@ class CloudAPITests: XCTestCase, CloudAPIDelegate {
     }
     
     func testDownload() {
-        let api = CloudAPI(identifier: "CloudAPITests.testDownload")
-        api.delegate = self
+        let api = CloudAPI(identifier: "CloudAPITests.testDownload", delegate: self)
         
         defer {
             api.invalidateAndCancel()
@@ -78,8 +76,7 @@ class CloudAPITests: XCTestCase, CloudAPIDelegate {
     }
     
     func testDownloadError() {
-        let api = CloudAPI(identifier: "CloudAPITests.testDownloadError")
-        api.delegate = self
+        let api = CloudAPI(identifier: "CloudAPITests.testDownloadError", delegate: self)
         
         defer {
             api.invalidateAndCancel()

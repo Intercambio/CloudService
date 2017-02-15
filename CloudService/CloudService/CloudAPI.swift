@@ -30,8 +30,7 @@ public protocol CloudAPIDelegate: class {
 
 public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate {
     
-    public weak var delegate: CloudAPIDelegate?
-    
+    public private(set) var delegate: CloudAPIDelegate?
     public let identifier: String
     
     private let operationQueue: OperationQueue
@@ -39,6 +38,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
 
     private lazy var downloadSession: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.identifier)")
+        configuration.networkServiceType = .background
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
     }()
     
@@ -47,14 +47,34 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
     }()
     
-    public init(identifier: String) {
-        self.identifier = identifier
-        
+    private var pendingDownloads: Set<URL> = Set<URL>()
+    
+    public init(identifier: String, delegate: CloudAPIDelegate?) {
         queue = DispatchQueue(label: "CloudAPI (\(identifier))")
         operationQueue = OperationQueue()
         operationQueue.underlyingQueue = queue
         
+        self.delegate = delegate
+        self.identifier = identifier
+        
         super.init()
+        
+        downloadSession.getAllTasks { tasks in
+            for task in tasks {
+                if let downloadTask = task as? URLSessionDownloadTask {
+                    guard
+                        let url = downloadTask.originalRequest?.url
+                        else { continue }
+                    self.pendingDownloads.insert(url)
+                    let totalBytesWritten = downloadTask.countOfBytesReceived
+                    let totalBytesExpectedToWrite = downloadTask.countOfBytesExpectedToReceive
+                    self.delegate?.cloudAPI(self,
+                                            didProgressDownloading: url,
+                                            totalBytesWritten: totalBytesWritten,
+                                            totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+                }
+            }
+        }
     }
     
     public func finishTasksAndInvalidate() {
@@ -114,14 +134,12 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
-    private var pendingDownloads: [URL] = []
-    
     public func download(_ url: URL) {
         queue.sync {
             if self.pendingDownloads.contains(url) {
                 return
             } else {
-                self.pendingDownloads.append(url)
+                self.pendingDownloads.insert(url)
                 let taks = self.downloadSession.downloadTask(with: url)
                 taks.resume()
             }
@@ -131,7 +149,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     // MARK: - URLSessionDelegate
     
     public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        
+        delegate = nil
     }
     
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -142,6 +160,14 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
+    #if os(iOS) || os(tvOS) || os(watchOS)
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        if session == downloadSession {
+            NSLog("Background URL Session did finish Events -- \(session)")
+        }
+    }
+    #endif
+    
     // MARK: URLSessionTaskDelegate
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -150,11 +176,9 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                 let url = task.originalRequest?.url
                 else { return }
             
-            if let index = pendingDownloads.index(of: url) {
-                pendingDownloads.remove(at: index)
-                if let donwloadError = error {
-                    delegate?.cloudAPI(self, didFailDownloading: url, error: donwloadError)
-                }
+            pendingDownloads.remove(url)
+            if let donwloadError = error {
+                delegate?.cloudAPI(self, didFailDownloading: url, error: donwloadError)
             }
         }
     }

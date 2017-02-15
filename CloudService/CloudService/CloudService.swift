@@ -52,10 +52,44 @@ public class CloudService {
     
     public func start(completion: ((Error?)->Void)?) {
         queue.async {
-            self.store.open(completion: completion)
+            self.store.open { error in
+                self.queue.async {
+                    do {
+                        if error != nil {
+                            throw error!
+                        }
+                        
+                        let resumeGroup = DispatchGroup()
+                        
+                        for account in self.store.accounts {
+                            resumeGroup.enter()
+                            let manager = self.resourceManager(for: account)
+                            manager.resume { error in
+                                if error != nil {
+                                    NSLog("Failed to resume manager: \(error)")
+                                }
+                                resumeGroup.leave()
+                            }
+                        }
+                        
+                        resumeGroup.notify(queue: self.queue) {
+                            completion?(nil)
+                        }
+                        
+                    } catch {
+                        completion?(error)
+                    }
+                }
+            }
         }
     }
     
+    deinit {
+        for (_, manager) in resourceManager {
+            manager.invalidateAndCancel()
+        }
+    }
+
     // MARK: - Account Management
     
     public var accounts: [Store.Account] {
