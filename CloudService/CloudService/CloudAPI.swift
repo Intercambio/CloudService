@@ -151,15 +151,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
         delegate = nil
     }
-    
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if let delegate = self.delegate {
-            delegate.cloudAPI(self, didReceive: challenge, completionHandler: completionHandler)
-        } else {
-            completionHandler(.rejectProtectionSpace, nil)
-        }
-    }
-    
+
     #if os(iOS) || os(tvOS) || os(watchOS)
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         if session == downloadSession {
@@ -169,6 +161,14 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     #endif
     
     // MARK: URLSessionTaskDelegate
+    
+    public func urlSession(_ session: URLSession, task _: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+        if let delegate = self.delegate {
+            delegate.cloudAPI(self, didReceive: challenge, completionHandler: completionHandler)
+        } else {
+            completionHandler(.rejectProtectionSpace, nil)
+        }
+    }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if session == downloadSession {
