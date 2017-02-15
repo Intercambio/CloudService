@@ -12,10 +12,7 @@ import PureXML
 public enum CloudAPIError: Error {
     case internalError
     case invalidResponse
-}
-
-public enum CloudAPIHTTPError: Error {
-    case status(code: Int, document: PXDocument?)
+    case unexpectedResponse(statusCode: Int, document: PXDocument?)
 }
 
 public enum CloudAPIRequestDepth: String {
@@ -25,35 +22,69 @@ public enum CloudAPIRequestDepth: String {
 }
 
 public protocol CloudAPIDelegate: class {
-    func cloudAPI(
-        _ api: CloudAPI,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
-    ) -> Void
+    func cloudAPI(_ api: CloudAPI, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) -> Void
+    func cloudAPI(_ api: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) -> Void
+    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) -> Void
+    func cloudAPI(_ api: CloudAPI, didFailDownloading url: URL, error: Error) -> Void
 }
 
-public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate {
+public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate {
     
-    public weak var delegate: CloudAPIDelegate?
-    
+    public private(set) var delegate: CloudAPIDelegate?
     public let identifier: String
     
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
+
+    private lazy var downloadSession: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.identifier)")
+        configuration.networkServiceType = .background
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
+    }()
     
     private lazy var dataSession: URLSession = {
         let configuration = URLSessionConfiguration.default
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
     }()
     
-    public init(identifier: String) {
-        self.identifier = identifier
-        
+    private var pendingDownloads: Set<URL> = Set<URL>()
+    
+    public init(identifier: String, delegate: CloudAPIDelegate?) {
         queue = DispatchQueue(label: "CloudAPI (\(identifier))")
         operationQueue = OperationQueue()
         operationQueue.underlyingQueue = queue
         
+        self.delegate = delegate
+        self.identifier = identifier
+        
         super.init()
+        
+        downloadSession.getAllTasks { tasks in
+            for task in tasks {
+                if let downloadTask = task as? URLSessionDownloadTask {
+                    guard
+                        let url = downloadTask.originalRequest?.url
+                        else { continue }
+                    self.pendingDownloads.insert(url)
+                    let totalBytesWritten = downloadTask.countOfBytesReceived
+                    let totalBytesExpectedToWrite = downloadTask.countOfBytesExpectedToReceive
+                    self.delegate?.cloudAPI(self,
+                                            didProgressDownloading: url,
+                                            totalBytesWritten: totalBytesWritten,
+                                            totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+                }
+            }
+        }
+    }
+    
+    public func finishTasksAndInvalidate() {
+        dataSession.finishTasksAndInvalidate()
+        downloadSession.finishTasksAndInvalidate()
+    }
+    
+    public func invalidateAndCancel() {
+        dataSession.invalidateAndCancel()
+        downloadSession.invalidateAndCancel()
     }
     
     private var pendingPropertiesRequests: [URL: [(CloudAPIResponse?, Error?) -> Void]] = [:]
@@ -89,7 +120,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                                 }
                             case let statusCode:
                                 let document = PXDocument(data: data)
-                                throw CloudAPIHTTPError.status(code: statusCode, document: document)
+                                throw CloudAPIError.unexpectedResponse(statusCode: statusCode, document: document)
                             }
                         } catch {
                             for handler in handlers {
@@ -103,14 +134,35 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
-    // MARK: - URLSessionTaskDelegate
+    public func download(_ url: URL) {
+        queue.sync {
+            if self.pendingDownloads.contains(url) {
+                return
+            } else {
+                self.pendingDownloads.insert(url)
+                let taks = self.downloadSession.downloadTask(with: url)
+                taks.resume()
+            }
+        }
+    }
     
-    public func urlSession(
-        _: URLSession,
-        task _: URLSessionTask,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void
-    ) {
+    // MARK: - URLSessionDelegate
+    
+    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        delegate = nil
+    }
+
+    #if os(iOS) || os(tvOS) || os(watchOS)
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        if session == downloadSession {
+            NSLog("Background URL Session did finish Events -- \(session)")
+        }
+    }
+    #endif
+    
+    // MARK: URLSessionTaskDelegate
+    
+    public func urlSession(_ session: URLSession, task _: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
         if let delegate = self.delegate {
             delegate.cloudAPI(self, didReceive: challenge, completionHandler: completionHandler)
         } else {
@@ -118,4 +170,44 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if session == downloadSession {
+            guard
+                let url = task.originalRequest?.url
+                else { return }
+            
+            pendingDownloads.remove(url)
+            if let donwloadError = error {
+                delegate?.cloudAPI(self, didFailDownloading: url, error: donwloadError)
+            }
+        }
+    }
+    
+    // MARK: URLSessionDownloadDelegate
+    
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        guard
+            let url = downloadTask.originalRequest?.url,
+            let delegate = self.delegate
+            else { return }
+        
+        delegate.cloudAPI(self, didProgressDownloading: url, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+    }
+    
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        guard
+            let url = downloadTask.originalRequest?.url,
+            let delegate = self.delegate,
+            let response = downloadTask.response as? HTTPURLResponse
+            else { return }
+        
+        switch response.statusCode {
+        case 200:
+            let etag = response.allHeaderFields["Etag"] as? String
+            delegate.cloudAPI(self, didFinishDownloading: url, etag: etag ?? "", to: location)
+        default:
+            let error = CloudAPIError.unexpectedResponse(statusCode: response.statusCode, document: nil)
+            delegate.cloudAPI(self, didFailDownloading: url, error: error)
+        }
+    }
 }

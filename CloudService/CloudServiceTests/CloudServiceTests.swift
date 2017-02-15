@@ -35,6 +35,17 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
         self.service = service
     }
     
+    override func tearDown() {
+        self.service = nil
+        super.tearDown()
+    }
+    
+    // MARK: Tests
+    
+    func test() {
+    
+    }
+    
     // MARK: - CloudServiceDelegate
     
     func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) {

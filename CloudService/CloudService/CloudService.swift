@@ -52,10 +52,44 @@ public class CloudService {
     
     public func start(completion: ((Error?)->Void)?) {
         queue.async {
-            self.store.open(completion: completion)
+            self.store.open { error in
+                self.queue.async {
+                    do {
+                        if error != nil {
+                            throw error!
+                        }
+                        
+                        let resumeGroup = DispatchGroup()
+                        
+                        for account in self.store.accounts {
+                            resumeGroup.enter()
+                            let manager = self.resourceManager(for: account)
+                            manager.resume { error in
+                                if error != nil {
+                                    NSLog("Failed to resume manager: \(error)")
+                                }
+                                resumeGroup.leave()
+                            }
+                        }
+                        
+                        resumeGroup.notify(queue: self.queue) {
+                            completion?(nil)
+                        }
+                        
+                    } catch {
+                        completion?(error)
+                    }
+                }
+            }
         }
     }
     
+    deinit {
+        for (_, manager) in resourceManager {
+            manager.invalidateAndCancel()
+        }
+    }
+
     // MARK: - Account Management
     
     public var accounts: [Store.Account] {
@@ -138,6 +172,13 @@ public class CloudService {
         }
     }
     
+    public func downloadResource(at path: [String], of account: Account) {
+        queue.async {
+            let manager = self.resourceManager(for: account)
+            manager.downloadResource(at: path)
+        }
+    }
+    
     // MARK: - Manage Credentials
     
     public func password(for account: CloudService.Account) -> String? {
@@ -215,6 +256,36 @@ extension CloudService: ResourceManagerDelegate {
                         object: self,
                         userInfo: [InsertedOrUpdatedResourcesKey: changeSet.insertedOrUpdated,
                                    DeletedResourcesKey: changeSet.deleted])
+        }
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
+        }
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
+        }
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
         }
     }
 }

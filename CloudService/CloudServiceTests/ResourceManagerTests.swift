@@ -112,6 +112,36 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         }
     }
     
+    func testDownload() {
+        guard
+            let store = self.store
+            else { XCTFail(); return }
+        
+        do {
+            let account = try store.addAccount(with: URL(string: "http://example.com")!, username: "romeo")
+            let resourceManager = ResourceManager(store: store, account: account)
+            resourceManager.delegate = self
+            
+            let path = ["test", "file"]
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            
+            expectation(forNotification: "Test.ResourceManager.startDownloadingResourceAt", object: resourceManager, handler: nil)
+            expectation(forNotification: "Test.ResourceManager.finishDownloadingResourceAt", object: resourceManager, handler: nil)
+            
+            resourceManager.downloadResource(at: path)
+            
+            waitForExpectations(timeout: 1.0, handler: nil)
+            
+            let resource = try store.resource(of: account, at: path)
+            XCTAssertNil(resource)
+            
+            
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
     // MARK: ResourceManagerDelegate
     
     var changeset: FileStore.ChangeSet?
@@ -122,6 +152,18 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
     
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
         completionHandler(nil)
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) {
+
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+
     }
     
     struct Properties: StoreResourceProperties {

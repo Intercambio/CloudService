@@ -11,6 +11,9 @@ import Foundation
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) -> Void
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) -> Void
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -20,14 +23,24 @@ class ResourceManager: CloudAPIDelegate {
     let store: FileStore
     let account: FileStore.Account
     let queue: DispatchQueue
-    let api: CloudAPI
+    lazy var api: CloudAPI = CloudAPI(identifier: self.account.url.absoluteString, delegate: self)
     
     init(store: FileStore, account: FileStore.Account) {
         self.store = store
         self.account = account
         self.queue = DispatchQueue(label: "CloudStore.ResourceManager")
-        self.api = CloudAPI(identifier: account.url.absoluteString)
-        self.api.delegate = self
+    }
+    
+    func resume(completion: ((Error?) -> Void)?) {
+        completion?(nil)
+    }
+    
+    func finishTasksAndInvalidate() {
+        api.finishTasksAndInvalidate()
+    }
+    
+    func invalidateAndCancel() {
+        api.invalidateAndCancel()
     }
     
     func updateResource(at path: [String], completion: ((Error?) -> Void)?) {
@@ -36,7 +49,7 @@ class ResourceManager: CloudAPIDelegate {
             do {
                 if let error = error {
                     switch error {
-                    case CloudAPIHTTPError.status(let code, _) where code == 404:
+                    case CloudAPIError.unexpectedResponse(let statusCode, _) where statusCode == 404:
                         let changeSet = try self.removeResource(at: path)
                         if let delegate = self.delegate {
                             delegate.resourceManager(self, didChange: changeSet)
@@ -58,6 +71,11 @@ class ResourceManager: CloudAPIDelegate {
                 completion?(error)
             }
         }
+    }
+    
+    func downloadResource(at path: [String]) {
+        let url = account.url.appendingPathComponent(path.joined(separator: "/"))
+        self.api.download(url)
     }
     
     private func updateResource(at path: [String], with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
@@ -117,6 +135,32 @@ class ResourceManager: CloudAPIDelegate {
                                             password: password,
                                             persistence: .forSession)
             completionHandler(.useCredential, credentials)
+        }
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didFailDownloading url: URL, error: Error) {
+        
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
+        do {
+            guard
+                let path = url.pathComponents(relativeTo: account.url),
+                let resource = try store.resource(of: account, at: path)
+                else { return }
+            
+            do {
+                let updatedResource = try store.moveFile(at: location, withVersion: etag, to: resource)
+                delegate?.resourceManager(self, didFinishDownloading: updatedResource)
+            } catch {
+                delegate?.resourceManager(self, didFailDownloading: resource, error: error)
+            }
+        } catch {
+            NSLog("Failed to sotre file: \(error)")
         }
     }
 }

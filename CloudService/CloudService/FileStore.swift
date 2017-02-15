@@ -178,10 +178,6 @@ public class FileStore: NSObject, Store, FileManagerDelegate {
                     FileStoreSchema.username <- username)
                 _ = try db.run(insert)
                 account = Account(identifier: identifier, url: standardizedURL, username: username, label: nil)
-                
-                let properties = FileStoreResourceProperties(isCollection: true, version: UUID().uuidString, contentType: nil, contentLength: nil, modified: nil)
-                let changeSet = FileStoreChangeSet()
-                _ = try self.updateResource(at: [], of: account!, with: properties, dirty: true, timestamp: nil, in: db, with: changeSet)
             }
             
             guard
@@ -344,6 +340,18 @@ public class FileStore: NSObject, Store, FileManagerDelegate {
         
         if let row = try db.pluck(query) {
             return try self.makeResource(with: row, account: account)
+        } else if path == [] {
+            return Resource(account: account,
+                            path: path,
+                            dirty: true,
+                            updated: nil,
+                            isCollection: true,
+                            version: UUID().uuidString.lowercased(),
+                            contentType: nil,
+                            contentLength: nil,
+                            modified: nil,
+                            fileURL: nil,
+                            fileVersion: nil)
         } else {
             return nil
         }
