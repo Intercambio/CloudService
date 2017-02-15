@@ -292,7 +292,6 @@
 			children = (
 				F608C40A1E4F2B4100410948 /* CloudAPITests.swift */,
 				F608C40B1E4F2B4100410948 /* CloudAPIResponseTests.swift */,
-				F608C40C1E4F2B4100410948 /* propfind.xml */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -301,10 +300,19 @@
 			isa = PBXGroup;
 			children = (
 				F608C41D1E52129100410948 /* ResourceManagerTests.swift */,
+			);
+			name = Resource;
+			sourceTree = "<group>";
+		};
+		F6129B5B1E5452250075DFF0 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				F608C40C1E4F2B4100410948 /* propfind.xml */,
+				F66412ED1E524D5300E6B798 /* file.txt */,
 				F608C4281E5216B400410948 /* resource_manager_test_existing.xml */,
 				F608C42C1E521A3900410948 /* resource_manager_test_removed.xml */,
 			);
-			name = Resource;
+			name = Data;
 			sourceTree = "<group>";
 		};
 		F63F52131E48A8E0006DAF83 /* Store */ = {
@@ -312,7 +320,6 @@
 			children = (
 				F68A94E81E48A83F002B15B6 /* TestCase.swift */,
 				F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */,
-				F66412ED1E524D5300E6B798 /* file.txt */,
 			);
 			name = Store;
 			sourceTree = "<group>";
@@ -377,6 +384,7 @@
 				F608C4091E4F2B2900410948 /* API */,
 				F63F52131E48A8E0006DAF83 /* Store */,
 				F608C41C1E52127D00410948 /* Resource */,
+				F6129B5B1E5452250075DFF0 /* Data */,
 				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);
 			path = CloudServiceTests;

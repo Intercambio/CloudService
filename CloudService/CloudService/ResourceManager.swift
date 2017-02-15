@@ -38,7 +38,7 @@ class ResourceManager: CloudAPIDelegate {
             do {
                 if let error = error {
                     switch error {
-                    case CloudAPIHTTPError.status(let code, _) where code == 404:
+                    case CloudAPIError.unexpectedResponse(let statusCode, _) where statusCode == 404:
                         let changeSet = try self.removeResource(at: path)
                         if let delegate = self.delegate {
                             delegate.resourceManager(self, didChange: changeSet)
@@ -124,6 +124,14 @@ class ResourceManager: CloudAPIDelegate {
                                             persistence: .forSession)
             completionHandler(.useCredential, credentials)
         }
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didFailDownloading url: URL, error: Error) {
+        
+    }
+    
+    func cloudAPI(_ api: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        
     }
     
     func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
