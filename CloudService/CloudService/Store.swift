@@ -8,6 +8,12 @@
 
 import Foundation
 
+public enum StoreFileState {
+    case none
+    case outdated
+    case valid
+}
+
 public protocol StoreAccount: Equatable, Hashable {
     var identifier: String { get }
     var username: String { get }
@@ -29,6 +35,8 @@ public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
     var path: [String] { get }
     var dirty: Bool { get }
     var updated: Date? { get }
+    var fileURL: URL? { get }
+    var fileState: StoreFileState { get }
 }
 
 public protocol StoreChangeSet {
@@ -52,6 +60,8 @@ protocol Store {
     
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?) throws -> ChangeSet
     func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?, content: [String:StoreResourceProperties]?) throws -> ChangeSet
+    
+    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource
 }
 
 extension StoreResource {
