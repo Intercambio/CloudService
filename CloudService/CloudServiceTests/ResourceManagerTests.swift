@@ -154,14 +154,16 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         completionHandler(nil)
     }
     
-    func resourceManager(_ manager: ResourceManager, startDownloadingResourceAt path: [String]) {
-        let center = NotificationCenter.default
-        center.post(name: Notification.Name(rawValue: "Test.ResourceManager.startDownloadingResourceAt"), object: manager)
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) {
+
     }
     
-    func resourceManager(_ manager: ResourceManager, finishDownloadingResourceAt path: [String]) {
-        let center = NotificationCenter.default
-        center.post(name: Notification.Name(rawValue: "Test.ResourceManager.finishDownloadingResourceAt"), object: manager)
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+
     }
     
     struct Properties: StoreResourceProperties {

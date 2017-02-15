@@ -11,8 +11,9 @@ import Foundation
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) -> Void
-    func resourceManager(_ manager: ResourceManager, startDownloadingResourceAt path: [String]) -> Void
-    func resourceManager(_ manager: ResourceManager, finishDownloadingResourceAt path: [String]) -> Void
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) -> Void
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -73,7 +74,8 @@ class ResourceManager: CloudAPIDelegate {
     }
     
     func downloadResource(at path: [String]) {
-        
+        let url = account.url.appendingPathComponent(path.joined(separator: "/"))
+        self.api.download(url)
     }
     
     private func updateResource(at path: [String], with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
@@ -145,6 +147,20 @@ class ResourceManager: CloudAPIDelegate {
     }
     
     func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
-        
+        do {
+            guard
+                let path = url.pathComponents(relativeTo: account.url),
+                let resource = try store.resource(of: account, at: path)
+                else { return }
+            
+            do {
+                let updatedResource = try store.moveFile(at: location, withVersion: etag, to: resource)
+                delegate?.resourceManager(self, didFinishDownloading: updatedResource)
+            } catch {
+                delegate?.resourceManager(self, didFailDownloading: resource, error: error)
+            }
+        } catch {
+            NSLog("Failed to sotre file: \(error)")
+        }
     }
 }

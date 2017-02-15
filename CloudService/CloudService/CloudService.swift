@@ -252,9 +252,33 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_ manager: ResourceManager, startDownloadingResourceAt path: [String]) {
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
+        }
     }
     
-    func resourceManager(_ manager: ResourceManager, finishDownloadingResourceAt path: [String]) {
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
+        }
+    }
+    
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(name: Notification.Name.CloudServiceDidChangeResources,
+                        object: self,
+                        userInfo: [InsertedOrUpdatedResourcesKey: [resource],
+                                   DeletedResourcesKey: []])
+        }
     }
 }
