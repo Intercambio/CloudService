@@ -91,19 +91,20 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     public func retrieveProperties(of url: URL, with depth: CloudAPIRequestDepth = .collection, completion: @escaping ((CloudAPIResponse?, Error?) -> Void)) {
         queue.async {
-            if var completionHandlers = self.pendingPropertiesRequests[url] {
+            let standardizedURL = url.standardized
+            if var completionHandlers = self.pendingPropertiesRequests[standardizedURL] {
                 completionHandlers.append(completion)
             } else {
                 let completionHandlers = [completion]
-                self.pendingPropertiesRequests[url] = completionHandlers
-                let request = URLRequest.makePropFindRequest(for: url, with: depth)
+                self.pendingPropertiesRequests[standardizedURL] = completionHandlers
+                let request = URLRequest.makePropFindRequest(for: standardizedURL, with: depth)
                 let task = self.dataSession.dataTask(with: request) { [weak self] data, response, error in
                     guard
                         let this = self
                     else { return }
                     this.queue.async {
-                        let handlers = this.pendingPropertiesRequests[url] ?? []
-                        this.pendingPropertiesRequests[url] = nil
+                        let handlers = this.pendingPropertiesRequests[standardizedURL] ?? []
+                        this.pendingPropertiesRequests[standardizedURL] = nil
                         do {
                             guard
                                 let data = data,
@@ -114,7 +115,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                                 guard
                                     let document = PXDocument(data: data)
                                 else { throw CloudAPIError.internalError }
-                                let result = try CloudAPIResponse(document: document, baseURL: url)
+                                let result = try CloudAPIResponse(document: document, baseURL: standardizedURL)
                                 for handler in handlers {
                                     handler(result, nil)
                                 }
@@ -136,11 +137,12 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     public func download(_ url: URL) {
         queue.sync {
-            if self.pendingDownloads.contains(url) {
+            let standardizedURL = url.standardized
+            if self.pendingDownloads.contains(standardizedURL) {
                 return
             } else {
-                self.pendingDownloads.insert(url)
-                let taks = self.downloadSession.downloadTask(with: url)
+                self.pendingDownloads.insert(standardizedURL)
+                let taks = self.downloadSession.downloadTask(with: standardizedURL)
                 taks.resume()
             }
         }
