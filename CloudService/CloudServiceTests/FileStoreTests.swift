@@ -18,12 +18,12 @@ class FileStoreTests: TestCase {
         
         guard
             let directory = self.directory
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         let store = FileStore(directory: directory)
         
         let expectation = self.expectation(description: "Open DB")
-        store.open { (error) in
+        store.open { error in
             XCTAssertNil(error)
             expectation.fulfill()
         }
@@ -35,8 +35,8 @@ class FileStoreTests: TestCase {
     func testManageAccounts() {
         guard
             let store = self.store
-            else { XCTFail(); return }
-
+        else { XCTFail(); return }
+        
         do {
             let url = URL(string: "https://example.com/api/")!
             let account = try store.addAccount(with: url, username: "romeo")
@@ -58,7 +58,7 @@ class FileStoreTests: TestCase {
     func testRemoveAccount() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -78,7 +78,7 @@ class FileStoreTests: TestCase {
     func testRemoteURL() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -86,7 +86,7 @@ class FileStoreTests: TestCase {
             
             let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            let _ = try store.update(resourceOf: account, at: path, with: properties)
+            _ = try store.update(resourceOf: account, at: path, with: properties)
             
             let resource = try store.resource(of: account, at: path)
             XCTAssertNotNil(resource)
@@ -102,7 +102,7 @@ class FileStoreTests: TestCase {
     func testInsertResource() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let date = Date()
@@ -155,7 +155,7 @@ class FileStoreTests: TestCase {
     func testInsertCollection() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -182,7 +182,7 @@ class FileStoreTests: TestCase {
     func testUpdateCollection() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -200,7 +200,7 @@ class FileStoreTests: TestCase {
                 "3": Properties(isCollection: false, version: "c", contentType: nil, contentLength: nil, modified: nil)
             ]
             let changeSet = try store.update(resourceOf: account, at: path, with: properties, content: content)
-
+            
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 4)
             XCTAssertEqual(changeSet.deleted.count, 1)
             
@@ -230,7 +230,7 @@ class FileStoreTests: TestCase {
             } else {
                 XCTFail()
             }
-
+            
             XCTAssertEqual(try store.contents(of: account, at: path).count, 3)
             XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "x"])))
             XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "x", "y"])))
@@ -243,7 +243,7 @@ class FileStoreTests: TestCase {
     func testUpdateCollectionResource() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -269,7 +269,7 @@ class FileStoreTests: TestCase {
     func testUpdateResource() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -313,7 +313,7 @@ class FileStoreTests: TestCase {
     func testChangeResourceType() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -336,12 +336,12 @@ class FileStoreTests: TestCase {
     func testRemoveResource() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
             let account = try store.addAccount(with: url, username: "romeo")
-
+            
             _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
             let changeSet = try store.update(resourceOf: account, at: Path(components: ["a", "b"]), with: nil)
             
@@ -359,7 +359,7 @@ class FileStoreTests: TestCase {
     func testMoveFile() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!
@@ -392,7 +392,7 @@ class FileStoreTests: TestCase {
             } else {
                 XCTFail()
             }
-
+            
         } catch {
             XCTFail("\(error)")
         }
@@ -401,7 +401,7 @@ class FileStoreTests: TestCase {
     func testMoveFileVersionMissmatch() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             let url = URL(string: "https://example.com/api/")!

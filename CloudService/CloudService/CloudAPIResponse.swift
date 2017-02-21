@@ -15,14 +15,14 @@ public struct CloudAPIResponse {
     init(document: PXDocument, baseURL: URL) throws {
         guard
             document.root.qualifiedName == PXQName(name: "multistatus", namespace: "DAV:")
-            else { throw CloudAPIError.invalidResponse }
+        else { throw CloudAPIError.invalidResponse }
         
         var resources: [CloudAPIResource] = []
         
         for node in document.root.nodes(forXPath: "./d:response", usingNamespaces: ["d": "DAV:"]) {
             guard
                 let element = node as? PXElement
-                else { continue }
+            else { continue }
             
             let resource = try CloudAPIResource(element: element, baseURL: baseURL)
             resources.append(resource)
@@ -40,7 +40,7 @@ public struct CloudAPIResource {
         return properties[property]?.root
     }
     
-    private let properties: [PXQName:PXDocument]
+    private let properties: [PXQName: PXDocument]
     
     init(element: PXElement, baseURL: URL) throws {
         let namespace = ["d": "DAV:"]
@@ -49,9 +49,9 @@ public struct CloudAPIResource {
             let urlElement = element.nodes(forXPath: "./d:href", usingNamespaces: namespace).first as? PXElement,
             let urlString = urlElement.stringValue,
             let url = URL(string: urlString, relativeTo: baseURL)
-            else { throw CloudAPIError.invalidResponse }
+        else { throw CloudAPIError.invalidResponse }
         
-        var properties: [PXQName:PXDocument] = [:]
+        var properties: [PXQName: PXDocument] = [:]
         
         for element in element.nodes(forXPath: "./d:propstat", usingNamespaces: namespace) {
             guard
@@ -60,9 +60,9 @@ public struct CloudAPIResource {
                 let statusString = statusElement.stringValue,
                 CloudAPIResource.makeStatus(with: statusString) == 200,
                 let prop = propstats.nodes(forXPath: "./d:prop", usingNamespaces: namespace).first as? PXElement
-                else { continue }
+            else { continue }
             
-            prop.enumerateElements { (element, stop) in
+            prop.enumerateElements { element, _ in
                 let name = element.qualifiedName
                 let document = PXDocument(element: element)
                 properties[name] = document
@@ -88,7 +88,7 @@ extension CloudAPIResource {
     public var etag: String? {
         guard
             let element = element(for: PXQN("DAV:", "getetag"))
-            else { return nil }
+        else { return nil }
         
         return element.stringValue
     }
@@ -96,16 +96,16 @@ extension CloudAPIResource {
     public var isCollection: Bool {
         guard
             let element = element(for: PXQN("DAV:", "resourcetype"))
-            else { return false }
+        else { return false }
         
-        return element.nodes(forXPath: "./d:collection", usingNamespaces: ["d":"DAV:"]).count > 0
+        return element.nodes(forXPath: "./d:collection", usingNamespaces: ["d": "DAV:"]).count > 0
     }
     
     public var contentType: String? {
         guard
             let element = element(for: PXQN("DAV:", "getcontenttype"))
-            else { return nil }
-    
+        else { return nil }
+        
         return element.stringValue
     }
     
@@ -114,7 +114,7 @@ extension CloudAPIResource {
             let element = element(for: PXQN("DAV:", "getcontentlength")),
             let stringValue = element.stringValue
         else { return nil }
-    
+        
         return Int(stringValue)
     }
     
@@ -122,7 +122,7 @@ extension CloudAPIResource {
         guard
             let element = element(for: PXQN("DAV:", "getlastmodified")),
             let stringValue = element.stringValue
-            else { return nil }
+        else { return nil }
         
         return CloudAPIResource.dateFormatter.date(from: stringValue)
     }

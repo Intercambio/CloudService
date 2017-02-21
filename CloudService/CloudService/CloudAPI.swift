@@ -30,12 +30,12 @@ public protocol CloudAPIDelegate: class {
 
 public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate {
     
-    public private(set) var delegate: CloudAPIDelegate?
+    private(set) public var delegate: CloudAPIDelegate?
     public let identifier: String
     
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
-
+    
     private lazy var downloadSession: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.identifier)")
         configuration.networkServiceType = .background
@@ -64,14 +64,16 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                 if let downloadTask = task as? URLSessionDownloadTask {
                     guard
                         let url = downloadTask.originalRequest?.url
-                        else { continue }
+                    else { continue }
                     self.pendingDownloads.insert(url)
                     let totalBytesWritten = downloadTask.countOfBytesReceived
                     let totalBytesExpectedToWrite = downloadTask.countOfBytesExpectedToReceive
-                    self.delegate?.cloudAPI(self,
-                                            didProgressDownloading: url,
-                                            totalBytesWritten: totalBytesWritten,
-                                            totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+                    self.delegate?.cloudAPI(
+                        self,
+                        didProgressDownloading: url,
+                        totalBytesWritten: totalBytesWritten,
+                        totalBytesExpectedToWrite: totalBytesExpectedToWrite
+                    )
                 }
             }
         }
@@ -150,16 +152,16 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     // MARK: - URLSessionDelegate
     
-    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+    public func urlSession(_: URLSession, didBecomeInvalidWithError _: Error?) {
         delegate = nil
     }
-
+    
     #if os(iOS) || os(tvOS) || os(watchOS)
-    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        if session == downloadSession {
-            NSLog("Background URL Session did finish Events -- \(session)")
+        public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+            if session == downloadSession {
+                NSLog("Background URL Session did finish Events -- \(session)")
+            }
         }
-    }
     #endif
     
     // MARK: URLSessionTaskDelegate
@@ -176,7 +178,7 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         if session == downloadSession {
             guard
                 let url = task.originalRequest?.url
-                else { return }
+            else { return }
             
             pendingDownloads.remove(url)
             if let donwloadError = error {
@@ -187,21 +189,21 @@ public class CloudAPI: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     // MARK: URLSessionDownloadDelegate
     
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    public func urlSession(_: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard
             let url = downloadTask.originalRequest?.url,
             let delegate = self.delegate
-            else { return }
+        else { return }
         
         delegate.cloudAPI(self, didProgressDownloading: url, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
     
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+    public func urlSession(_: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard
             let url = downloadTask.originalRequest?.url,
             let delegate = self.delegate,
             let response = downloadTask.response as? HTTPURLResponse
-            else { return }
+        else { return }
         
         switch response.statusCode {
         case 200:

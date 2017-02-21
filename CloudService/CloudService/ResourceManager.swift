@@ -9,7 +9,7 @@
 import Foundation
 
 protocol ResourceManagerDelegate: class {
-    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
+    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) -> Void
     func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) -> Void
     func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) -> Void
@@ -47,7 +47,7 @@ class ResourceManager: CloudAPIDelegate {
     
     func updateResource(at path: Path, completion: ((Error?) -> Void)?) {
         let url = account.url.appending(path)
-        self.api.retrieveProperties(of: url) { (result, error) in
+        self.api.retrieveProperties(of: url) { result, error in
             do {
                 if let error = error {
                     switch error {
@@ -77,20 +77,22 @@ class ResourceManager: CloudAPIDelegate {
     
     private func updateResource(at path: Path, with response: CloudAPIResponse) throws -> StoreChangeSet {
         
-        var properties: Properties? = nil
-        var content: [String:Properties] = [:]
+        var properties: Properties?
+        var content: [String: Properties] = [:]
         
         for resource in response.resources {
             guard
                 let resourcePath = resource.url.makePath(relativeTo: self.account.url),
                 let etag = resource.etag
-                else { continue }
+            else { continue }
             
-            let resourceProperties = Properties(isCollection: resource.isCollection,
-                                                version: etag,
-                                                contentType: resource.contentType,
-                                                contentLength: resource.contentLength,
-                                                modified: resource.modified)
+            let resourceProperties = Properties(
+                isCollection: resource.isCollection,
+                version: etag,
+                contentType: resource.contentType,
+                contentLength: resource.contentLength,
+                modified: resource.modified
+            )
             
             if resourcePath == path {
                 properties = resourceProperties
@@ -124,16 +126,16 @@ class ResourceManager: CloudAPIDelegate {
             } catch {
                 NSLog("\(error)")
             }
-
+            
             return progress
         }
     }
     
     // MARK: Progress
     
-    private var progresByPath: [Path:Progress] = [:]
+    private var progresByPath: [Path: Progress] = [:]
     
-    func progress() -> [Path:Progress] {
+    func progress() -> [Path: Progress] {
         return queue.sync {
             return progresByPath
         }
@@ -152,10 +154,14 @@ class ResourceManager: CloudAPIDelegate {
         progresByPath[path] = progress
         
         progress.kind = ProgressKind.file
-        progress.setUserInfoObject(Progress.FileOperationKind.downloading,
-                                   forKey: .fileOperationKindKey)
-        progress.setUserInfoObject(account.url.appending(path),
-                                   forKey: .fileURLKey)
+        progress.setUserInfoObject(
+            Progress.FileOperationKind.downloading,
+            forKey: .fileOperationKindKey
+        )
+        progress.setUserInfoObject(
+            account.url.appending(path),
+            forKey: .fileURLKey
+        )
         
         return progress
     }
@@ -166,7 +172,7 @@ class ResourceManager: CloudAPIDelegate {
             progress.totalUnitCount = totalBytesExpectedToWrite
         }
     }
-
+    
     private func cancelProgress(for path: Path) {
         if let progress = progresByPath[path] {
             progress.cancel()
@@ -184,60 +190,66 @@ class ResourceManager: CloudAPIDelegate {
     
     // MARK: - CloudAPIDelegate
     
-    func cloudAPI(_ api: CloudAPI,
-                  didReceive challenge: URLAuthenticationChallenge,
-                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func cloudAPI(
+        _: CloudAPI,
+        didReceive _: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
         guard
             let delegate = self.delegate
-            else {
-                completionHandler(.cancelAuthenticationChallenge, nil)
-                return
+        else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
         }
         
         delegate.resourceManager(self) { password in
             guard
                 let password = password
-                else {
-                    completionHandler(.cancelAuthenticationChallenge, nil)
-                    return
+            else {
+                completionHandler(.cancelAuthenticationChallenge, nil)
+                return
             }
             
-            let credentials = URLCredential(user: self.account.username,
-                                            password: password,
-                                            persistence: .forSession)
+            let credentials = URLCredential(
+                user: self.account.username,
+                password: password,
+                persistence: .forSession
+            )
             completionHandler(.useCredential, credentials)
         }
     }
     
-    func cloudAPI(_ api: CloudAPI, didFailDownloading url: URL, error: Error) {
+    func cloudAPI(_: CloudAPI, didFailDownloading url: URL, error _: Error) {
         queue.async {
             guard
                 let path = url.makePath(relativeTo: self.account.url)
-                else { return }
-
+            else { return }
+            
             self.cancelProgress(for: path)
         }
     }
     
-    func cloudAPI(_ api: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    func cloudAPI(_: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         queue.async {
             guard
                 let path = url.makePath(relativeTo: self.account.url)
-                else { return }
+            else { return }
             
-            self.updateProgress(for: path,
-                                totalBytesWritten: totalBytesWritten,
-                                totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+            self.updateProgress(
+                for: path,
+                totalBytesWritten: totalBytesWritten,
+                totalBytesExpectedToWrite: totalBytesExpectedToWrite
+            )
             
         }
     }
     
-    func cloudAPI(_ api: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
+    func cloudAPI(_: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
         do {
             guard
                 let path = url.makePath(relativeTo: account.url),
                 let resource = try store.resource(of: account, at: path)
-                else { return }
+            else { return }
             
             do {
                 let updatedResource = try store.moveFile(at: location, withVersion: etag, to: resource)

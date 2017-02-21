@@ -11,7 +11,7 @@ import Foundation
 public struct Path: Hashable, Equatable, CustomStringConvertible {
     
     public let components: [String]
-
+    
     public init() {
         self.components = []
     }
@@ -45,7 +45,7 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
     public var parent: Path? {
         guard
             components.count > 0
-            else { return nil }
+        else { return nil }
         
         return Path(components: Array(components.dropLast(1)))
     }
@@ -79,7 +79,7 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
     public static func ==(lhs: Path, rhs: Path) -> Bool {
         guard
             lhs.components.count == rhs.components.count
-            else { return false }
+        else { return false }
         
         return zip(lhs.components, rhs.components).contains { (lhs, rhs) -> Bool in
             return lhs != rhs

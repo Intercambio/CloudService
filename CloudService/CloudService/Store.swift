@@ -23,7 +23,7 @@ public protocol Store {
     func contents(of account: Account, at path: Path) throws -> [Resource]
     
     func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String:Properties]?) throws -> StoreChangeSet
+    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
     
     func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource
 }

@@ -30,8 +30,6 @@ class FileStoreSchema {
     static let content_type = Expression<String?>("content_type")
     static let content_length = Expression<Int?>("content_length")
     
-    
-    
     let directory: URL
     required init(directory: URL) {
         self.directory = directory

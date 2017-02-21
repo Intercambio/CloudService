@@ -19,14 +19,14 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
         
         guard
             let directory = self.directory
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         let keyChain = KeyChain(serviceName: "CloudServiceTests")
         let service = CloudService(directory: directory, keyChain: keyChain)
         service.delegate = self
         
         let expectation = self.expectation(description: "Start")
-        service.start { (error) in
+        service.start { error in
             XCTAssertNil(error)
             expectation.fulfill()
         }
@@ -43,20 +43,20 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
     // MARK: Tests
     
     func test() {
-    
+        
     }
     
     // MARK: - CloudServiceDelegate
     
-    func service(_ service: CloudService, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) {
-        
-    }
-
-    func serviceDidBeginActivity(_ service: CloudService) {
+    func service(_: CloudService, needsPasswordFor _: Account, completionHandler _: @escaping (String?) -> Void) {
         
     }
     
-    func serviceDidEndActivity(_ service: CloudService) {
+    func serviceDidBeginActivity(_: CloudService) {
+        
+    }
+    
+    func serviceDidEndActivity(_: CloudService) {
         
     }
 }
