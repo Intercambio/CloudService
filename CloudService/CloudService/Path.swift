@@ -21,13 +21,12 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
     }
     
     public init(href: String) {
-        let path: [String] = href.components(separatedBy: "/")
-        self.components = Array(path.dropFirst(1))
-    }
-    
-    private func makePath(with href: String) -> [String] {
-        let path: [String] = href.components(separatedBy: "/")
-        return Array(path.dropFirst(1))
+        if href == "/" {
+            self.components = []
+        } else {
+            let components: [String] = href.components(separatedBy: "/")
+            self.components = Array(components.dropFirst(1))
+        }
     }
     
     public var length: Int {
