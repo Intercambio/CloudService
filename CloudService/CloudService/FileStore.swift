@@ -297,7 +297,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     }
     
     private func makeResource(with row: SQLite.Row, account: Account) throws -> Resource {
-        let path = makePath(with: row.get(FileStoreSchema.href))
+        let path = Path(href: row.get(FileStoreSchema.href))
         let isCollection = row.get(FileStoreSchema.is_collection)
         let dirty = row.get(FileStoreSchema.dirty)
         let version = row.get(FileStoreSchema.version)
@@ -319,7 +319,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         
         let resource = Resource(
             account: account,
-            path: Path(components: path),
+            path: path,
             dirty: dirty,
             updated: updated,
             properties: properties,
@@ -389,7 +389,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 FileStoreSchema.content_length <- properties.contentLength,
                 FileStoreSchema.modified <- properties.modified
             ))
-            let fileURL = self.makeLocalFileURL(with: path.components, account: account)
+            let fileURL = self.makeLocalFileURL(with: path, account: account)
             
             let resource = Resource(
                 account: account,
@@ -453,7 +453,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         
         _ = try db.run(query.delete())
         
-        let fileURL = makeLocalFileURL(with: path.components, account: account)
+        let fileURL = makeLocalFileURL(with: path, account: account)
         
         var coordinatorSuccess = false
         var coordinatorError: NSError?
@@ -480,7 +480,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         
         if try db.run(query.delete()) > 0 {
             
-            let fileURL = makeLocalFileURL(with: path.components, account: account)
+            let fileURL = makeLocalFileURL(with: path, account: account)
             
             var coordinatorSuccess = false
             var coordinatorError: NSError?
@@ -583,28 +583,14 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     
     // MARK: HRef & Local File URL
     
-    private func makeHRef(with path: [String]) -> String {
-        return "/\(path.joined(separator: "/"))"
-    }
-    
-    private func makePath(with href: String) -> [String] {
-        let path: [String] = href.components(separatedBy: "/")
-        return Array(path.dropFirst(1))
-    }
-    
-    private func makeLocalFileURL(with path: [String]) -> URL {
-        let baseDirectory = directory.appendingPathComponent("files", isDirectory: true)
-        return baseDirectory.appendingPathComponent(path.joined(separator: "/"))
-    }
-    
     private func makeLocalFileURL(with resource: Resource) -> URL {
-        return makeLocalFileURL(with: resource.path.components, account: resource.account)
+        return makeLocalFileURL(with: resource.path, account: resource.account)
     }
     
-    private func makeLocalFileURL(with path: [String], account: Account) -> URL {
+    private func makeLocalFileURL(with path: Path, account: Account) -> URL {
         let storeBase = directory.appendingPathComponent("files", isDirectory: true)
         let accountBase = storeBase.appendingPathComponent(account.identifier, isDirectory: true)
-        let fileURL = accountBase.appendingPathComponent(path.joined(separator: "/"))
+        let fileURL = accountBase.appending(path)
         return fileURL
     }
     
