@@ -165,17 +165,31 @@ public class CloudService {
         return queue.async {
             self.beginActivity()
             let manager = self.resourceManager(for: account)
-            manager.updateResource(at: path) { error in
+            manager.updateResource(at: Path(components: path)) { error in
                 completion?(error)
                 self.endActivity()
             }
         }
     }
     
-    public func downloadResource(at path: [String], of account: Account) {
-        queue.async {
+    public func downloadResource(at path: [String], of account: Account) -> Progress {
+        return queue.sync {
             let manager = self.resourceManager(for: account)
-            manager.downloadResource(at: path)
+            return manager.downloadResource(at: Path(components: path))
+        }
+    }
+    
+    public func progressForResource(at path: [String], of account: Account) -> Progress? {
+        return queue.sync {
+            let manager = self.resourceManager(for: account)
+            return manager.progress(for: Path(components: path))
+        }
+    }
+    
+    public func progress(of account: Account) -> [Path:Progress] {
+        return queue.sync {
+            let manager = self.resourceManager(for: account)
+            return manager.progress()
         }
     }
     

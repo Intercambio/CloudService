@@ -68,6 +68,10 @@
 		F66412F31E5447C400E6B798 /* FileStoreSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66412F11E5447C400E6B798 /* FileStoreSchema.swift */; };
 		F66412F41E5447C400E6B798 /* FileStoreSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66412F11E5447C400E6B798 /* FileStoreSchema.swift */; };
 		F66412F51E5447C400E6B798 /* FileStoreSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66412F11E5447C400E6B798 /* FileStoreSchema.swift */; };
+		F67DACDE1E5B541F00C16B8E /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67DACDD1E5B541F00C16B8E /* Path.swift */; };
+		F67DACDF1E5B541F00C16B8E /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67DACDD1E5B541F00C16B8E /* Path.swift */; };
+		F67DACE01E5B541F00C16B8E /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67DACDD1E5B541F00C16B8E /* Path.swift */; };
+		F67DACE11E5B541F00C16B8E /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67DACDD1E5B541F00C16B8E /* Path.swift */; };
 		F68A943A1E48988F002B15B6 /* CloudService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A94301E48988F002B15B6 /* CloudService.framework */; };
 		F68A94411E48988F002B15B6 /* CloudStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F68A94331E48988F002B15B6 /* CloudStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F68A94581E4898F2002B15B6 /* CloudService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68A944F1E4898F2002B15B6 /* CloudService.framework */; };
@@ -172,6 +176,7 @@
 		F63F52261E48AC34006DAF83 /* CloudService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CloudService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F66412ED1E524D5300E6B798 /* file.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = file.txt; sourceTree = "<group>"; };
 		F66412F11E5447C400E6B798 /* FileStoreSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStoreSchema.swift; sourceTree = "<group>"; };
+		F67DACDD1E5B541F00C16B8E /* Path.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
 		F68A94301E48988F002B15B6 /* CloudService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F68A94331E48988F002B15B6 /* CloudStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CloudStore.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F68A94341E48988F002B15B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -340,6 +345,14 @@
 			name = Additions;
 			sourceTree = "<group>";
 		};
+		F67DACE21E5B57A900C16B8E /* Path */ = {
+			isa = PBXGroup;
+			children = (
+				F67DACDD1E5B541F00C16B8E /* Path.swift */,
+			);
+			name = Path;
+			sourceTree = "<group>";
+		};
 		F68A94261E48988F002B15B6 = {
 			isa = PBXGroup;
 			children = (
@@ -370,6 +383,7 @@
 				F63F52261E48AC34006DAF83 /* CloudService.swift */,
 				F63F52251E48AA9D006DAF83 /* Additions */,
 				F608C3F91E4F2AF300410948 /* API */,
+				F67DACE21E5B57A900C16B8E /* Path */,
 				F63F521A1E48A9D9006DAF83 /* Resource */,
 				F68A94DB1E48A7E0002B15B6 /* Store */,
 				F68A94DC1E48A7E7002B15B6 /* Supporting FIles */,
@@ -820,6 +834,7 @@
 				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
 				F608C4011E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
+				F67DACDE1E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52271E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -849,6 +864,7 @@
 				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
 				F608C4021E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
+				F67DACDF1E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52281E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -878,6 +894,7 @@
 				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
 				F608C4031E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
+				F67DACE01E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52291E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -894,6 +911,7 @@
 				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521F1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
 				F608C4041E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
+				F67DACE11E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F522A1E48AC34006DAF83 /* CloudService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

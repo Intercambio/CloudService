@@ -9,7 +9,8 @@
 import Foundation
 
 extension URL {
-    func pathComponents(relativeTo baseURL: URL) -> [String]? {
+    
+    public func pathComponents(relativeTo baseURL: URL) -> [String]? {
         guard
             baseURL.scheme == scheme,
             baseURL.host == host,
@@ -25,5 +26,17 @@ extension URL {
         } else {
             return nil
         }
+    }
+
+    public func makePath(relativeTo baseURL: URL) -> Path? {
+        guard
+            let components = pathComponents(relativeTo: baseURL)
+            else { return nil }
+        
+        return Path(components: components)
+    }
+
+    public func appending(_ path: Path) -> URL {
+        return appendingPathComponent(path.href)
     }
 }
