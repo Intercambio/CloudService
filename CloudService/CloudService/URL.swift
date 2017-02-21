@@ -37,6 +37,6 @@ extension URL {
     }
 
     public func appending(_ path: Path) -> URL {
-        return appendingPathComponent(path.href)
+        return appendingPathComponent(path.components.joined(separator: "/"))
     }
 }

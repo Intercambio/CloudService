@@ -27,20 +27,16 @@ public let InsertedOrUpdatedResourcesKey = "CloudStore.InsertedOrUpdatedResource
 public let DeletedResourcesKey = "CloudStore.DeletedResourcesKey"
 
 public protocol CloudServiceDelegate: class {
-    func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) -> Void
+    func service(_ service: CloudService, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) -> Void
     func serviceDidBeginActivity(_ service: CloudService) -> Void
     func serviceDidEndActivity(_ service: CloudService) -> Void
 }
 
 public class CloudService {
-    
-    public typealias Store = FileStore
-    public typealias Resource = Store.Resource
-    public typealias Account = Store.Account
-    
+
     public weak var delegate: CloudServiceDelegate?
 
-    private let store: Store
+    private let store: FileStore
     private let keyChain: KeyChain
     private let queue: DispatchQueue
     
@@ -92,7 +88,7 @@ public class CloudService {
 
     // MARK: - Account Management
     
-    public var accounts: [Store.Account] {
+    public var accounts: [Account] {
         return store.accounts
     }
     
@@ -153,36 +149,36 @@ public class CloudService {
         }
     }
     
-    public func resource(of account: Account, at path: [String]) throws -> Resource? {
+    public func resource(of account: Account, at path: Path) throws -> Resource? {
         return try store.resource(of: account, at: path)
     }
     
-    public func contents(of account: Account, at path: [String]) throws -> [Resource] {
+    public func contents(of account: Account, at path: Path) throws -> [Resource] {
         return try store.contents(of: account, at: path)
     }
     
-    public func updateResource(at path: [String], of account: Account, completion: ((Error?) -> Void)?) {
+    public func updateResource(at path: Path, of account: Account, completion: ((Error?) -> Void)?) {
         return queue.async {
             self.beginActivity()
             let manager = self.resourceManager(for: account)
-            manager.updateResource(at: Path(components: path)) { error in
+            manager.updateResource(at: path) { error in
                 completion?(error)
                 self.endActivity()
             }
         }
     }
     
-    public func downloadResource(at path: [String], of account: Account) -> Progress {
+    public func downloadResource(at path: Path, of account: Account) -> Progress {
         return queue.sync {
             let manager = self.resourceManager(for: account)
-            return manager.downloadResource(at: Path(components: path))
+            return manager.downloadResource(at: path)
         }
     }
     
-    public func progressForResource(at path: [String], of account: Account) -> Progress? {
+    public func progressForResource(at path: Path, of account: Account) -> Progress? {
         return queue.sync {
             let manager = self.resourceManager(for: account)
-            return manager.progress(for: Path(components: path))
+            return manager.progress(for: path)
         }
     }
     
@@ -195,7 +191,7 @@ public class CloudService {
     
     // MARK: - Manage Credentials
     
-    public func password(for account: CloudService.Account) -> String? {
+    public func password(for account: Account) -> String? {
         do {
             return try keyChain.passwordForItem(with: account.identifier)
         } catch {
@@ -203,7 +199,7 @@ public class CloudService {
         }
     }
     
-    public func setPassword(_ password: String?, for account: CloudService.Account) {
+    public func setPassword(_ password: String?, for account: Account) {
         do {
             try keyChain.setPassword(password, forItemWith: account.identifier)
         } catch {
@@ -211,7 +207,7 @@ public class CloudService {
         }
     }
     
-    public func requestPassword(for account: CloudService.Account, completion: @escaping (String?) -> Void) -> Void {
+    public func requestPassword(for account: Account, completion: @escaping (String?) -> Void) -> Void {
         DispatchQueue.main.async {
             if let delegate = self.delegate {
                 delegate.service(self, needsPasswordFor: account) { password in
@@ -263,7 +259,7 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_ manager: ResourceManager, didChange changeSet: Store.ChangeSet) {
+    func resourceManager(_ manager: ResourceManager, didChange changeSet: StoreChangeSet) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(name: Notification.Name.CloudServiceDidChangeResources,
@@ -283,7 +279,7 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: Resource) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(name: Notification.Name.CloudServiceDidChangeResources,
@@ -293,7 +289,7 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(name: Notification.Name.CloudServiceDidChangeResources,

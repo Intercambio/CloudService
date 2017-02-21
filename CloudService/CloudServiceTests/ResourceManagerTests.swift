@@ -55,7 +55,7 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             resourceManager.delegate = self
             
             let update = expectation(description: "Update")
-            resourceManager.updateResource(at: ["test", "existing"]) { error in
+            resourceManager.updateResource(at: Path(components: ["test", "existing"])) { error in
                 XCTAssertNil(error)
                 update.fulfill()
             }
@@ -87,9 +87,9 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             let resourceManager = ResourceManager(store: store, account: account)
             resourceManager.delegate = self
             
-            let path = ["test", "removed"]
+            let path = Path(components: ["test", "removed"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            let _ = try store.update(resourceOf: account, at: path, with: properties)
             
             let update = expectation(description: "Update")
             resourceManager.updateResource(at: path) { error in
@@ -122,9 +122,9 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             let resourceManager = ResourceManager(store: store, account: account)
             resourceManager.delegate = self
             
-            let path = ["test", "file"]
+            let path = Path(components: ["test", "file"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            let _ = try store.update(resourceOf: account, at: path, with: properties)
             
             expectation(forNotification: "Test.ResourceManager.startDownloadingResourceAt", object: resourceManager, handler: nil)
             expectation(forNotification: "Test.ResourceManager.finishDownloadingResourceAt", object: resourceManager, handler: nil)
@@ -144,9 +144,9 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
     
     // MARK: ResourceManagerDelegate
     
-    var changeset: FileStore.ChangeSet?
+    var changeset: StoreChangeSet?
     
-    func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) {
+    func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) {
         self.changeset = changeset
     }
     
@@ -154,23 +154,15 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         completionHandler(nil)
     }
     
-    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) {
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) {
 
     }
     
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) {
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: Resource) {
 
     }
     
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) {
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) {
 
-    }
-    
-    struct Properties: StoreResourceProperties {
-        let isCollection: Bool
-        let version: String
-        let contentType: String?
-        let contentLength: Int?
-        let modified: Date?
     }
 }

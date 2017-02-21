@@ -39,7 +39,7 @@ class FileStoreTests: TestCase {
 
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             XCTAssertEqual(account.url, url)
             
             XCTAssertTrue(store.accounts.contains(account))
@@ -62,13 +62,13 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             XCTAssertEqual(account.url, url)
             
-            _ = try store.update(resourceAt: ["a"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
             
             try store.remove(account)
-            XCTAssertNil(try store.resource(of: account, at: ["a"]))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a"])))
             
         } catch {
             XCTFail("\(error)")
@@ -82,11 +82,11 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             
-            let path = ["a", "b", "c"]
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            let _ = try store.update(resourceOf: account, at: path, with: properties)
             
             let resource = try store.resource(of: account, at: path)
             XCTAssertNotNil(resource)
@@ -107,11 +107,11 @@ class FileStoreTests: TestCase {
         do {
             let date = Date()
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account: Account = try store.addAccount(with: url, username: "romeo")
             
-            let path = ["a", "b", "c"]
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: false, version: "123", contentType: "application/pdf", contentLength: 55555, modified: date)
-            let changeSet = try store.update(resourceAt: path, of: account, with: properties)
+            let changeSet = try store.update(resourceOf: account, at: path, with: properties)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 1)
             
@@ -119,35 +119,32 @@ class FileStoreTests: TestCase {
             XCTAssertNotNil(resource)
             if let resource = resource {
                 XCTAssertEqual(resource.path, path)
-                XCTAssertEqual(resource.version, "123")
-                XCTAssertFalse(resource.isCollection)
+                XCTAssertEqual(resource.properties.version, "123")
+                XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
                 XCTAssertNotNil(resource.updated)
                 
-                XCTAssertEqual(resource.contentType, "application/pdf")
-                XCTAssertEqual(resource.contentLength, 55555)
-                XCTAssertEqual(round(resource.modified?.timeIntervalSinceNow ?? -100), round(date.timeIntervalSinceNow))
+                XCTAssertEqual(resource.properties.contentType, "application/pdf")
+                XCTAssertEqual(resource.properties.contentLength, 55555)
+                XCTAssertEqual(round(resource.properties.modified?.timeIntervalSinceNow ?? -100), round(date.timeIntervalSinceNow))
                 
-                var parentPath = path
-                parentPath.removeLast()
-                let content = try store.contents(of: account, at: parentPath)
+                let content = try store.contents(of: account, at: path.parent!)
                 XCTAssertEqual(content, [resource])
             }
             
-            var parentPath = path
+            var parentPath = path.parent
             
-            while parentPath.count > 0 {
-                parentPath.removeLast()
-                
-                let contents = try store.contents(of: account, at: parentPath)
+            while parentPath != nil {
+                let contents = try store.contents(of: account, at: parentPath!)
                 XCTAssertEqual(contents.count, 1)
                 
-                let resource = try store.resource(of: account, at: parentPath)
+                let resource = try store.resource(of: account, at: parentPath!)
                 XCTAssertNotNil(resource)
                 if let resource = resource {
                     XCTAssertTrue(resource.dirty)
-                    XCTAssertTrue(resource.isCollection)
+                    XCTAssertTrue(resource.properties.isCollection)
                 }
+                parentPath = parentPath!.parent
             }
             
         } catch {
@@ -162,20 +159,20 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account: Account = try store.addAccount(with: url, username: "romeo")
             
-            let path = ["a", "b", "c"]
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let content = [
                 "1": Properties(isCollection: true, version: "a", contentType: nil, contentLength: nil, modified: nil),
                 "2": Properties(isCollection: false, version: "b", contentType: nil, contentLength: nil, modified: nil),
                 "3": Properties(isCollection: false, version: "c", contentType: nil, contentLength: nil, modified: nil)
             ]
-            _ = try store.update(resourceAt: path, of: account, with: properties, content: content)
+            _ = try store.update(resourceOf: account, at: path, with: properties, content: content)
             
-            XCTAssertNotNil(try store.resource(of: account, at: ["a", "b", "c", "1"]))
-            XCTAssertNotNil(try store.resource(of: account, at: ["a", "b", "c", "2"]))
-            XCTAssertNotNil(try store.resource(of: account, at: ["a", "b", "c", "3"]))
+            XCTAssertNotNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "1"])))
+            XCTAssertNotNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "2"])))
+            XCTAssertNotNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "3"])))
             
         } catch {
             XCTFail("\(error)")
@@ -189,20 +186,20 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             
-            _ = try store.update(resourceAt: ["a", "b", "c", "x", "y"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b", "c", "3", "x"], of: account, with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b", "c", "3"], of: account, with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "x", "y"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "3", "x"]), with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "3"]), with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
             
-            let path = ["a", "b", "c"]
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let content = [
                 "1": Properties(isCollection: true, version: "a", contentType: nil, contentLength: nil, modified: nil),
                 "2": Properties(isCollection: false, version: "b", contentType: nil, contentLength: nil, modified: nil),
                 "3": Properties(isCollection: false, version: "c", contentType: nil, contentLength: nil, modified: nil)
             ]
-            let changeSet = try store.update(resourceAt: path, of: account, with: properties, content: content)
+            let changeSet = try store.update(resourceOf: account, at: path, with: properties, content: content)
 
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 4)
             XCTAssertEqual(changeSet.deleted.count, 1)
@@ -211,33 +208,33 @@ class FileStoreTests: TestCase {
             XCTAssertNotNil(resource)
             if let resource = resource {
                 XCTAssertEqual(resource.path, path)
-                XCTAssertEqual(resource.version, "123")
-                XCTAssertTrue(resource.isCollection)
+                XCTAssertEqual(resource.properties.version, "123")
+                XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
             }
             
-            if let resource = try store.resource(of: account, at: ["a", "b", "c", "1"]) {
-                XCTAssertEqual(resource.path, ["a", "b", "c", "1"])
-                XCTAssertEqual(resource.version, "a")
-                XCTAssertTrue(resource.isCollection)
+            if let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c", "1"])) {
+                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c", "1"]))
+                XCTAssertEqual(resource.properties.version, "a")
+                XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertTrue(resource.dirty)
             } else {
                 XCTFail()
             }
             
-            if let resource = try store.resource(of: account, at: ["a", "b", "c", "2"]) {
-                XCTAssertEqual(resource.path, ["a", "b", "c", "2"])
-                XCTAssertEqual(resource.version, "b")
-                XCTAssertFalse(resource.isCollection)
+            if let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c", "2"])) {
+                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c", "2"]))
+                XCTAssertEqual(resource.properties.version, "b")
+                XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
             } else {
                 XCTFail()
             }
 
             XCTAssertEqual(try store.contents(of: account, at: path).count, 3)
-            XCTAssertNil(try store.resource(of: account, at: ["a", "b", "c", "x"]))
-            XCTAssertNil(try store.resource(of: account, at: ["a", "b", "c", "x", "y"]))
-            XCTAssertNil(try store.resource(of: account, at: ["a", "b", "c", "3", "x"]))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "x"])))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "x", "y"])))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c", "3", "x"])))
         } catch {
             XCTFail("\(error)")
         }
@@ -250,17 +247,17 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             
-            _ = try store.update(resourceAt: ["a", "b", "c"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b"], of: account, with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b"]), with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
             
-            let resource = try store.resource(of: account, at: ["a", "b"])
+            let resource = try store.resource(of: account, at: Path(components: ["a", "b"]))
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, ["a", "b"])
-                XCTAssertEqual(resource.version, "567")
-                XCTAssertTrue(resource.isCollection)
+                XCTAssertEqual(resource.path, Path(components: ["a", "b"]))
+                XCTAssertEqual(resource.properties.version, "567")
+                XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
             }
             
@@ -276,37 +273,36 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             
-            _ = try store.update(resourceAt: ["a", "b", "c"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b"], of: account, with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b", "c"], of: account, with: Properties(isCollection: false, version: "888", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b"]), with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "888", contentType: nil, contentLength: nil, modified: nil))
             
-            let resource = try store.resource(of: account, at: ["a", "b", "c"])
+            let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c"]))
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, ["a", "b", "c"])
-                XCTAssertEqual(resource.version, "888")
-                XCTAssertFalse(resource.isCollection)
+                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c"]))
+                XCTAssertEqual(resource.properties.version, "888")
+                XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
                 
-                let content = try store.contents(of: account, at: ["a", "b"])
+                let content = try store.contents(of: account, at: Path(components: ["a", "b"]))
                 XCTAssertEqual(content, [resource])
             }
             
-            var parentPath = ["a", "b", "c"]
-            while parentPath.count > 0 {
-                parentPath.removeLast()
-                
-                let contents = try store.contents(of: account, at: parentPath)
+            var parentPath = Path(components: ["a", "b", "c"]).parent
+            while parentPath != nil {
+                let contents = try store.contents(of: account, at: parentPath!)
                 XCTAssertEqual(contents.count, 1)
                 
-                let resource = try store.resource(of: account, at: parentPath)
+                let resource = try store.resource(of: account, at: parentPath!)
                 XCTAssertNotNil(resource)
                 if let resource = resource {
                     XCTAssertTrue(resource.dirty)
-                    XCTAssertTrue(resource.isCollection)
+                    XCTAssertTrue(resource.properties.isCollection)
                 }
+                parentPath = parentPath!.parent
             }
             
         } catch {
@@ -321,15 +317,15 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
             
-            _ = try store.update(resourceAt: ["a", "b", "c"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceAt: ["a", "b"], of: account, with: Properties(isCollection: false, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b"]), with: Properties(isCollection: false, version: "567", contentType: nil, contentLength: nil, modified: nil))
             
-            let resource = try store.resource(of: account, at: ["a", "b", "c"])
+            let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c"]))
             XCTAssertNil(resource)
             
-            let content = try store.contents(of: account, at: ["a", "b"])
+            let content = try store.contents(of: account, at: Path(components: ["a", "b"]))
             XCTAssertEqual(content, [])
             
         } catch {
@@ -344,16 +340,16 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
+            let account = try store.addAccount(with: url, username: "romeo")
 
-            _ = try store.update(resourceAt: ["a", "b", "c"], of: account, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            let changeSet = try store.update(resourceAt: ["a", "b"], of: account, with: nil)
+            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            let changeSet = try store.update(resourceOf: account, at: Path(components: ["a", "b"]), with: nil)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 0)
             XCTAssertEqual(changeSet.deleted.count, 1)
             
-            XCTAssertNil(try store.resource(of: account, at: ["a", "b", "c"]))
-            XCTAssertNil(try store.resource(of: account, at: ["a", "b"]))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b", "c"])))
+            XCTAssertNil(try store.resource(of: account, at: Path(components: ["a", "b"])))
             
         } catch {
             XCTFail("\(error)")
@@ -367,15 +363,15 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
-            let path = ["a", "b", "c"]
+            let account = try store.addAccount(with: url, username: "romeo")
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
             let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
             try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
-            _ = try store.update(resourceAt: path, of: account, with: properties)
+            _ = try store.update(resourceOf: account, at: path, with: properties)
             
             if var resource = try store.resource(of: account, at: path) {
                 resource = try store.moveFile(at: tempFileURL, withVersion: "123", to: resource)
@@ -387,7 +383,7 @@ class FileStoreTests: TestCase {
                 }
                 
                 let properties = Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil)
-                _ = try store.update(resourceAt: path, of: account, with: properties)
+                _ = try store.update(resourceOf: account, at: path, with: properties)
                 resource = try store.resource(of: account, at: path)!
                 
                 XCTAssertEqual(resource.fileState, .outdated)
@@ -409,15 +405,15 @@ class FileStoreTests: TestCase {
         
         do {
             let url = URL(string: "https://example.com/api/")!
-            let account: FileStore.Account = try store.addAccount(with: url, username: "romeo")
-            let path = ["a", "b", "c"]
+            let account = try store.addAccount(with: url, username: "romeo")
+            let path = Path(components: ["a", "b", "c"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
             let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
             try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
-            _ = try store.update(resourceAt: path, of: account, with: properties)
+            _ = try store.update(resourceOf: account, at: path, with: properties)
             
             if let resource = try store.resource(of: account, at: path) {
                 XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource))
@@ -430,13 +426,4 @@ class FileStoreTests: TestCase {
             XCTFail("\(error)")
         }
     }
-    
-    struct Properties: StoreResourceProperties {
-        let isCollection: Bool
-        let version: String
-        let contentType: String?
-        let contentLength: Int?
-        let modified: Date?
-    }
-    
 }

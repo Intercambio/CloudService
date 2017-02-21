@@ -11,6 +11,10 @@ import Foundation
 public struct Path: Hashable, Equatable, CustomStringConvertible {
     
     public let components: [String]
+
+    public init() {
+        self.components = []
+    }
     
     public init(components: [String]) {
         self.components = components
@@ -26,8 +30,16 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
         return Array(path.dropFirst(1))
     }
     
+    public var length: Int {
+        return components.count
+    }
+    
     public var href: String {
         return "/\(components.joined(separator: "/"))"
+    }
+    
+    public var isRoot: Bool {
+        return components.count == 0
     }
     
     public var parent: Path? {
@@ -40,6 +52,28 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
     
     public var hashValue: Int {
         return components.count
+    }
+    
+    public func isParent(_ path: Path) -> Bool {
+        return parent == path
+    }
+    
+    public func isChild(_ path: Path) -> Bool {
+        return path.parent == self
+    }
+    
+    public func isAncestor(_ path: Path) -> Bool {
+        return self != path && components.starts(with: path.components)
+    }
+    
+    public func isDescendant(_ path: Path) -> Bool {
+        return self != path && path.components.starts(with: components)
+    }
+    
+    public func appending(_ name: String) -> Path {
+        var components = self.components
+        components.append(name)
+        return Path(components: components)
     }
     
     public static func ==(lhs: Path, rhs: Path) -> Bool {

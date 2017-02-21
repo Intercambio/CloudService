@@ -61,6 +61,18 @@
 		F63F52281E48AC34006DAF83 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* CloudService.swift */; };
 		F63F52291E48AC34006DAF83 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* CloudService.swift */; };
 		F63F522A1E48AC34006DAF83 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F52261E48AC34006DAF83 /* CloudService.swift */; };
+		F66171FC1E5C63D700D026B5 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66171FB1E5C63D700D026B5 /* Account.swift */; };
+		F66171FD1E5C63D700D026B5 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66171FB1E5C63D700D026B5 /* Account.swift */; };
+		F66171FE1E5C63D700D026B5 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66171FB1E5C63D700D026B5 /* Account.swift */; };
+		F66171FF1E5C63D700D026B5 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66171FB1E5C63D700D026B5 /* Account.swift */; };
+		F66172011E5C642700D026B5 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172001E5C642700D026B5 /* Properties.swift */; };
+		F66172021E5C642700D026B5 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172001E5C642700D026B5 /* Properties.swift */; };
+		F66172031E5C642700D026B5 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172001E5C642700D026B5 /* Properties.swift */; };
+		F66172041E5C642700D026B5 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172001E5C642700D026B5 /* Properties.swift */; };
+		F66172061E5C649A00D026B5 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172051E5C649A00D026B5 /* Resource.swift */; };
+		F66172071E5C649A00D026B5 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172051E5C649A00D026B5 /* Resource.swift */; };
+		F66172081E5C649A00D026B5 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172051E5C649A00D026B5 /* Resource.swift */; };
+		F66172091E5C649A00D026B5 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66172051E5C649A00D026B5 /* Resource.swift */; };
 		F66412EE1E524D5300E6B798 /* file.txt in Resources */ = {isa = PBXBuildFile; fileRef = F66412ED1E524D5300E6B798 /* file.txt */; };
 		F66412EF1E524D5300E6B798 /* file.txt in Resources */ = {isa = PBXBuildFile; fileRef = F66412ED1E524D5300E6B798 /* file.txt */; };
 		F66412F01E524D5300E6B798 /* file.txt in Resources */ = {isa = PBXBuildFile; fileRef = F66412ED1E524D5300E6B798 /* file.txt */; };
@@ -174,6 +186,9 @@
 		F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ResourceManager.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F63F52201E48AA9A006DAF83 /* URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = URL.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F63F52261E48AC34006DAF83 /* CloudService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CloudService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		F66171FB1E5C63D700D026B5 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		F66172001E5C642700D026B5 /* Properties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Properties.swift; sourceTree = "<group>"; };
+		F66172051E5C649A00D026B5 /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
 		F66412ED1E524D5300E6B798 /* file.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = file.txt; sourceTree = "<group>"; };
 		F66412F11E5447C400E6B798 /* FileStoreSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStoreSchema.swift; sourceTree = "<group>"; };
 		F67DACDD1E5B541F00C16B8E /* Path.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
@@ -345,12 +360,15 @@
 			name = Additions;
 			sourceTree = "<group>";
 		};
-		F67DACE21E5B57A900C16B8E /* Path */ = {
+		F67DACE21E5B57A900C16B8E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F66171FB1E5C63D700D026B5 /* Account.swift */,
 				F67DACDD1E5B541F00C16B8E /* Path.swift */,
+				F66172001E5C642700D026B5 /* Properties.swift */,
+				F66172051E5C649A00D026B5 /* Resource.swift */,
 			);
-			name = Path;
+			name = Model;
 			sourceTree = "<group>";
 		};
 		F68A94261E48988F002B15B6 = {
@@ -383,7 +401,7 @@
 				F63F52261E48AC34006DAF83 /* CloudService.swift */,
 				F63F52251E48AA9D006DAF83 /* Additions */,
 				F608C3F91E4F2AF300410948 /* API */,
-				F67DACE21E5B57A900C16B8E /* Path */,
+				F67DACE21E5B57A900C16B8E /* Model */,
 				F63F521A1E48A9D9006DAF83 /* Resource */,
 				F68A94DB1E48A7E0002B15B6 /* Store */,
 				F68A94DC1E48A7E7002B15B6 /* Supporting FIles */,
@@ -826,13 +844,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F66172061E5C649A00D026B5 /* Resource.swift in Sources */,
 				F63F52211E48AA9A006DAF83 /* URL.swift in Sources */,
+				F66171FC1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4051E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FD1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F21E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
 				F68A94E31E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F66172011E5C642700D026B5 /* Properties.swift in Sources */,
 				F608C4011E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F67DACDE1E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52271E48AC34006DAF83 /* CloudService.swift in Sources */,
@@ -856,13 +877,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F66172071E5C649A00D026B5 /* Resource.swift in Sources */,
 				F63F52221E48AA9A006DAF83 /* URL.swift in Sources */,
+				F66171FD1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4061E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FE1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F31E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
 				F68A94E41E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F66172021E5C642700D026B5 /* Properties.swift in Sources */,
 				F608C4021E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F67DACDF1E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52281E48AC34006DAF83 /* CloudService.swift in Sources */,
@@ -886,13 +910,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F66172081E5C649A00D026B5 /* Resource.swift in Sources */,
 				F63F52231E48AA9A006DAF83 /* URL.swift in Sources */,
+				F66171FE1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4071E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FF1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F41E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
 				F68A94E51E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F66172031E5C642700D026B5 /* Properties.swift in Sources */,
 				F608C4031E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F67DACE01E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F52291E48AC34006DAF83 /* CloudService.swift in Sources */,
@@ -903,13 +930,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F66172091E5C649A00D026B5 /* Resource.swift in Sources */,
 				F63F52241E48AA9A006DAF83 /* URL.swift in Sources */,
+				F66171FF1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4081E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
 				F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C4001E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F51E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
 				F68A94E61E48A7FA002B15B6 /* FileStore.swift in Sources */,
 				F63F521F1E48A9F6006DAF83 /* ResourceManager.swift in Sources */,
+				F66172041E5C642700D026B5 /* Properties.swift in Sources */,
 				F608C4041E4F2B0500410948 /* CloudAPIRequest.swift in Sources */,
 				F67DACE11E5B541F00C16B8E /* Path.swift in Sources */,
 				F63F522A1E48AC34006DAF83 /* CloudService.swift in Sources */,

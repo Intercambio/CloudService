@@ -48,7 +48,7 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
     
     // MARK: - CloudServiceDelegate
     
-    func service(_ service: CloudService, needsPasswordFor account: CloudService.Account, completionHandler: @escaping (String?) -> Void) {
+    func service(_ service: CloudService, needsPasswordFor account: Account, completionHandler: @escaping (String?) -> Void) {
         
     }
 

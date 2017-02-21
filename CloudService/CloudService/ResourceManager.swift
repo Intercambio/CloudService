@@ -10,10 +10,10 @@ import Foundation
 
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?)->Void) -> Void
-    func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) -> Void
-    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: FileStore.Resource) -> Void
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: FileStore.Resource, error: Error) -> Void
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: FileStore.Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) -> Void
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) -> Void
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: Resource) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -21,11 +21,11 @@ class ResourceManager: CloudAPIDelegate {
     weak var delegate: ResourceManagerDelegate?
     
     let store: FileStore
-    let account: FileStore.Account
+    let account: Account
     let queue: DispatchQueue
     lazy var api: CloudAPI = CloudAPI(identifier: self.account.url.absoluteString, delegate: self)
     
-    init(store: FileStore, account: FileStore.Account) {
+    init(store: FileStore, account: Account) {
         self.store = store
         self.account = account
         self.queue = DispatchQueue(label: "CloudStore.ResourceManager")
@@ -75,10 +75,10 @@ class ResourceManager: CloudAPIDelegate {
         }
     }
     
-    private func updateResource(at path: Path, with response: CloudAPIResponse) throws -> FileStore.ChangeSet {
+    private func updateResource(at path: Path, with response: CloudAPIResponse) throws -> StoreChangeSet {
         
-        var properties: StoreResourceProperties? = nil
-        var content: [String:StoreResourceProperties] = [:]
+        var properties: Properties? = nil
+        var content: [String:Properties] = [:]
         
         for resource in response.resources {
             guard
@@ -86,11 +86,11 @@ class ResourceManager: CloudAPIDelegate {
                 let etag = resource.etag
                 else { continue }
             
-            let resourceProperties = FileStoreResourceProperties(isCollection: resource.isCollection,
-                                                                 version: etag,
-                                                                 contentType: resource.contentType,
-                                                                 contentLength: resource.contentLength,
-                                                                 modified: resource.modified)
+            let resourceProperties = Properties(isCollection: resource.isCollection,
+                                                version: etag,
+                                                contentType: resource.contentType,
+                                                contentLength: resource.contentLength,
+                                                modified: resource.modified)
             
             if resourcePath == path {
                 properties = resourceProperties
@@ -101,11 +101,11 @@ class ResourceManager: CloudAPIDelegate {
             }
         }
         
-        return try store.update(resourceAt: path.components, of: self.account, with: properties, content: content)
+        return try store.update(resourceOf: self.account, at: path, with: properties, content: content)
     }
     
-    private func removeResource(at path: Path) throws -> FileStore.ChangeSet {
-        return try store.update(resourceAt: path.components, of: account, with: nil)
+    private func removeResource(at path: Path) throws -> StoreChangeSet {
+        return try store.update(resourceOf: self.account, at: path, with: nil)
     }
     
     // MARK: Download Resource
@@ -118,7 +118,7 @@ class ResourceManager: CloudAPIDelegate {
             self.api.download(url)
             
             do {
-                if let resource = try self.store.resource(of: self.account, at: path.components) {
+                if let resource = try self.store.resource(of: self.account, at: path) {
                     self.delegate?.resourceManager(self, didStartDownloading: resource)
                 }
             } catch {
@@ -236,7 +236,7 @@ class ResourceManager: CloudAPIDelegate {
         do {
             guard
                 let path = url.makePath(relativeTo: account.url),
-                let resource = try store.resource(of: account, at: path.components)
+                let resource = try store.resource(of: account, at: path)
                 else { return }
             
             do {
