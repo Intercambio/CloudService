@@ -42,6 +42,10 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
         return components.count == 0
     }
     
+    public var name: String {
+        return components.last ?? "/"
+    }
+    
     public var parent: Path? {
         guard
             components.count > 0
@@ -54,20 +58,20 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
         return components.count
     }
     
-    public func isParent(_ path: Path) -> Bool {
-        return parent == path
+    public func isParent(of path: Path) -> Bool {
+        return self == path.parent
     }
     
-    public func isChild(_ path: Path) -> Bool {
-        return path.parent == self
+    public func isChild(of path: Path) -> Bool {
+        return self == parent
     }
     
-    public func isAncestor(_ path: Path) -> Bool {
-        return self != path && components.starts(with: path.components)
-    }
-    
-    public func isDescendant(_ path: Path) -> Bool {
+    public func isAncestor(of path: Path) -> Bool {
         return self != path && path.components.starts(with: components)
+    }
+    
+    public func isDescendant(of path: Path) -> Bool {
+        return self != path && components.starts(with: path.components)
     }
     
     public func appending(_ name: String) -> Path {
