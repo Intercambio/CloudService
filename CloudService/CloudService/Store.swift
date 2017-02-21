@@ -8,54 +8,22 @@
 
 import Foundation
 
-public protocol StoreAccount: Equatable, Hashable {
-    var identifier: String { get }
-    var username: String { get }
-    var url: URL { get }
-    var label: String? { get }
+public class StoreChangeSet {
+    public var insertedOrUpdated: [Resource] = []
+    public var deleted: [Resource] = []
 }
 
-public protocol StoreResourceProperties {
-    var isCollection: Bool { get }
-    var version: String { get }
-    var contentType: String? { get }
-    var contentLength: Int? { get }
-    var modified: Date? { get }
-}
-
-public protocol StoreResource: StoreResourceProperties, Equatable, Hashable {
-    associatedtype Account: StoreAccount
-    var account: Account { get }
-    var path: [String] { get }
-    var dirty: Bool { get }
-    var updated: Date? { get }
-}
-
-public protocol StoreChangeSet {
-    associatedtype Resource: StoreResource
-    var insertedOrUpdated: [Resource] { get }
-    var deleted: [Resource] { get }
-}
-
-protocol Store {
-    associatedtype Account: StoreAccount
-    associatedtype Resource: StoreResource
-    associatedtype ChangeSet: StoreChangeSet
-    
+public protocol Store {
     var accounts: [Account] { get }
     func addAccount(with url: URL, username: String) throws -> Account
     func update(_ account: Account, with label: String?) throws -> Account
     func remove(_ account: Account) throws -> Void
     
-    func resource(of account: Account, at path: [String]) throws -> Resource?
-    func contents(of account: Account, at path: [String]) throws -> [Resource]
+    func resource(of account: Account, at path: Path) throws -> Resource?
+    func contents(of account: Account, at path: Path) throws -> [Resource]
     
-    func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?) throws -> ChangeSet
-    func update(resourceAt path: [String], of account: Account, with properties: StoreResourceProperties?, content: [String:StoreResourceProperties]?) throws -> ChangeSet
-}
-
-extension StoreResource {
-    public var remoteURL: URL {
-        return account.url.appendingPathComponent(path.joined(separator: "/"))
-    }
+    func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet
+    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
+    
+    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource
 }

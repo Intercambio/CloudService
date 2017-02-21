@@ -38,6 +38,11 @@
                BlueprintName = "macOSTests"
                ReferencedContainer = "container:CloudService.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ResourceManagerTests/testDownload()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

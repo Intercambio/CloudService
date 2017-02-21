@@ -19,12 +19,12 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         
         guard
             let directory = self.directory
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         let store = FileStore(directory: directory)
         
         let expectation = self.expectation(description: "Open DB")
-        store.open { (error) in
+        store.open { error in
             XCTAssertNil(error)
             expectation.fulfill()
         }
@@ -40,14 +40,14 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
     
     func testUpdateExistingResource() {
         guard
-        let store = self.store
-            else { XCTFail(); return }
+            let store = self.store
+        else { XCTFail(); return }
         
         do {
             
             stub(condition: isHost("example.com") && isPath("/test/existing")) { _ in
                 let stubPath = OHPathForFile("resource_manager_test_existing.xml", type(of: self))
-                return fixture(filePath: stubPath!, status: 207, headers: ["Content-Type":"application/xml"])
+                return fixture(filePath: stubPath!, status: 207, headers: ["Content-Type": "application/xml"])
             }
             
             let account = try store.addAccount(with: URL(string: "http://example.com")!, username: "romeo")
@@ -55,7 +55,7 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             resourceManager.delegate = self
             
             let update = expectation(description: "Update")
-            resourceManager.updateResource(at: ["test", "existing"]) { error in
+            resourceManager.updateResource(at: Path(components: ["test", "existing"])) { error in
                 XCTAssertNil(error)
                 update.fulfill()
             }
@@ -75,21 +75,21 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
     func testUpdateRemovedResource() {
         guard
             let store = self.store
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         do {
             stub(condition: isHost("example.com") && isPath("/test/removed")) { _ in
                 let stubPath = OHPathForFile("resource_manager_test_removed.xml", type(of: self))
-                return fixture(filePath: stubPath!, status: 404, headers: ["Content-Type":"application/xml"])
+                return fixture(filePath: stubPath!, status: 404, headers: ["Content-Type": "application/xml"])
             }
             
             let account = try store.addAccount(with: URL(string: "http://example.com")!, username: "romeo")
             let resourceManager = ResourceManager(store: store, account: account)
             resourceManager.delegate = self
             
-            let path = ["test", "removed"]
+            let path = Path(components: ["test", "removed"])
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            let _ = try store.update(resourceAt: path, of: account, with: properties)
+            _ = try store.update(resourceOf: account, at: path, with: properties)
             
             let update = expectation(description: "Update")
             resourceManager.updateResource(at: path) { error in
@@ -112,23 +112,56 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         }
     }
     
+    func testDownload() {
+        guard
+            let store = self.store
+        else { XCTFail(); return }
+        
+        do {
+            let account = try store.addAccount(with: URL(string: "http://example.com")!, username: "romeo")
+            let resourceManager = ResourceManager(store: store, account: account)
+            resourceManager.delegate = self
+            
+            let path = Path(components: ["test", "file"])
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            _ = try store.update(resourceOf: account, at: path, with: properties)
+            
+            expectation(forNotification: "Test.ResourceManager.startDownloadingResourceAt", object: resourceManager, handler: nil)
+            expectation(forNotification: "Test.ResourceManager.finishDownloadingResourceAt", object: resourceManager, handler: nil)
+            
+            resourceManager.downloadResource(at: path)
+            
+            waitForExpectations(timeout: 1.0, handler: nil)
+            
+            let resource = try store.resource(of: account, at: path)
+            XCTAssertNil(resource)
+            
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
     // MARK: ResourceManagerDelegate
     
-    var changeset: FileStore.ChangeSet?
+    var changeset: StoreChangeSet?
     
-    func resourceManager(_ manager: ResourceManager, didChange changeset: FileStore.ChangeSet) {
+    func resourceManager(_: ResourceManager, didChange changeset: StoreChangeSet) {
         self.changeset = changeset
     }
     
-    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
+    func resourceManager(_: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
         completionHandler(nil)
     }
     
-    struct Properties: StoreResourceProperties {
-        let isCollection: Bool
-        let version: String
-        let contentType: String?
-        let contentLength: Int?
-        let modified: Date?
+    func resourceManager(_: ResourceManager, didStartDownloading _: Resource) {
+        
+    }
+    
+    func resourceManager(_: ResourceManager, didFinishDownloading _: Resource) {
+        
+    }
+    
+    func resourceManager(_: ResourceManager, didFailDownloading _: Resource, error _: Error) {
+        
     }
 }

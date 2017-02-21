@@ -16,7 +16,7 @@ class CloudAPIResponseTests: XCTestCase {
         guard
             let document = PXDocument(named: "propfind.xml", in: Bundle(for: CloudAPIResponseTests.self)),
             let baseURL = URL(string: "https://example.com/")
-            else { XCTFail(); return }
+        else { XCTFail(); return }
         
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")
