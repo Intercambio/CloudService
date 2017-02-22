@@ -62,7 +62,7 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
     }
     
     public func isChild(of path: Path) -> Bool {
-        return self == parent
+        return parent == path
     }
     
     public func isAncestor(of path: Path) -> Bool {
