@@ -162,7 +162,8 @@ public class CloudService {
     }
     
     public func resource(of account: Account, at path: Path) throws -> Resource? {
-        return try store.resource(of: account, at: path)
+        let resourceID = ResourceID(accountID: account.identifier, path: path)
+        return try store.resource(with: resourceID)
     }
     
     public func contents(of account: Account, at path: Path) throws -> [Resource] {

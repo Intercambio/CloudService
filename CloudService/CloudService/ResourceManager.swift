@@ -114,13 +114,14 @@ class ResourceManager: CloudAPIDelegate {
     
     func downloadResource(at path: Path) -> Progress {
         return queue.sync {
+            let resourceID = ResourceID(accountID: self.account.identifier, path: path)
             let progress = self.makeProgress(for: path)
             
             let url = self.account.url.appending(path)
             self.api.download(url)
             
             do {
-                if let resource = try self.store.resource(of: self.account, at: path) {
+                if let resource = try self.store.resource(with: resourceID) {
                     self.delegate?.resourceManager(self, didStartDownloading: resource)
                 }
             } catch {
@@ -248,7 +249,7 @@ class ResourceManager: CloudAPIDelegate {
         do {
             guard
                 let path = url.makePath(relativeTo: account.url),
-                let resource = try store.resource(of: account, at: path)
+                let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: path))
             else { return }
             
             do {

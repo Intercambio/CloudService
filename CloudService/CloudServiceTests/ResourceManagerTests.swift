@@ -104,7 +104,7 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
                 XCTFail()
             }
             
-            let resource = try store.resource(of: account, at: path)
+            let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: path))
             XCTAssertNil(resource)
             
         } catch {
@@ -133,7 +133,7 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             
             waitForExpectations(timeout: 1.0, handler: nil)
             
-            let resource = try store.resource(of: account, at: path)
+            let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: path))
             XCTAssertNil(resource)
             
         } catch {

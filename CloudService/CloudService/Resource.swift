@@ -10,7 +10,7 @@ import Foundation
 
 public struct Resource: Hashable, Equatable {
     
-    public let resouceID: ResourceID
+    public let resourceID: ResourceID
     
     public let dirty: Bool
     public let updated: Date?
@@ -21,11 +21,11 @@ public struct Resource: Hashable, Equatable {
     let fileVersion: String?
     
     public static func ==(lhs: Resource, rhs: Resource) -> Bool {
-        return lhs.resouceID == rhs.resouceID
+        return lhs.resourceID == rhs.resourceID
     }
     
     public var hashValue: Int {
-        return resouceID.hashValue
+        return resourceID.hashValue
     }
 }
 

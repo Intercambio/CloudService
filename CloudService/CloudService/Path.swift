@@ -73,12 +73,16 @@ public struct Path: Hashable, Equatable, CustomStringConvertible {
         return self != path && components.starts(with: path.components)
     }
     
-    public func appending(_ name: String) -> Path {
+    public func appending(_ component: String) -> Path {
         var components = self.components
-        components.append(name)
+        components.append(component)
         return Path(components: components)
     }
-    
+    public func appending(_ components: [String]) -> Path {
+        var components = self.components
+        components.append(contentsOf: components)
+        return Path(components: components)
+    }
     public static func ==(lhs: Path, rhs: Path) -> Bool {
         guard
             lhs.components.count == rhs.components.count

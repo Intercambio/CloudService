@@ -46,8 +46,11 @@ public struct ResourceID: Hashable, Equatable, CustomStringConvertible {
             else { return nil }
         return ResourceID(accountID: accountID, path: parentPath)
     }
-    public func appending(_ name: String) -> ResourceID {
-        return ResourceID(accountID: accountID, path: path.appending(name))
+    public func appending(_ component: String) -> ResourceID {
+        return ResourceID(accountID: accountID, path: path.appending(component))
+    }
+    public func appending(_ components: [String]) -> ResourceID {
+        return ResourceID(accountID: accountID, path: path.appending(components))
     }
     public var isRoot: Bool {
         return path.isRoot
