@@ -283,8 +283,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 modified: nil
             )
             return Resource(
-                account: account,
-                path: path,
+                resouceID: ResourceID(accountID: account.identifier, path: path),
                 dirty: true,
                 updated: nil,
                 properties: properties,
@@ -307,7 +306,9 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         let contentLength = row.get(FileStoreSchema.content_length)
         let modified = row.get(FileStoreSchema.modified)
         
-        let fileURL = self.makeLocalFileURL(with: path, account: account)
+        let resouceID = ResourceID(accountID: account.identifier, path: path)
+        
+        let fileURL = self.makeLocalFileURL(with: resouceID)
         
         let properties = Properties(
             isCollection: isCollection,
@@ -318,8 +319,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         )
         
         let resource = Resource(
-            account: account,
-            path: path,
+            resouceID: resouceID,
             dirty: dirty,
             updated: updated,
             properties: properties,
@@ -389,11 +389,12 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 FileStoreSchema.content_length <- properties.contentLength,
                 FileStoreSchema.modified <- properties.modified
             ))
-            let fileURL = self.makeLocalFileURL(with: path, account: account)
+            
+            let resouceID = ResourceID(accountID: account.identifier, path: path)
+            let fileURL = self.makeLocalFileURL(with: resouceID)
             
             let resource = Resource(
-                account: account,
-                path: path,
+                resouceID: resouceID,
                 dirty: dirty,
                 updated: timestamp,
                 properties: properties,
@@ -453,7 +454,8 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         
         _ = try db.run(query.delete())
         
-        let fileURL = makeLocalFileURL(with: path, account: account)
+        let resouceID = ResourceID(accountID: account.identifier, path: path)
+        let fileURL = makeLocalFileURL(with: resouceID)
         
         var coordinatorSuccess = false
         var coordinatorError: NSError?
@@ -480,7 +482,8 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         
         if try db.run(query.delete()) > 0 {
             
-            let fileURL = makeLocalFileURL(with: path, account: account)
+            let resouceID = ResourceID(accountID: account.identifier, path: path)
+            let fileURL = makeLocalFileURL(with: resouceID)
             
             var coordinatorSuccess = false
             var coordinatorError: NSError?
@@ -518,8 +521,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             )
             
             let resource = Resource(
-                account: account,
-                path: path,
+                resouceID: ResourceID(accountID: account.identifier, path: path),
                 dirty: false,
                 updated: nil,
                 properties: properties,
@@ -532,11 +534,11 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     }
     
     private func moveFile(at url: URL, withVersion version: String, to resource: Resource, in db: SQLite.Connection) throws -> Resource {
-        let href = resource.path.href
+        let href = resource.resouceID.path.href
         let fileURL = makeLocalFileURL(with: resource)
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_identifier == resource.account.identifier &&
+            FileStoreSchema.account_identifier == resource.resouceID.accountID &&
                 FileStoreSchema.href == href
         )
         
@@ -567,8 +569,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 }
                 
                 return Resource(
-                    account: resource.account,
-                    path: resource.path,
+                    resouceID: resource.resouceID,
                     dirty: resource.dirty,
                     updated: resource.updated,
                     properties: resource.properties,
@@ -584,13 +585,13 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     // MARK: HRef & Local File URL
     
     private func makeLocalFileURL(with resource: Resource) -> URL {
-        return makeLocalFileURL(with: resource.path, account: resource.account)
+        return makeLocalFileURL(with: resource.resouceID)
     }
     
-    private func makeLocalFileURL(with path: Path, account: Account) -> URL {
+    private func makeLocalFileURL(with resourceID: ResourceID) -> URL {
         let storeBase = directory.appendingPathComponent("files", isDirectory: true)
-        let accountBase = storeBase.appendingPathComponent(account.identifier, isDirectory: true)
-        let fileURL = accountBase.appending(path)
+        let accountBase = storeBase.appendingPathComponent(resourceID.accountID, isDirectory: true)
+        let fileURL = accountBase.appending(resourceID.path)
         return fileURL
     }
     

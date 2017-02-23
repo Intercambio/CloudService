@@ -75,30 +75,6 @@ class FileStoreTests: TestCase {
         }
     }
     
-    func testRemoteURL() {
-        guard
-            let store = self.store
-        else { XCTFail(); return }
-        
-        do {
-            let url = URL(string: "https://example.com/api/")!
-            let account = try store.addAccount(with: url, username: "romeo")
-            
-            let path = Path(components: ["a", "b", "c"])
-            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            _ = try store.update(resourceOf: account, at: path, with: properties)
-            
-            let resource = try store.resource(of: account, at: path)
-            XCTAssertNotNil(resource)
-            if let resource = resource {
-                let remoteURL = resource.remoteURL
-                XCTAssertEqual(remoteURL.absoluteString, "https://example.com/api/a/b/c")
-            }
-        } catch {
-            XCTFail("\(error)")
-        }
-    }
-    
     func testInsertResource() {
         guard
             let store = self.store
@@ -118,7 +94,7 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(of: account, at: path)
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, path)
+                XCTAssertEqual(resource.resouceID.path, path)
                 XCTAssertEqual(resource.properties.version, "123")
                 XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
@@ -207,14 +183,14 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(of: account, at: path)
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, path)
+                XCTAssertEqual(resource.resouceID.path, path)
                 XCTAssertEqual(resource.properties.version, "123")
                 XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
             }
             
             if let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c", "1"])) {
-                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c", "1"]))
+                XCTAssertEqual(resource.resouceID.path, Path(components: ["a", "b", "c", "1"]))
                 XCTAssertEqual(resource.properties.version, "a")
                 XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertTrue(resource.dirty)
@@ -223,7 +199,7 @@ class FileStoreTests: TestCase {
             }
             
             if let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c", "2"])) {
-                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c", "2"]))
+                XCTAssertEqual(resource.resouceID.path, Path(components: ["a", "b", "c", "2"]))
                 XCTAssertEqual(resource.properties.version, "b")
                 XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
@@ -255,7 +231,7 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(of: account, at: Path(components: ["a", "b"]))
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, Path(components: ["a", "b"]))
+                XCTAssertEqual(resource.resouceID.path, Path(components: ["a", "b"]))
                 XCTAssertEqual(resource.properties.version, "567")
                 XCTAssertTrue(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
@@ -282,7 +258,7 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(of: account, at: Path(components: ["a", "b", "c"]))
             XCTAssertNotNil(resource)
             if let resource = resource {
-                XCTAssertEqual(resource.path, Path(components: ["a", "b", "c"]))
+                XCTAssertEqual(resource.resouceID.path, Path(components: ["a", "b", "c"]))
                 XCTAssertEqual(resource.properties.version, "888")
                 XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
