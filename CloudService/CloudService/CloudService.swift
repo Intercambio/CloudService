@@ -58,13 +58,14 @@ public class CloudService {
                         let resumeGroup = DispatchGroup()
                         
                         for account in try self.store.allAccounts() {
-                            resumeGroup.enter()
-                            let manager = self.resourceManager(for: account)
-                            manager.resume { error in
-                                if error != nil {
-                                    NSLog("Failed to resume manager: \(error)")
+                            if let manager = self.resourceManager(for: account.identifier) {
+                                resumeGroup.enter()
+                                manager.resume { error in
+                                    if error != nil {
+                                        NSLog("Failed to resume manager: \(error)")
+                                    }
+                                    resumeGroup.leave()
                                 }
-                                resumeGroup.leave()
                             }
                         }
                         
@@ -152,58 +153,64 @@ public class CloudService {
     
     // MARK: - Resource Management
     
-    private var resourceManager: [Account: ResourceManager] = [:]
+    private var resourceManager: [AccountID: ResourceManager] = [:]
     
-    private func resourceManager(for account: Account) -> ResourceManager {
-        if let manager = resourceManager[account] {
+    private func resourceManager(for accountID: AccountID) -> ResourceManager? {
+        if let manager = resourceManager[accountID] {
             return manager
         } else {
-            let manager = ResourceManager(store: store, account: account)
-            manager.delegate = self
-            resourceManager[account] = manager
-            return manager
-        }
-    }
-    
-    public func resource(of account: Account, at path: Path) throws -> Resource? {
-        let resourceID = ResourceID(accountID: account.identifier, path: path)
-        return try store.resource(with: resourceID)
-    }
-    
-    public func contents(of account: Account, at path: Path) throws -> [Resource] {
-        let resourceID = ResourceID(accountID: account.identifier, path: path)
-        return try store.content(ofResourceWith: resourceID)
-    }
-    
-    public func updateResource(at path: Path, of account: Account, completion: ((Error?) -> Void)?) {
-        return queue.async {
-            self.beginActivity()
-            let manager = self.resourceManager(for: account)
-            manager.updateResource(at: path) { error in
-                completion?(error)
-                self.endActivity()
+            do {
+                if let account = try store.account(with: accountID) {
+                    let manager = ResourceManager(store: store, account: account)
+                    manager.delegate = self
+                    resourceManager[accountID] = manager
+                    return manager
+                } else {
+                    return nil
+                }
+            } catch {
+                return nil
             }
         }
     }
     
-    public func downloadResource(at path: Path, of account: Account) -> Progress {
-        return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.downloadResource(at: path)
+    public func resource(with resourceID: ResourceID) throws -> Resource? {
+        return try store.resource(with: resourceID)
+    }
+    
+    public func content(ofResourceWith resourceID: ResourceID) throws -> [Resource] {
+        return try store.content(ofResourceWith: resourceID)
+    }
+    
+    public func updateResource(with resourceID: ResourceID, completion: ((Error?) -> Void)?) {
+        return queue.async {
+            if let manager = self.resourceManager(for: resourceID.accountID) {
+                self.beginActivity()
+                manager.updateResource(at: resourceID.path) { error in
+                    completion?(error)
+                    self.endActivity()
+                }
+            } else {
+                completion?(nil)
+            }
         }
     }
     
-    public func progressForResource(at path: Path, of account: Account) -> Progress? {
+    public func downloadResource(with resourceID: ResourceID) {
         return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.progress(for: path)
+            if let manager = self.resourceManager(for: resourceID.accountID) {
+                _ = manager.downloadResource(at: resourceID.path)
+            }
         }
     }
     
-    public func progress(of account: Account) -> [Path: Progress] {
+    public func progressForResource(with resourceID: ResourceID) -> Progress? {
         return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.progress()
+            if let manager = self.resourceManager(for: resourceID.accountID) {
+                return manager.progress(for: resourceID.path)
+            } else {
+                return nil
+            }
         }
     }
     
