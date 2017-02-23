@@ -141,7 +141,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    func contents(ofResourceWith resourceID: ResourceID) throws -> [Resource] {
+    func content(ofResourceWith resourceID: ResourceID) throws -> [Resource] {
         return try queue.sync {
             guard
                 let db = self.db

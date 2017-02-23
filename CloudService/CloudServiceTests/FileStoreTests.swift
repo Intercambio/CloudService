@@ -108,13 +108,13 @@ class FileStoreTests: TestCase {
                 XCTAssertEqual(resource.properties.contentLength, 55555)
                 XCTAssertEqual(round(resource.properties.modified?.timeIntervalSinceNow ?? -100), round(date.timeIntervalSinceNow))
                 
-                let content = try store.contents(ofResourceWith: resourceID.parent!)
+                let content = try store.content(ofResourceWith: resourceID.parent!)
                 XCTAssertEqual(content, [resource])
             }
             
             var parentResourceID = resourceID.parent
             while parentResourceID != nil {
-                let contents = try store.contents(ofResourceWith: parentResourceID!)
+                let contents = try store.content(ofResourceWith: parentResourceID!)
                 XCTAssertEqual(contents.count, 1)
                 
                 let resource = try store.resource(with: parentResourceID!)
@@ -212,7 +212,7 @@ class FileStoreTests: TestCase {
                 XCTFail()
             }
             
-            XCTAssertEqual(try store.contents(ofResourceWith: resourceID).count, 3)
+            XCTAssertEqual(try store.content(ofResourceWith: resourceID).count, 3)
             XCTAssertNil(try store.resource(with: resourceID.appending("x")))
             XCTAssertNil(try store.resource(with: resourceID.appending(["x", "y"])))
             XCTAssertNil(try store.resource(with: resourceID.appending(["3", "x"])))
@@ -272,13 +272,13 @@ class FileStoreTests: TestCase {
                 XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
                 
-                let content = try store.contents(ofResourceWith: resourceID.parent!)
+                let content = try store.content(ofResourceWith: resourceID.parent!)
                 XCTAssertEqual(content, [resource])
             }
             
             var parentResourceID = resourceID.parent
             while parentResourceID != nil {
-                let contents = try store.contents(ofResourceWith: parentResourceID!)
+                let contents = try store.content(ofResourceWith: parentResourceID!)
                 XCTAssertEqual(contents.count, 1)
                 
                 let resource = try store.resource(with: parentResourceID!)
@@ -312,7 +312,7 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(with: resourceID)
             XCTAssertNil(resource)
             
-            let content = try store.contents(ofResourceWith: resourceID.parent!)
+            let content = try store.content(ofResourceWith: resourceID.parent!)
             XCTAssertEqual(content, [])
             
         } catch {
