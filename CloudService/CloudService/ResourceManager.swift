@@ -11,9 +11,9 @@ import Foundation
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) -> Void
-    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) -> Void
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) -> Void
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resourceID: ResourceID) -> Void
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resourceID: ResourceID, error: Error) -> Void
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resourceID: ResourceID) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -114,20 +114,14 @@ class ResourceManager: CloudAPIDelegate {
     
     func downloadResource(at path: Path) -> Progress {
         return queue.sync {
-            let resourceID = ResourceID(accountID: self.account.identifier, path: path)
-            let progress = self.makeProgress(for: path)
             
+            let progress = self.makeProgress(for: path)
             let url = self.account.url.appending(path)
             self.api.download(url)
             
-            do {
-                if let resource = try self.store.resource(with: resourceID) {
-                    self.delegate?.resourceManager(self, didStartDownloading: resource)
-                }
-            } catch {
-                NSLog("\(error)")
-            }
-            
+            let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+            self.delegate?.resourceManager(self, didStartDownloading: resourceID)
+
             return progress
         }
     }
@@ -248,15 +242,16 @@ class ResourceManager: CloudAPIDelegate {
     func cloudAPI(_: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
         do {
             guard
-                let path = url.makePath(relativeTo: account.url),
-                let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: path))
+                let path = url.makePath(relativeTo: account.url)
             else { return }
             
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
             do {
-                let updatedResource = try store.moveFile(at: location, withVersion: etag, to: resource)
-                delegate?.resourceManager(self, didFinishDownloading: updatedResource)
+                try store.moveFile(at: location, withVersion: etag, to: resourceID)
+                delegate?.resourceManager(self, didFinishDownloading: resourceID)
             } catch {
-                delegate?.resourceManager(self, didFailDownloading: resource, error: error)
+                delegate?.resourceManager(self, didFailDownloading: resourceID, error: error)
             }
             
             self.queue.async {

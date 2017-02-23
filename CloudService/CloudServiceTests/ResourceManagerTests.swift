@@ -153,15 +153,15 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
         completionHandler(nil)
     }
     
-    func resourceManager(_: ResourceManager, didStartDownloading _: Resource) {
+    func resourceManager(_: ResourceManager, didStartDownloading _: ResourceID) {
         
     }
     
-    func resourceManager(_: ResourceManager, didFinishDownloading _: Resource) {
+    func resourceManager(_: ResourceManager, didFinishDownloading _: ResourceID) {
         
     }
     
-    func resourceManager(_: ResourceManager, didFailDownloading _: Resource, error _: Error) {
+    func resourceManager(_: ResourceManager, didFailDownloading _: ResourceID, error _: Error) {
         
     }
 }

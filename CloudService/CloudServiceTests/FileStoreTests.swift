@@ -364,25 +364,22 @@ class FileStoreTests: TestCase {
             
             _ = try store.update(resourceOf: account, at: path, with: properties)
             
-            if var resource = try store.resource(with: resourceID) {
-                resource = try store.moveFile(at: tempFileURL, withVersion: "123", to: resource)
-                XCTAssertEqual(resource.fileState, .valid)
-                XCTAssertNotNil(resource.fileURL)
-                if let url = resource.fileURL {
-                    let content = try String(contentsOf: url)
-                    XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
-                }
-                
-                let properties = Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil)
-                _ = try store.update(resourceOf: account, at: path, with: properties)
-                resource = try store.resource(with: resourceID)!
-                
-                XCTAssertEqual(resource.fileState, .outdated)
-                XCTAssertNotNil(resource.fileURL)
-                
-            } else {
-                XCTFail()
+            try store.moveFile(at: tempFileURL, withVersion: "123", to: resourceID)
+            
+            var resource = try store.resource(with: resourceID)
+            XCTAssertEqual(resource!.fileState, .valid)
+            XCTAssertNotNil(resource!.fileURL)
+            if let url = resource!.fileURL {
+                let content = try String(contentsOf: url)
+                XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
             }
+            
+            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil))
+            resource = try store.resource(with: resourceID)
+            
+            XCTAssertEqual(resource!.fileState, .outdated)
+            XCTAssertNotNil(resource!.fileURL)
+
             
         } catch {
             XCTFail("\(error)")
@@ -409,7 +406,7 @@ class FileStoreTests: TestCase {
             _ = try store.update(resourceOf: account, at: path, with: properties)
             
             if let resource = try store.resource(with: resourceID) {
-                XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource))
+                XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource.resourceID))
                 XCTAssertEqual(resource.fileState, .none)
             } else {
                 XCTFail()

@@ -222,17 +222,15 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource {
+    func moveFile(at url: URL, withVersion version: String, to resourceID: ResourceID) throws {
         return try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
             
-            var resource: Resource = resource
             try db.transaction {
-                resource = try self.moveFile(at: url, withVersion: version, to: resource, in: db)
+                try self.moveFile(at: url, withVersion: version, to: resourceID, in: db)
             }
-            return resource
         }
     }
     
@@ -537,13 +535,14 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    private func moveFile(at url: URL, withVersion version: String, to resource: Resource, in db: SQLite.Connection) throws -> Resource {
-        let href = resource.resourceID.path.href
-        let fileURL = makeLocalFileURL(with: resource)
+    private func moveFile(at url: URL, withVersion version: String, to resourceID: ResourceID, in db: SQLite.Connection) throws {
+        
+        let accountID = resourceID.accountID
+        let href = resourceID.path.href
+        let fileURL = makeLocalFileURL(with: resourceID)
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_identifier == resource.resourceID.accountID &&
-                FileStoreSchema.href == href
+            FileStoreSchema.account_identifier == accountID && FileStoreSchema.href == href
         )
         
         if let row = try db.pluck(query) {
@@ -571,15 +570,6 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 } else if coordinatorSuccess == false {
                     throw FileStoreError.internalError
                 }
-                
-                return Resource(
-                    resourceID: resource.resourceID,
-                    dirty: resource.dirty,
-                    updated: resource.updated,
-                    properties: resource.properties,
-                    fileURL: fileURL,
-                    fileVersion: version
-                )
             }
         } else {
             throw FileStoreError.resourceDoesNotExist

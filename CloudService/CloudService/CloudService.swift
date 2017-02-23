@@ -287,42 +287,42 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_: ResourceManager, didStartDownloading resource: Resource) {
+    func resourceManager(_: ResourceManager, didStartDownloading resourceID: ResourceID) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )
         }
     }
     
-    func resourceManager(_: ResourceManager, didFinishDownloading resource: Resource) {
+    func resourceManager(_: ResourceManager, didFinishDownloading resourceID: ResourceID) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )
         }
     }
     
-    func resourceManager(_: ResourceManager, didFailDownloading resource: Resource, error _: Error) {
+    func resourceManager(_: ResourceManager, didFailDownloading resourceID: ResourceID, error _: Error) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )
