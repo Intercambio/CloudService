@@ -14,9 +14,11 @@ public class StoreChangeSet {
 }
 
 public protocol Store {
-    var accounts: [Account] { get }
+    func allAccounts() throws -> [Account]
+    func account(with identifier: AccountID) throws -> Account?
+    
     func addAccount(with url: URL, username: String) throws -> Account
-    func update(_ account: Account, with label: String?) throws -> Account
+    func update(_ account: Account, with label: String?) throws -> Void
     func remove(_ account: Account) throws -> Void
     
     func resource(with resourceID: ResourceID) throws -> Resource?

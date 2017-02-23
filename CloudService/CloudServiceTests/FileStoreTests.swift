@@ -42,13 +42,13 @@ class FileStoreTests: TestCase {
             let account = try store.addAccount(with: url, username: "romeo")
             XCTAssertEqual(account.url, url)
             
-            XCTAssertTrue(store.accounts.contains(account))
+            XCTAssertTrue(try store.allAccounts().contains(account))
             
-            let updatedAccount = try store.update(account, with: "Foo Bar")
-            XCTAssertEqual(updatedAccount.label, "Foo Bar")
+            try store.update(account, with: "Foo Bar")
+            XCTAssertEqual(try store.account(with: account.identifier)?.label, "Foo Bar")
             
             try store.remove(account)
-            XCTAssertFalse(store.accounts.contains(account))
+            XCTAssertFalse(try store.allAccounts().contains(account))
             
         } catch {
             XCTFail("\(error)")

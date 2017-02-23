@@ -60,36 +60,29 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     
     // MARK: Accounts
     
-    var accounts: [Account] {
-        return queue.sync {
-            do {
-                return try self.fetchAccounts()
-            } catch {
-                NSLog("Failed to fetch accounts: \(error)")
-                return []
-            }
+    func allAccounts() throws -> [Account] {
+        return try queue.sync {
+            return try self.fetchAccounts()
         }
     }
     
-    func update(_ account: Account, with label: String?) throws -> Account {
+    func account(with accountID: AccountID) throws -> Account? {
         return try queue.sync {
+            return try self.fetchAccount(with: accountID)
+        }
+    }
+    
+    func update(_ account: Account, with label: String?) throws {
+        try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
-            var account: Account = account
             try db.transaction {
                 let update = FileStoreSchema.account
                     .filter(FileStoreSchema.identifier == account.identifier)
                     .update(FileStoreSchema.label <- label)
                 _ = try db.run(update)
-                account = Account(
-                    identifier: account.identifier,
-                    url: account.url,
-                    username: account.username,
-                    label: label
-                )
             }
-            return account
         }
     }
     
@@ -254,6 +247,21 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             }
         }
         return result
+    }
+    
+    private func fetchAccount(with accountID: AccountID) throws -> Account? {
+        guard
+            let db = self.db
+            else { throw FileStoreError.notSetup }
+        var account: Account? = nil
+        try db.transaction {
+            let query = FileStoreSchema.account
+                .filter(FileStoreSchema.identifier == accountID)
+            if let row = try db.pluck(query) {
+                account = try self.makeAcocunt(with: row)
+            }
+        }
+        return account
     }
     
     private func makeAcocunt(with row: SQLite.Row) throws -> Account {

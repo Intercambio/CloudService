@@ -22,7 +22,7 @@ extension Notification.Name {
     public static let CloudServiceDidChangeResources = Notification.Name(rawValue: "CloudStore.CloudServiceDidChangeResources")
 }
 
-public let AccountKey = "CloudStore.AccountKey"
+public let AccountIDKey = "CloudStore.AccountIDKey"
 public let InsertedOrUpdatedResourcesKey = "CloudStore.InsertedOrUpdatedResourcesKey"
 public let DeletedResourcesKey = "CloudStore.DeletedResourcesKey"
 
@@ -57,7 +57,7 @@ public class CloudService {
                         
                         let resumeGroup = DispatchGroup()
                         
-                        for account in self.store.accounts {
+                        for account in try self.store.allAccounts() {
                             resumeGroup.enter()
                             let manager = self.resourceManager(for: account)
                             manager.resume { error in
@@ -88,8 +88,12 @@ public class CloudService {
     
     // MARK: - Account Management
     
-    public var accounts: [Account] {
-        return store.accounts
+    public func allAccounts() throws -> [Account] {
+        return try store.allAccounts()
+    }
+    
+    public func account(with identifier: AccountID) throws -> Account? {
+        return try store.account(with: identifier)
     }
     
     public func addAccount(with url: URL, username: String) throws -> Account {
@@ -101,7 +105,7 @@ public class CloudService {
         center.post(
             name: Notification.Name.CloudServiceDidAddAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
@@ -111,21 +115,21 @@ public class CloudService {
         return account
     }
     
-    public func update(_ account: Account, with label: String?) throws -> Account {
-        let account = try store.update(account, with: label)
+    public func update(_ account: Account, with label: String?) throws {
+        try store.update(account, with: label)
         
         let center = NotificationCenter.default
+        
         center.post(
             name: Notification.Name.CloudServiceDidUdpateAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
+        
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
             object: self
         )
-        
-        return account
     }
     
     public func remove(_ account: Account) throws {
@@ -138,7 +142,7 @@ public class CloudService {
         center.post(
             name: Notification.Name.CloudServiceDidRemoveAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
