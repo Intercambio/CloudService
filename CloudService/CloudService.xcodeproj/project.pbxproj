@@ -49,6 +49,10 @@
 		F61292C71E4C9AED00051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C01E4C9AB300051B24 /* KeyChain.framework */; };
 		F61292C81E4C9AF500051B24 /* KeyChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; };
 		F61292C91E4C9AFD00051B24 /* KeyChain.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F61292C41E4C9AD300051B24 /* KeyChain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F62CE8C21E5EE70D0010B98D /* ResourceID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62CE8C11E5EE70D0010B98D /* ResourceID.swift */; };
+		F62CE8C31E5EE70D0010B98D /* ResourceID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62CE8C11E5EE70D0010B98D /* ResourceID.swift */; };
+		F62CE8C41E5EE70D0010B98D /* ResourceID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62CE8C11E5EE70D0010B98D /* ResourceID.swift */; };
+		F62CE8C51E5EE70D0010B98D /* ResourceID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62CE8C11E5EE70D0010B98D /* ResourceID.swift */; };
 		F63F521C1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
 		F63F521D1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
 		F63F521E1E48A9F6006DAF83 /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */; };
@@ -124,6 +128,9 @@
 		F6C54CC91E49F1E800B22181 /* CloudServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */; };
 		F6C54CCA1E49F1E800B22181 /* CloudServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */; };
 		F6C54CCB1E49F1E800B22181 /* CloudServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */; };
+		F6D7F3251E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D7F3241E5EDF81009C98F1 /* ResourceIDTests.swift */; };
+		F6D7F3261E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D7F3241E5EDF81009C98F1 /* ResourceIDTests.swift */; };
+		F6D7F3271E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D7F3241E5EDF81009C98F1 /* ResourceIDTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,6 +190,7 @@
 		F61292C01E4C9AB300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/tvOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C21E4C9AC300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/watchOS/KeyChain.framework; sourceTree = "<group>"; };
 		F61292C41E4C9AD300051B24 /* KeyChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeyChain.framework; path = ../Carthage/Build/Mac/KeyChain.framework; sourceTree = "<group>"; };
+		F62CE8C11E5EE70D0010B98D /* ResourceID.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceID.swift; sourceTree = "<group>"; };
 		F63F521B1E48A9F6006DAF83 /* ResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ResourceManager.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F63F52201E48AA9A006DAF83 /* URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = URL.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F63F52261E48AC34006DAF83 /* CloudService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CloudService.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -215,6 +223,7 @@
 		F68A94E81E48A83F002B15B6 /* TestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TestCase.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F68A94E91E48A83F002B15B6 /* FileStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FileStoreTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CloudServiceTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		F6D7F3241E5EDF81009C98F1 /* ResourceIDTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceIDTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,6 +376,7 @@
 				F67DACDD1E5B541F00C16B8E /* Path.swift */,
 				F66172001E5C642700D026B5 /* Properties.swift */,
 				F66172051E5C649A00D026B5 /* Resource.swift */,
+				F62CE8C11E5EE70D0010B98D /* ResourceID.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -414,9 +424,10 @@
 			children = (
 				F6C54CC81E49F1E800B22181 /* CloudServiceTests.swift */,
 				F608C4091E4F2B2900410948 /* API */,
-				F63F52131E48A8E0006DAF83 /* Store */,
-				F608C41C1E52127D00410948 /* Resource */,
 				F6129B5B1E5452250075DFF0 /* Data */,
+				F6D7F3231E5EDF68009C98F1 /* Model */,
+				F608C41C1E52127D00410948 /* Resource */,
+				F63F52131E48A8E0006DAF83 /* Store */,
 				F68A94E71E48A829002B15B6 /* Supporting Files */,
 			);
 			path = CloudServiceTests;
@@ -501,6 +512,14 @@
 				F68A94401E48988F002B15B6 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F6D7F3231E5EDF68009C98F1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F6D7F3241E5EDF81009C98F1 /* ResourceIDTests.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -848,6 +867,7 @@
 				F63F52211E48AA9A006DAF83 /* URL.swift in Sources */,
 				F66171FC1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4051E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
+				F62CE8C21E5EE70D0010B98D /* ResourceID.swift in Sources */,
 				F68A94DF1E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FD1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F21E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
@@ -865,6 +885,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4101E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F6D7F3251E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */,
 				F608C41E1E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94ED1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EA1E48A83F002B15B6 /* TestCase.swift in Sources */,
@@ -881,6 +902,7 @@
 				F63F52221E48AA9A006DAF83 /* URL.swift in Sources */,
 				F66171FD1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4061E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
+				F62CE8C31E5EE70D0010B98D /* ResourceID.swift in Sources */,
 				F68A94E01E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FE1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F31E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
@@ -898,6 +920,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4111E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F6D7F3261E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */,
 				F608C41F1E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94EE1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EB1E48A83F002B15B6 /* TestCase.swift in Sources */,
@@ -914,6 +937,7 @@
 				F63F52231E48AA9A006DAF83 /* URL.swift in Sources */,
 				F66171FE1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4071E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
+				F62CE8C41E5EE70D0010B98D /* ResourceID.swift in Sources */,
 				F68A94E11E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C3FF1E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F41E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
@@ -934,6 +958,7 @@
 				F63F52241E48AA9A006DAF83 /* URL.swift in Sources */,
 				F66171FF1E5C63D700D026B5 /* Account.swift in Sources */,
 				F608C4081E4F2B0500410948 /* CloudAPIResponse.swift in Sources */,
+				F62CE8C51E5EE70D0010B98D /* ResourceID.swift in Sources */,
 				F68A94E21E48A7FA002B15B6 /* Store.swift in Sources */,
 				F608C4001E4F2B0500410948 /* CloudAPI.swift in Sources */,
 				F66412F51E5447C400E6B798 /* FileStoreSchema.swift in Sources */,
@@ -951,6 +976,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F608C4121E4F2B4100410948 /* CloudAPIResponseTests.swift in Sources */,
+				F6D7F3271E5EDF81009C98F1 /* ResourceIDTests.swift in Sources */,
 				F608C4201E52129100410948 /* ResourceManagerTests.swift in Sources */,
 				F68A94EF1E48A83F002B15B6 /* FileStoreTests.swift in Sources */,
 				F68A94EC1E48A83F002B15B6 /* TestCase.swift in Sources */,
