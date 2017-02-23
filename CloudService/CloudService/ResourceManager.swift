@@ -249,7 +249,7 @@ class ResourceManager: CloudAPIDelegate {
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
             do {
-                try store.moveFile(at: location, withVersion: etag, to: resourceID)
+                try store.moveFile(at: location, withVersion: etag, toResourceWith: resourceID)
                 delegate?.resourceManager(self, didFinishDownloading: resourceID)
             } catch {
                 delegate?.resourceManager(self, didFailDownloading: resourceID, error: error)

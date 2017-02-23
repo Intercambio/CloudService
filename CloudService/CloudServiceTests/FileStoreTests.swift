@@ -364,7 +364,7 @@ class FileStoreTests: TestCase {
             
             _ = try store.update(resourceWith: resourceID, using: properties)
             
-            try store.moveFile(at: tempFileURL, withVersion: "123", to: resourceID)
+            try store.moveFile(at: tempFileURL, withVersion: "123", toResourceWith: resourceID)
             
             var resource = try store.resource(with: resourceID)
             XCTAssertEqual(resource!.fileState, .valid)
@@ -406,7 +406,7 @@ class FileStoreTests: TestCase {
             _ = try store.update(resourceWith: resourceID, using: properties)
             
             if let resource = try store.resource(with: resourceID) {
-                XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource.resourceID))
+                XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", toResourceWith: resource.resourceID))
                 XCTAssertEqual(resource.fileState, .none)
             } else {
                 XCTFail()

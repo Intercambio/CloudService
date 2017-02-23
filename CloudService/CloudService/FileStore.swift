@@ -215,14 +215,14 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    func moveFile(at url: URL, withVersion version: String, to resourceID: ResourceID) throws {
+    func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID) throws {
         return try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
             
             try db.transaction {
-                try self.moveFile(at: url, withVersion: version, to: resourceID, in: db)
+                try self.moveFile(at: url, withVersion: version, toResourceWith: resourceID, in: db)
             }
         }
     }
@@ -509,7 +509,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    private func moveFile(at url: URL, withVersion version: String, to resourceID: ResourceID, in db: SQLite.Connection) throws {
+    private func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID, in db: SQLite.Connection) throws {
         
         let accountID = resourceID.accountID
         let href = resourceID.path.href
