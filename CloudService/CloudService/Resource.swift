@@ -34,12 +34,16 @@ public struct Resource: Hashable, Equatable {
         }
     }
     
+    public var resouceID: ResourceID {
+        return ResourceID(accountID: account.identifier, path: path)
+    }
+    
     public static func ==(lhs: Resource, rhs: Resource) -> Bool {
-        return lhs.account == rhs.account && lhs.path == rhs.path
+        return lhs.resouceID == rhs.resouceID
     }
     
     public var hashValue: Int {
-        return account.hashValue ^ path.hashValue
+        return resouceID.hashValue
     }
 }
 
