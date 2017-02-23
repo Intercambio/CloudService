@@ -86,14 +86,15 @@ class FileStoreTests: TestCase {
             let date = Date()
             let url = URL(string: "https://example.com/api/")!
             let account: Account = try store.addAccount(with: url, username: "romeo")
-            
             let path = Path(components: ["a", "b", "c"])
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
             let properties = Properties(isCollection: false, version: "123", contentType: "application/pdf", contentLength: 55555, modified: date)
             let changeSet = try store.update(resourceOf: account, at: path, with: properties)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 1)
             
-            let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: path))
+            let resource = try store.resource(with: resourceID)
             XCTAssertNotNil(resource)
             if let resource = resource {
                 XCTAssertEqual(resource.resourceID.path, path)
@@ -106,23 +107,22 @@ class FileStoreTests: TestCase {
                 XCTAssertEqual(resource.properties.contentLength, 55555)
                 XCTAssertEqual(round(resource.properties.modified?.timeIntervalSinceNow ?? -100), round(date.timeIntervalSinceNow))
                 
-                let content = try store.contents(of: account, at: path.parent!)
+                let content = try store.contents(ofResourceWith: resourceID.parent!)
                 XCTAssertEqual(content, [resource])
             }
             
-            var parentPath = path.parent
-            
-            while parentPath != nil {
-                let contents = try store.contents(of: account, at: parentPath!)
+            var parentResourceID = resourceID.parent
+            while parentResourceID != nil {
+                let contents = try store.contents(ofResourceWith: parentResourceID!)
                 XCTAssertEqual(contents.count, 1)
                 
-                let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: parentPath!))
+                let resource = try store.resource(with: parentResourceID!)
                 XCTAssertNotNil(resource)
                 if let resource = resource {
                     XCTAssertTrue(resource.dirty)
                     XCTAssertTrue(resource.properties.isCollection)
                 }
-                parentPath = parentPath!.parent
+                parentResourceID = parentResourceID!.parent
             }
             
         } catch {
@@ -212,7 +212,7 @@ class FileStoreTests: TestCase {
                 XCTFail()
             }
             
-            XCTAssertEqual(try store.contents(of: account, at: path).count, 3)
+            XCTAssertEqual(try store.contents(ofResourceWith: resourceID).count, 3)
             XCTAssertNil(try store.resource(with: resourceID.appending("x")))
             XCTAssertNil(try store.resource(with: resourceID.appending(["x", "y"])))
             XCTAssertNil(try store.resource(with: resourceID.appending(["3", "x"])))
@@ -272,22 +272,22 @@ class FileStoreTests: TestCase {
                 XCTAssertFalse(resource.properties.isCollection)
                 XCTAssertFalse(resource.dirty)
                 
-                let content = try store.contents(of: account, at: path.parent!)
+                let content = try store.contents(ofResourceWith: resourceID.parent!)
                 XCTAssertEqual(content, [resource])
             }
             
-            var parentPath = path.parent
-            while parentPath != nil {
-                let contents = try store.contents(of: account, at: parentPath!)
+            var parentResourceID = resourceID.parent
+            while parentResourceID != nil {
+                let contents = try store.contents(ofResourceWith: parentResourceID!)
                 XCTAssertEqual(contents.count, 1)
                 
-                let resource = try store.resource(with: ResourceID(accountID: account.identifier, path: parentPath!))
+                let resource = try store.resource(with: parentResourceID!)
                 XCTAssertNotNil(resource)
                 if let resource = resource {
                     XCTAssertTrue(resource.dirty)
                     XCTAssertTrue(resource.properties.isCollection)
                 }
-                parentPath = parentPath!.parent
+                parentResourceID = parentResourceID!.parent
             }
             
         } catch {
@@ -312,7 +312,7 @@ class FileStoreTests: TestCase {
             let resource = try store.resource(with: resourceID)
             XCTAssertNil(resource)
             
-            let content = try store.contents(of: account, at: path.parent!)
+            let content = try store.contents(ofResourceWith: resourceID.parent!)
             XCTAssertEqual(content, [])
             
         } catch {

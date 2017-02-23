@@ -20,7 +20,7 @@ public protocol Store {
     func remove(_ account: Account) throws -> Void
     
     func resource(with resourceID: ResourceID) throws -> Resource?
-    func contents(of account: Account, at path: Path) throws -> [Resource]
+    func contents(ofResourceWith resourceID: ResourceID) throws -> [Resource]
     
     func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet
     func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet

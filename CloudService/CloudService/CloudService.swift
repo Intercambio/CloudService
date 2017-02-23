@@ -167,7 +167,8 @@ public class CloudService {
     }
     
     public func contents(of account: Account, at path: Path) throws -> [Resource] {
-        return try store.contents(of: account, at: path)
+        let resourceID = ResourceID(accountID: account.identifier, path: path)
+        return try store.contents(ofResourceWith: resourceID)
     }
     
     public func updateResource(at path: Path, of account: Account, completion: ((Error?) -> Void)?) {

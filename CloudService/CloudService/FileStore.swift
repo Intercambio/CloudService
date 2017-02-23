@@ -148,23 +148,25 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    func contents(of account: Account, at path: Path) throws -> [Resource] {
+    func contents(ofResourceWith resourceID: ResourceID) throws -> [Resource] {
         return try queue.sync {
             guard
                 let db = self.db
-            else { throw FileStoreError.notSetup }
+                else { throw FileStoreError.notSetup }
             
             var result: [Resource] = []
             
             try db.transaction {
                 
-                let href = path.href
-                let hrefPattern = path.length == 0 ? "/%" : "\(href)/%"
+                let href = resourceID.path.href
+                let depth = resourceID.path.length
+                let hrefPattern = depth == 0 ? "/%" : "\(href)/%"
+                let accountID = resourceID.accountID
                 
                 let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_identifier == account.identifier
+                    FileStoreSchema.account_identifier == accountID
                         && FileStoreSchema.href.like(hrefPattern)
-                        && FileStoreSchema.depth == path.length + 1
+                        && FileStoreSchema.depth == depth + 1
                 )
                 
                 for row in try db.prepare(query) {
@@ -176,7 +178,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             return result
         }
     }
-    
+
     func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet {
         return try update(resourceOf: account, at: path, with: properties, content: nil)
     }
