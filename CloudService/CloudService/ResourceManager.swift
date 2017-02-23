@@ -11,9 +11,9 @@ import Foundation
 protocol ResourceManagerDelegate: class {
     func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) -> Void
-    func resourceManager(_ manager: ResourceManager, didStartDownloading resource: Resource) -> Void
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resource: Resource, error: Error) -> Void
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resource: Resource) -> Void
+    func resourceManager(_ manager: ResourceManager, didStartDownloading resourceID: ResourceID) -> Void
+    func resourceManager(_ manager: ResourceManager, didFailDownloading resourceID: ResourceID, error: Error) -> Void
+    func resourceManager(_ manager: ResourceManager, didFinishDownloading resourceID: ResourceID) -> Void
 }
 
 class ResourceManager: CloudAPIDelegate {
@@ -102,31 +102,27 @@ class ResourceManager: CloudAPIDelegate {
                 content[name] = resourceProperties
             }
         }
-        
-        return try store.update(resourceOf: self.account, at: path, with: properties, content: content)
+        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+        return try store.update(resourceWith: resourceID, using: properties, content: content)
     }
     
     private func removeResource(at path: Path) throws -> StoreChangeSet {
-        return try store.update(resourceOf: self.account, at: path, with: nil)
+        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+        return try store.update(resourceWith: resourceID, using: nil)
     }
     
     // MARK: Download Resource
     
     func downloadResource(at path: Path) -> Progress {
         return queue.sync {
-            let progress = self.makeProgress(for: path)
             
+            let progress = self.makeProgress(for: path)
             let url = self.account.url.appending(path)
             self.api.download(url)
             
-            do {
-                if let resource = try self.store.resource(of: self.account, at: path) {
-                    self.delegate?.resourceManager(self, didStartDownloading: resource)
-                }
-            } catch {
-                NSLog("\(error)")
-            }
-            
+            let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+            self.delegate?.resourceManager(self, didStartDownloading: resourceID)
+
             return progress
         }
     }
@@ -247,15 +243,16 @@ class ResourceManager: CloudAPIDelegate {
     func cloudAPI(_: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
         do {
             guard
-                let path = url.makePath(relativeTo: account.url),
-                let resource = try store.resource(of: account, at: path)
+                let path = url.makePath(relativeTo: account.url)
             else { return }
             
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
             do {
-                let updatedResource = try store.moveFile(at: location, withVersion: etag, to: resource)
-                delegate?.resourceManager(self, didFinishDownloading: updatedResource)
+                try store.moveFile(at: location, withVersion: etag, toResourceWith: resourceID)
+                delegate?.resourceManager(self, didFinishDownloading: resourceID)
             } catch {
-                delegate?.resourceManager(self, didFailDownloading: resource, error: error)
+                delegate?.resourceManager(self, didFailDownloading: resourceID, error: error)
             }
             
             self.queue.async {

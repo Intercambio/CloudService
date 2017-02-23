@@ -9,21 +9,23 @@
 import Foundation
 
 public class StoreChangeSet {
-    public var insertedOrUpdated: [Resource] = []
-    public var deleted: [Resource] = []
+    public var insertedOrUpdated: [ResourceID] = []
+    public var deleted: [ResourceID] = []
 }
 
 public protocol Store {
-    var accounts: [Account] { get }
+    func allAccounts() throws -> [Account]
+    func account(with identifier: AccountID) throws -> Account?
+    
     func addAccount(with url: URL, username: String) throws -> Account
-    func update(_ account: Account, with label: String?) throws -> Account
+    func update(_ account: Account, with label: String?) throws -> Void
     func remove(_ account: Account) throws -> Void
     
-    func resource(of account: Account, at path: Path) throws -> Resource?
-    func contents(of account: Account, at path: Path) throws -> [Resource]
+    func resource(with resourceID: ResourceID) throws -> Resource?
+    func content(ofResourceWith resourceID: ResourceID) throws -> [Resource]
     
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?) throws -> StoreChangeSet
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
     
-    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource
+    func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID) throws -> Void
 }

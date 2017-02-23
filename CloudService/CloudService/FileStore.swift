@@ -60,36 +60,29 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     
     // MARK: Accounts
     
-    var accounts: [Account] {
-        return queue.sync {
-            do {
-                return try self.fetchAccounts()
-            } catch {
-                NSLog("Failed to fetch accounts: \(error)")
-                return []
-            }
+    func allAccounts() throws -> [Account] {
+        return try queue.sync {
+            return try self.fetchAccounts()
         }
     }
     
-    func update(_ account: Account, with label: String?) throws -> Account {
+    func account(with accountID: AccountID) throws -> Account? {
         return try queue.sync {
+            return try self.fetchAccount(with: accountID)
+        }
+    }
+    
+    func update(_ account: Account, with label: String?) throws {
+        try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
-            var account: Account = account
             try db.transaction {
                 let update = FileStoreSchema.account
                     .filter(FileStoreSchema.identifier == account.identifier)
                     .update(FileStoreSchema.label <- label)
                 _ = try db.run(update)
-                account = Account(
-                    identifier: account.identifier,
-                    url: account.url,
-                    username: account.username,
-                    label: label
-                )
             }
-            return account
         }
     }
     
@@ -135,40 +128,42 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     
     // MARK: Resources
     
-    func resource(of account: Account, at path: Path) throws -> Resource? {
+    func resource(with resourceID: ResourceID) throws -> Resource? {
         return try queue.sync {
             guard
                 let db = self.db
-            else { throw FileStoreError.notSetup }
+                else { throw FileStoreError.notSetup }
             var resource: Resource?
             try db.transaction {
-                resource = try self.resource(of: account, at: path, in: db)
+                resource = try self.resource(with: resourceID, in: db)
             }
             return resource
         }
     }
     
-    func contents(of account: Account, at path: Path) throws -> [Resource] {
+    func content(ofResourceWith resourceID: ResourceID) throws -> [Resource] {
         return try queue.sync {
             guard
                 let db = self.db
-            else { throw FileStoreError.notSetup }
+                else { throw FileStoreError.notSetup }
             
             var result: [Resource] = []
             
             try db.transaction {
                 
-                let href = path.href
-                let hrefPattern = path.length == 0 ? "/%" : "\(href)/%"
+                let href = resourceID.path.href
+                let depth = resourceID.path.length
+                let hrefPattern = depth == 0 ? "/%" : "\(href)/%"
+                let accountID = resourceID.accountID
                 
                 let query = FileStoreSchema.resource.filter(
-                    FileStoreSchema.account_identifier == account.identifier
+                    FileStoreSchema.account_identifier == accountID
                         && FileStoreSchema.href.like(hrefPattern)
-                        && FileStoreSchema.depth == path.length + 1
+                        && FileStoreSchema.depth == depth + 1
                 )
                 
                 for row in try db.prepare(query) {
-                    let resource = try self.makeResource(with: row, account: account)
+                    let resource = try self.makeResource(with: row)
                     result.append(resource)
                 }
             }
@@ -176,12 +171,12 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             return result
         }
     }
-    
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet {
-        return try update(resourceOf: account, at: path, with: properties, content: nil)
+
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?) throws -> StoreChangeSet {
+        return try update(resourceWith: resourceID, using: properties, content: nil)
     }
     
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet {
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet {
         return try queue.sync {
             guard
                 let db = self.db
@@ -195,24 +190,24 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 
                 if let properties = properties {
                     
-                    if try self.updateResource(at: path, of: account, with: properties, timestamp: timestamp, in: db, with: changeSet) {
+                    if try self.updateResource(with: resourceID, using: properties, timestamp: timestamp, in: db, with: changeSet) {
                         
-                        var parentPath = path.parent
-                        while parentPath != nil {
-                            try self.invalidateCollection(at: parentPath!, of: account, in: db, with: changeSet)
-                            parentPath = parentPath!.parent
+                        var parentResourceID = resourceID.parent
+                        while parentResourceID != nil {
+                            try self.invalidateCollection(with: parentResourceID!, in: db, with: changeSet)
+                            parentResourceID = parentResourceID!.parent
                         }
                         
                         if properties.isCollection == true {
                             if let content = content {
-                                try self.updateCollection(at: path, of: account, with: content, timestamp: timestamp, in: db, with: changeSet)
+                                try self.updateCollection(with: resourceID, using: content, timestamp: timestamp, in: db, with: changeSet)
                             }
                         } else {
-                            try self.clearCollection(at: path, of: account, in: db, with: changeSet)
+                            try self.clearCollection(with: resourceID, in: db, with: changeSet)
                         }
                     }
                 } else {
-                    try self.removeResource(at: path, of: account, in: db, with: changeSet)
+                    try self.removeResource(with: resourceID, in: db, with: changeSet)
                 }
             }
             
@@ -220,17 +215,15 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    func moveFile(at url: URL, withVersion version: String, to resource: Resource) throws -> Resource {
+    func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID) throws {
         return try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
             
-            var resource: Resource = resource
             try db.transaction {
-                resource = try self.moveFile(at: url, withVersion: version, to: resource, in: db)
+                try self.moveFile(at: url, withVersion: version, toResourceWith: resourceID, in: db)
             }
-            return resource
         }
     }
     
@@ -256,6 +249,21 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         return result
     }
     
+    private func fetchAccount(with accountID: AccountID) throws -> Account? {
+        guard
+            let db = self.db
+            else { throw FileStoreError.notSetup }
+        var account: Account? = nil
+        try db.transaction {
+            let query = FileStoreSchema.account
+                .filter(FileStoreSchema.identifier == accountID)
+            if let row = try db.pluck(query) {
+                account = try self.makeAcocunt(with: row)
+            }
+        }
+        return account
+    }
+    
     private func makeAcocunt(with row: SQLite.Row) throws -> Account {
         let identifier = row.get(FileStoreSchema.identifier)
         let url = row.get(FileStoreSchema.url)
@@ -264,17 +272,17 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         return Account(identifier: identifier, url: url, username: username, label: label)
     }
     
-    private func resource(of account: Account, at path: Path, in db: SQLite.Connection) throws -> Resource? {
-        let href = path.href
+    private func resource(with resoruceID: ResourceID, in db: SQLite.Connection) throws -> Resource? {
+        let href = resoruceID.path.href
+        let accountID = resoruceID.accountID
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_identifier == account.identifier &&
-                FileStoreSchema.href == href
+            FileStoreSchema.account_identifier == accountID && FileStoreSchema.href == href
         )
         
         if let row = try db.pluck(query) {
-            return try self.makeResource(with: row, account: account)
-        } else if path.isRoot {
+            return try self.makeResource(with: row)
+        } else if resoruceID.isRoot {
             let properties = Properties(
                 isCollection: true,
                 version: UUID().uuidString.lowercased(),
@@ -283,8 +291,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 modified: nil
             )
             return Resource(
-                account: account,
-                path: path,
+                resourceID: resoruceID,
                 dirty: true,
                 updated: nil,
                 properties: properties,
@@ -296,7 +303,8 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    private func makeResource(with row: SQLite.Row, account: Account) throws -> Resource {
+    private func makeResource(with row: SQLite.Row) throws -> Resource {
+        let accountID = row.get(FileStoreSchema.account_identifier)
         let path = Path(href: row.get(FileStoreSchema.href))
         let isCollection = row.get(FileStoreSchema.is_collection)
         let dirty = row.get(FileStoreSchema.dirty)
@@ -307,7 +315,9 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         let contentLength = row.get(FileStoreSchema.content_length)
         let modified = row.get(FileStoreSchema.modified)
         
-        let fileURL = self.makeLocalFileURL(with: path, account: account)
+        let resourceID = ResourceID(accountID: accountID, path: path)
+        
+        let fileURL = self.makeLocalFileURL(with: resourceID)
         
         let properties = Properties(
             isCollection: isCollection,
@@ -318,8 +328,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         )
         
         let resource = Resource(
-            account: account,
-            path: path,
+            resourceID: resourceID,
             dirty: dirty,
             updated: updated,
             properties: properties,
@@ -329,16 +338,16 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         return resource
     }
     
-    private func invalidateCollection(at path: Path, of account: Account, in db: SQLite.Connection, with _: StoreChangeSet) throws {
+    private func invalidateCollection(with resourceID: ResourceID, in db: SQLite.Connection, with _: StoreChangeSet) throws {
         
-        let href = path.href
-        let depth = path.length
+        let href = resourceID.path.href
+        let depth = resourceID.path.length
         
-        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href == href)
+        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == resourceID.accountID && FileStoreSchema.href == href)
         
         if try db.run(query.update(FileStoreSchema.dirty <- true)) == 0 {
             let insert = FileStoreSchema.resource.insert(
-                FileStoreSchema.account_identifier <- account.identifier,
+                FileStoreSchema.account_identifier <- resourceID.accountID,
                 FileStoreSchema.href <- href,
                 FileStoreSchema.depth <- depth,
                 FileStoreSchema.version <- "",
@@ -349,20 +358,18 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    private func updateResource(at path: Path, of account: Account, with properties: Properties, dirty: Bool = false, timestamp: Date?, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws -> Bool {
+    private func updateResource(with resourceID: ResourceID, using properties: Properties, dirty: Bool = false, timestamp: Date?, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws -> Bool {
         
-        let href = path.href
+        let href = resourceID.path.href
         let query = FileStoreSchema.resource
             .filter(
-                FileStoreSchema.account_identifier == account.identifier &&
+                FileStoreSchema.account_identifier == resourceID.accountID &&
                     FileStoreSchema.href == href
             )
         
         // Resource is up to date, just updating the timestamp
         if try db.run(query.filter(FileStoreSchema.dirty == false && FileStoreSchema.version == properties.version).update(FileStoreSchema.updated <- timestamp)) > 0 {
-            if let resource = try self.resource(of: account, at: path, in: db) {
-                changeSet.insertedOrUpdated.append(resource)
-            }
+            changeSet.insertedOrUpdated.append(resourceID)
             return false
         } else if try db.run(query.update(
             FileStoreSchema.version <- properties.version,
@@ -372,15 +379,13 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             FileStoreSchema.content_length <- properties.contentLength,
             FileStoreSchema.modified <- properties.modified
         )) > 0 {
-            if let resource = try self.resource(of: account, at: path, in: db) {
-                changeSet.insertedOrUpdated.append(resource)
-            }
+            changeSet.insertedOrUpdated.append(resourceID)
             return true
         } else {
             _ = try db.run(FileStoreSchema.resource.insert(
-                FileStoreSchema.account_identifier <- account.identifier,
+                FileStoreSchema.account_identifier <- resourceID.accountID,
                 FileStoreSchema.href <- href,
-                FileStoreSchema.depth <- path.length,
+                FileStoreSchema.depth <- resourceID.path.length,
                 FileStoreSchema.updated <- timestamp,
                 FileStoreSchema.version <- properties.version,
                 FileStoreSchema.is_collection <- properties.isCollection,
@@ -389,30 +394,19 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 FileStoreSchema.content_length <- properties.contentLength,
                 FileStoreSchema.modified <- properties.modified
             ))
-            let fileURL = self.makeLocalFileURL(with: path, account: account)
             
-            let resource = Resource(
-                account: account,
-                path: path,
-                dirty: dirty,
-                updated: timestamp,
-                properties: properties,
-                fileURL: fileURL,
-                fileVersion: nil
-            )
-            
-            changeSet.insertedOrUpdated.append(resource)
+            changeSet.insertedOrUpdated.append(resourceID)
             return true
         }
     }
     
-    private func updateCollection(at path: Path, of account: Account, with content: [String: Properties], timestamp: Date?, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws {
+    private func updateCollection(with resourceID: ResourceID, using content: [String: Properties], timestamp: Date?, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws {
         
-        let href = path.href
-        let hrefPattern = path.length == 0 ? "/%" : "\(href)/%"
+        let href = resourceID.path.href
+        let hrefPattern = resourceID.path.length == 0 ? "/%" : "\(href)/%"
         
         let query = FileStoreSchema.resource
-            .filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href.like(hrefPattern) && FileStoreSchema.depth == path.length + 1)
+            .filter(FileStoreSchema.account_identifier == resourceID.accountID && FileStoreSchema.href.like(hrefPattern) && FileStoreSchema.depth == resourceID.path.length + 1)
             .order(FileStoreSchema.href.asc)
             .select(FileStoreSchema.href, FileStoreSchema.version)
         
@@ -427,33 +421,34 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                         insertOrUpdate[name] = nil
                     }
                 } else {
-                    _ = try self.removeResource(at: path, of: account, in: db, with: changeSet)
+                    _ = try self.removeResource(with: resourceID.appending(name), in: db, with: changeSet)
                 }
             }
         }
         
         for (name, properties) in insertOrUpdate {
-            let childPath = path.appending(name)
-            _ = try self.updateResource(at: childPath, of: account, with: properties, dirty: properties.isCollection, timestamp: timestamp, in: db, with: changeSet)
+            let childResourceID = resourceID.appending(name)
+            _ = try self.updateResource(with: childResourceID, using: properties, dirty: properties.isCollection, timestamp: timestamp, in: db, with: changeSet)
             if properties.isCollection == false {
-                _ = try self.clearCollection(at: childPath, of: account, in: db, with: changeSet)
+                _ = try self.clearCollection(with: childResourceID, in: db, with: changeSet)
             }
         }
     }
     
-    private func clearCollection(at path: Path, of account: Account, in db: SQLite.Connection, with _: StoreChangeSet) throws {
-        let href = path.href
-        let hrefPattern = path.length == 0 ? "/%" : "\(href)/%"
+    private func clearCollection(with resourceID: ResourceID, in db: SQLite.Connection, with _: StoreChangeSet) throws {
+        
+        let href = resourceID.path.href
+        let hrefPattern = resourceID.path.length == 0 ? "/%" : "\(href)/%"
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_identifier == account.identifier
+            FileStoreSchema.account_identifier == resourceID.accountID
                 && FileStoreSchema.href.like(hrefPattern)
-                && FileStoreSchema.depth == path.length + 1
+                && FileStoreSchema.depth == resourceID.path.length + 1
         )
         
         _ = try db.run(query.delete())
         
-        let fileURL = makeLocalFileURL(with: path, account: account)
+        let fileURL = makeLocalFileURL(with: resourceID)
         
         var coordinatorSuccess = false
         var coordinatorError: NSError?
@@ -473,14 +468,15 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         }
     }
     
-    private func removeResource(at path: Path, of account: Account, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws {
+    private func removeResource(with resourceID: ResourceID, in db: SQLite.Connection, with changeSet: StoreChangeSet) throws {
         
-        let href = path.href
-        let query = FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier && FileStoreSchema.href == href)
+        let query = FileStoreSchema.resource.filter(
+            FileStoreSchema.account_identifier == resourceID.accountID && FileStoreSchema.href == resourceID.path.href
+        )
         
         if try db.run(query.delete()) > 0 {
             
-            let fileURL = makeLocalFileURL(with: path, account: account)
+            let fileURL = makeLocalFileURL(with: resourceID)
             
             var coordinatorSuccess = false
             var coordinatorError: NSError?
@@ -499,45 +495,28 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 throw FileStoreError.internalError
             }
             
-            let hrefPattern = path.length == 0 ? "/%" : "\(href)/%"
+            let hrefPattern = resourceID.path.length == 0 ? "/%" : "\(resourceID.path.href)/%"
             
             let query = FileStoreSchema.resource.filter(
-                FileStoreSchema.account_identifier == account.identifier
+                FileStoreSchema.account_identifier == resourceID.accountID
                     && FileStoreSchema.href.like(hrefPattern)
-                    && FileStoreSchema.depth == path.length + 1
+                    && FileStoreSchema.depth == resourceID.path.length + 1
             )
             
-            let mightBeACollection = try db.run(query.delete()) > 0
-            
-            let properties = Properties(
-                isCollection: mightBeACollection,
-                version: UUID().uuidString.lowercased(),
-                contentType: nil,
-                contentLength: nil,
-                modified: nil
-            )
-            
-            let resource = Resource(
-                account: account,
-                path: path,
-                dirty: false,
-                updated: nil,
-                properties: properties,
-                fileURL: nil,
-                fileVersion: nil
-            )
-            
-            changeSet.deleted.append(resource)
+            _ = try db.run(query.delete())
+
+            changeSet.deleted.append(resourceID)
         }
     }
     
-    private func moveFile(at url: URL, withVersion version: String, to resource: Resource, in db: SQLite.Connection) throws -> Resource {
-        let href = resource.path.href
-        let fileURL = makeLocalFileURL(with: resource)
+    private func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID, in db: SQLite.Connection) throws {
+        
+        let accountID = resourceID.accountID
+        let href = resourceID.path.href
+        let fileURL = makeLocalFileURL(with: resourceID)
         
         let query = FileStoreSchema.resource.filter(
-            FileStoreSchema.account_identifier == resource.account.identifier &&
-                FileStoreSchema.href == href
+            FileStoreSchema.account_identifier == accountID && FileStoreSchema.href == href
         )
         
         if let row = try db.pluck(query) {
@@ -565,16 +544,6 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 } else if coordinatorSuccess == false {
                     throw FileStoreError.internalError
                 }
-                
-                return Resource(
-                    account: resource.account,
-                    path: resource.path,
-                    dirty: resource.dirty,
-                    updated: resource.updated,
-                    properties: resource.properties,
-                    fileURL: fileURL,
-                    fileVersion: version
-                )
             }
         } else {
             throw FileStoreError.resourceDoesNotExist
@@ -584,13 +553,13 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     // MARK: HRef & Local File URL
     
     private func makeLocalFileURL(with resource: Resource) -> URL {
-        return makeLocalFileURL(with: resource.path, account: resource.account)
+        return makeLocalFileURL(with: resource.resourceID)
     }
     
-    private func makeLocalFileURL(with path: Path, account: Account) -> URL {
+    private func makeLocalFileURL(with resourceID: ResourceID) -> URL {
         let storeBase = directory.appendingPathComponent("files", isDirectory: true)
-        let accountBase = storeBase.appendingPathComponent(account.identifier, isDirectory: true)
-        let fileURL = accountBase.appending(path)
+        let accountBase = storeBase.appendingPathComponent(resourceID.accountID, isDirectory: true)
+        let fileURL = accountBase.appending(resourceID.path)
         return fileURL
     }
     
