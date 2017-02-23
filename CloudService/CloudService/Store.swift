@@ -22,8 +22,8 @@ public protocol Store {
     func resource(with resourceID: ResourceID) throws -> Resource?
     func contents(ofResourceWith resourceID: ResourceID) throws -> [Resource]
     
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?) throws -> StoreChangeSet
-    func update(resourceOf account: Account, at path: Path, with properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?) throws -> StoreChangeSet
+    func update(resourceWith resourceID: ResourceID, using properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
     
     func moveFile(at url: URL, withVersion version: String, to resourceID: ResourceID) throws -> Void
 }

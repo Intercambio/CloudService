@@ -102,12 +102,13 @@ class ResourceManager: CloudAPIDelegate {
                 content[name] = resourceProperties
             }
         }
-        
-        return try store.update(resourceOf: self.account, at: path, with: properties, content: content)
+        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+        return try store.update(resourceWith: resourceID, using: properties, content: content)
     }
     
     private func removeResource(at path: Path) throws -> StoreChangeSet {
-        return try store.update(resourceOf: self.account, at: path, with: nil)
+        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+        return try store.update(resourceWith: resourceID, using: nil)
     }
     
     // MARK: Download Resource

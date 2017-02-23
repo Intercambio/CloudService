@@ -65,11 +65,12 @@ class FileStoreTests: TestCase {
             let account = try store.addAccount(with: url, username: "romeo")
             XCTAssertEqual(account.url, url)
             
-            _ = try store.update(resourceOf: account, at: Path(components: ["a"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            
-            try store.remove(account)
             let path = Path(components: ["a"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            
+            try store.remove(account)
             XCTAssertNil(try store.resource(with: resourceID))
             
         } catch {
@@ -90,7 +91,7 @@ class FileStoreTests: TestCase {
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
             let properties = Properties(isCollection: false, version: "123", contentType: "application/pdf", contentLength: 55555, modified: date)
-            let changeSet = try store.update(resourceOf: account, at: path, with: properties)
+            let changeSet = try store.update(resourceWith: resourceID, using: properties)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 1)
             
@@ -147,7 +148,7 @@ class FileStoreTests: TestCase {
                 "2": Properties(isCollection: false, version: "b", contentType: nil, contentLength: nil, modified: nil),
                 "3": Properties(isCollection: false, version: "c", contentType: nil, contentLength: nil, modified: nil)
             ]
-            _ = try store.update(resourceOf: account, at: path, with: properties, content: content)
+            _ = try store.update(resourceWith: resourceID, using: properties, content: content)
             
             XCTAssertNotNil(try store.resource(with: resourceID.appending("1")))
             XCTAssertNotNil(try store.resource(with: resourceID.appending("2")))
@@ -168,11 +169,10 @@ class FileStoreTests: TestCase {
             let account = try store.addAccount(with: url, username: "romeo")
             let path = Path(components: ["a", "b", "c"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
-            
-            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "x", "y"]), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "3", "x"]), with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: Path(components: ["a", "b", "c", "3"]), with: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            
+   
+            _ = try store.update(resourceWith: resourceID.appending(["x", "y"]), using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID.appending(["3", "x"]), using: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID.appending(["3"]), using: Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil))
             
             let properties = Properties(isCollection: true, version: "123", contentType: nil, contentLength: nil, modified: nil)
             let content = [
@@ -180,7 +180,7 @@ class FileStoreTests: TestCase {
                 "2": Properties(isCollection: false, version: "b", contentType: nil, contentLength: nil, modified: nil),
                 "3": Properties(isCollection: false, version: "c", contentType: nil, contentLength: nil, modified: nil)
             ]
-            let changeSet = try store.update(resourceOf: account, at: path, with: properties, content: content)
+            let changeSet = try store.update(resourceWith: resourceID, using: properties, content: content)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 4)
             XCTAssertEqual(changeSet.deleted.count, 1)
@@ -232,8 +232,8 @@ class FileStoreTests: TestCase {
             let path = Path(components: ["a", "b"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
-            _ = try store.update(resourceOf: account, at: path.appending("c"), with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID.appending("c"), using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
             
             let resource = try store.resource(with: resourceID)
             XCTAssertNotNil(resource)
@@ -260,9 +260,9 @@ class FileStoreTests: TestCase {
             let path = Path(components: ["a", "b", "c"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
              
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: path.parent!, with: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "888", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID.parent!, using: Properties(isCollection: true, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "888", contentType: nil, contentLength: nil, modified: nil))
             
             let resource = try store.resource(with: resourceID)
             XCTAssertNotNil(resource)
@@ -306,8 +306,8 @@ class FileStoreTests: TestCase {
             let path = Path(components: ["a", "b", "c"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            _ = try store.update(resourceOf: account, at: path.parent!, with: Properties(isCollection: false, version: "567", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID.parent!, using: Properties(isCollection: false, version: "567", contentType: nil, contentLength: nil, modified: nil))
             
             let resource = try store.resource(with: resourceID)
             XCTAssertNil(resource)
@@ -331,8 +331,8 @@ class FileStoreTests: TestCase {
             let path = Path(components: ["a", "b", "c"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
-            let changeSet = try store.update(resourceOf: account, at: path.parent!, with: nil)
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            let changeSet = try store.update(resourceWith: resourceID.parent!, using: nil)
             
             XCTAssertEqual(changeSet.insertedOrUpdated.count, 0)
             XCTAssertEqual(changeSet.deleted.count, 1)
@@ -362,7 +362,7 @@ class FileStoreTests: TestCase {
             let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
             try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
-            _ = try store.update(resourceOf: account, at: path, with: properties)
+            _ = try store.update(resourceWith: resourceID, using: properties)
             
             try store.moveFile(at: tempFileURL, withVersion: "123", to: resourceID)
             
@@ -374,7 +374,7 @@ class FileStoreTests: TestCase {
                 XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
             }
             
-            _ = try store.update(resourceOf: account, at: path, with: Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil))
+            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "345", contentType: nil, contentLength: nil, modified: nil))
             resource = try store.resource(with: resourceID)
             
             XCTAssertEqual(resource!.fileState, .outdated)
@@ -403,7 +403,7 @@ class FileStoreTests: TestCase {
             let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
             try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
             
-            _ = try store.update(resourceOf: account, at: path, with: properties)
+            _ = try store.update(resourceWith: resourceID, using: properties)
             
             if let resource = try store.resource(with: resourceID) {
                 XCTAssertThrowsError(try store.moveFile(at: tempFileURL, withVersion: "345", to: resource.resourceID))

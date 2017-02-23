@@ -88,8 +88,10 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             resourceManager.delegate = self
             
             let path = Path(components: ["test", "removed"])
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            _ = try store.update(resourceOf: account, at: path, with: properties)
+            _ = try store.update(resourceWith: resourceID, using: properties)
             
             let update = expectation(description: "Update")
             resourceManager.updateResource(at: path) { error in
@@ -123,8 +125,10 @@ class ResourceManagerTests: TestCase, ResourceManagerDelegate {
             resourceManager.delegate = self
             
             let path = Path(components: ["test", "file"])
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
             let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
-            _ = try store.update(resourceOf: account, at: path, with: properties)
+            _ = try store.update(resourceWith: resourceID, using: properties)
             
             expectation(forNotification: "Test.ResourceManager.startDownloadingResourceAt", object: resourceManager, handler: nil)
             expectation(forNotification: "Test.ResourceManager.finishDownloadingResourceAt", object: resourceManager, handler: nil)
