@@ -366,7 +366,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
         // Resource is up to date, just updating the timestamp
         if try db.run(query.filter(FileStoreSchema.dirty == false && FileStoreSchema.version == properties.version).update(FileStoreSchema.updated <- timestamp)) > 0 {
             if let resource = try self.resource(with: resourceID, in: db) {
-                changeSet.insertedOrUpdated.append(resource)
+                changeSet.insertedOrUpdated.append(resource.resourceID)
             }
             return false
         } else if try db.run(query.update(
@@ -378,7 +378,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             FileStoreSchema.modified <- properties.modified
         )) > 0 {
             if let resource = try self.resource(with: resourceID, in: db) {
-                changeSet.insertedOrUpdated.append(resource)
+                changeSet.insertedOrUpdated.append(resource.resourceID)
             }
             return true
         } else {
@@ -406,7 +406,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 fileVersion: nil
             )
             
-            changeSet.insertedOrUpdated.append(resource)
+            changeSet.insertedOrUpdated.append(resource.resourceID)
             return true
         }
     }
@@ -533,7 +533,7 @@ class FileStore: NSObject, Store, FileManagerDelegate {
                 fileVersion: nil
             )
             
-            changeSet.deleted.append(resource)
+            changeSet.deleted.append(resource.resourceID)
         }
     }
     

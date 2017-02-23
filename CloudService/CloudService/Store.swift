@@ -9,8 +9,8 @@
 import Foundation
 
 public class StoreChangeSet {
-    public var insertedOrUpdated: [Resource] = []
-    public var deleted: [Resource] = []
+    public var insertedOrUpdated: [ResourceID] = []
+    public var deleted: [ResourceID] = []
 }
 
 public protocol Store {
