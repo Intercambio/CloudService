@@ -121,7 +121,10 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             
             try db.transaction {
                 try db.run(FileStoreSchema.account.filter(FileStoreSchema.identifier == account.identifier).delete())
-                try db.run(FileStoreSchema.resource.filter(FileStoreSchema.account_identifier == account.identifier).delete())
+                
+                let resoruceID = ResourceID(accountID: account.identifier, components: [])
+                let changeSet = StoreChangeSet()
+                try self.clearCollection(with: resoruceID, in: db, with: changeSet)
             }
         }
     }

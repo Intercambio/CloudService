@@ -68,10 +68,25 @@ class FileStoreTests: TestCase {
             let path = Path(components: ["a"])
             let resourceID = ResourceID(accountID: account.identifier, path: path)
             
-            _ = try store.update(resourceWith: resourceID, using: Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil))
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            
+            _ = try store.update(resourceWith: resourceID, using: properties)
+            
+            let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
+            try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
+            
+            try store.moveFile(at: tempFileURL, withVersion: "123", toResourceWith: resourceID)
+            
+            let localFileURL = try store.resource(with: resourceID)?.fileURL
+            XCTAssertNotNil(localFileURL)
+            XCTAssertTrue(FileManager.default.fileExists(atPath: localFileURL?.path ?? ""))
             
             try store.remove(account)
             XCTAssertNil(try store.resource(with: resourceID))
+            
+            XCTAssertFalse(FileManager.default.fileExists(atPath: localFileURL?.path ?? ""))
             
         } catch {
             XCTFail("\(error)")
