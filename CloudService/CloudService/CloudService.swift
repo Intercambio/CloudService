@@ -9,9 +9,12 @@
 import Foundation
 import Dispatch
 import KeyChain
+import PureXML
 
 public enum CloudServiceError: Error {
     case internalError
+    case invalidResponse
+    case unexpectedResponse(statusCode: Int, document: PXDocument?)
 }
 
 extension Notification.Name {
@@ -22,7 +25,7 @@ extension Notification.Name {
     public static let CloudServiceDidChangeResources = Notification.Name(rawValue: "CloudStore.CloudServiceDidChangeResources")
 }
 
-public let AccountKey = "CloudStore.AccountKey"
+public let AccountIDKey = "CloudStore.AccountIDKey"
 public let InsertedOrUpdatedResourcesKey = "CloudStore.InsertedOrUpdatedResourcesKey"
 public let DeletedResourcesKey = "CloudStore.DeletedResourcesKey"
 
@@ -36,7 +39,7 @@ public class CloudService {
     
     public weak var delegate: CloudServiceDelegate?
     
-    private let store: FileStore
+    fileprivate let store: FileStore
     private let keyChain: KeyChain
     private let queue: DispatchQueue
     
@@ -55,23 +58,12 @@ public class CloudService {
                             throw error!
                         }
                         
-                        let resumeGroup = DispatchGroup()
-                        
-                        for account in self.store.accounts {
-                            resumeGroup.enter()
-                            let manager = self.resourceManager(for: account)
-                            manager.resume { error in
-                                if error != nil {
-                                    NSLog("Failed to resume manager: \(error)")
-                                }
-                                resumeGroup.leave()
-                            }
+                        for account in try self.store.allAccounts() {
+                            _ = self.resourceManager(for: account.identifier)
+                            _ = self.downloadManager(for: account.identifier)
                         }
                         
-                        resumeGroup.notify(queue: self.queue) {
-                            completion?(nil)
-                        }
-                        
+                        completion?(nil)
                     } catch {
                         completion?(error)
                     }
@@ -88,8 +80,12 @@ public class CloudService {
     
     // MARK: - Account Management
     
-    public var accounts: [Account] {
-        return store.accounts
+    public func allAccounts() throws -> [Account] {
+        return try store.allAccounts()
+    }
+    
+    public func account(with identifier: AccountID) throws -> Account? {
+        return try store.account(with: identifier)
     }
     
     public func addAccount(with url: URL, username: String) throws -> Account {
@@ -101,7 +97,7 @@ public class CloudService {
         center.post(
             name: Notification.Name.CloudServiceDidAddAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
@@ -111,21 +107,21 @@ public class CloudService {
         return account
     }
     
-    public func update(_ account: Account, with label: String?) throws -> Account {
-        let account = try store.update(account, with: label)
+    public func update(_ account: Account, with label: String?) throws {
+        try store.update(account, with: label)
         
         let center = NotificationCenter.default
+        
         center.post(
             name: Notification.Name.CloudServiceDidUdpateAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
+        
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
             object: self
         )
-        
-        return account
     }
     
     public func remove(_ account: Account) throws {
@@ -138,7 +134,7 @@ public class CloudService {
         center.post(
             name: Notification.Name.CloudServiceDidRemoveAccount,
             object: self,
-            userInfo: [AccountKey: account]
+            userInfo: [AccountIDKey: account.identifier]
         )
         center.post(
             name: Notification.Name.CloudServiceDidChangeAccounts,
@@ -146,59 +142,48 @@ public class CloudService {
         )
     }
     
-    // MARK: - Resource Management
-    
-    private var resourceManager: [Account: ResourceManager] = [:]
-    
-    private func resourceManager(for account: Account) -> ResourceManager {
-        if let manager = resourceManager[account] {
-            return manager
-        } else {
-            let manager = ResourceManager(store: store, account: account)
-            manager.delegate = self
-            resourceManager[account] = manager
-            return manager
-        }
+    public func resource(with resourceID: ResourceID) throws -> Resource? {
+        return try store.resource(with: resourceID)
     }
     
-    public func resource(of account: Account, at path: Path) throws -> Resource? {
-        return try store.resource(of: account, at: path)
+    public func contentOfResource(with resourceID: ResourceID) throws -> [Resource] {
+        return try store.content(ofResourceWith: resourceID)
     }
     
-    public func contents(of account: Account, at path: Path) throws -> [Resource] {
-        return try store.contents(of: account, at: path)
-    }
-    
-    public func updateResource(at path: Path, of account: Account, completion: ((Error?) -> Void)?) {
+    public func updateResource(with resourceID: ResourceID, completion: ((Error?) -> Void)?) {
         return queue.async {
-            self.beginActivity()
-            let manager = self.resourceManager(for: account)
-            manager.updateResource(at: path) { error in
-                completion?(error)
-                self.endActivity()
+            if let manager = self.resourceManager(for: resourceID.accountID) {
+                self.beginActivity()
+                manager.update(resourceWith: resourceID) { error in
+                    completion?(error)
+                    self.endActivity()
+                }
+            } else {
+                completion?(nil)
             }
         }
     }
     
-    public func downloadResource(at path: Path, of account: Account) -> Progress {
-        return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.downloadResource(at: path)
+    public func downloadResource(with resourceID: ResourceID) {
+        return queue.async {
+            if let manager = self.downloadManager(for: resourceID.accountID) {
+                manager.download(resourceWith: resourceID)
+            }
         }
     }
     
-    public func progressForResource(at path: Path, of account: Account) -> Progress? {
+    public func progressForResource(with resourceID: ResourceID) -> Progress? {
         return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.progress(for: path)
+            if let manager = self.downloadManager(for: resourceID.accountID) {
+                return manager.progress(forResourceWith: resourceID)
+            } else {
+                return nil
+            }
         }
     }
     
-    public func progress(of account: Account) -> [Path: Progress] {
-        return queue.sync {
-            let manager = self.resourceManager(for: account)
-            return manager.progress()
-        }
+    public func deleteFileForResource(with resourceID: ResourceID) throws {
+        return try store.deleteFile(ofResourceWith: resourceID)
     }
     
     // MARK: - Manage Credentials
@@ -232,6 +217,49 @@ public class CloudService {
         }
     }
     
+    // MARK: - Manager
+    
+    private var resourceManager: [AccountID: ResourceManager] = [:]
+    private var downloadManager: [AccountID: DownloadManager] = [:]
+    
+    private func resourceManager(for accountID: AccountID) -> ResourceManager? {
+        if let manager = resourceManager[accountID] {
+            return manager
+        } else {
+            do {
+                if let account = try store.account(with: accountID) {
+                    let manager = ResourceManager(accountID: account.identifier, baseURL: account.url, store: store)
+                    manager.delegate = self
+                    resourceManager[accountID] = manager
+                    return manager
+                } else {
+                    return nil
+                }
+            } catch {
+                return nil
+            }
+        }
+    }
+    
+    private func downloadManager(for accountID: AccountID) -> DownloadManager? {
+        if let manager = downloadManager[accountID] {
+            return manager
+        } else {
+            do {
+                if let account = try store.account(with: accountID) {
+                    let manager = DownloadManager(accountID: account.identifier, baseURL: account.url, store: store)
+                    manager.delegate = self
+                    downloadManager[accountID] = manager
+                    return manager
+                } else {
+                    return nil
+                }
+            } catch {
+                return nil
+            }
+        }
+    }
+    
     // MARK: - Activity
     
     private var runningActives: Int = 0 {
@@ -261,13 +289,27 @@ public class CloudService {
 
 extension CloudService: ResourceManagerDelegate {
     
-    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) {
-        if let password = password(for: manager.account) {
-            completionHandler(password)
-        } else {
-            requestPassword(for: manager.account) { password in
-                completionHandler(password)
+    func resourceManager(_ manager: ResourceManager, needsCredentialWith completionHandler: @escaping (URLCredential?) -> Void) {
+        do {
+            if let account = try store.account(with: manager.accountID) {
+                if let password = password(for: account) {
+                    let credential = URLCredential(user: account.username, password: password, persistence: .forSession)
+                    completionHandler(credential)
+                } else {
+                    requestPassword(for: account) { password in
+                        if let providedPassword = password {
+                            let credential = URLCredential(user: account.username, password: providedPassword, persistence: .forSession)
+                            completionHandler(credential)
+                        } else {
+                            completionHandler(nil)
+                        }
+                    }
+                }
+            } else {
+                completionHandler(nil)
             }
+        } catch {
+            completionHandler(nil)
         }
     }
     
@@ -285,42 +327,70 @@ extension CloudService: ResourceManagerDelegate {
         }
     }
     
-    func resourceManager(_: ResourceManager, didStartDownloading resource: Resource) {
+}
+
+extension CloudService: DownloadManagerDelegate {
+    
+    func downloadManager(_ manager: DownloadManager, needsCredentialWith completionHandler: @escaping (URLCredential?) -> Void) {
+        do {
+            if let account = try store.account(with: manager.accountID) {
+                if let password = password(for: account) {
+                    let credential = URLCredential(user: account.username, password: password, persistence: .forSession)
+                    completionHandler(credential)
+                } else {
+                    requestPassword(for: account) { password in
+                        if let providedPassword = password {
+                            let credential = URLCredential(user: account.username, password: providedPassword, persistence: .forSession)
+                            completionHandler(credential)
+                        } else {
+                            completionHandler(nil)
+                        }
+                    }
+                }
+            } else {
+                completionHandler(nil)
+            }
+        } catch {
+            completionHandler(nil)
+        }
+    }
+    
+    func downloadManager(_ manager: DownloadManager, didStartDownloading resourceID: ResourceID) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )
         }
     }
     
-    func resourceManager(_: ResourceManager, didFinishDownloading resource: Resource) {
+    func downloadManager(_ manager: DownloadManager, didFinishDownloading resourceID: ResourceID) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )
         }
     }
     
-    func resourceManager(_: ResourceManager, didFailDownloading resource: Resource, error _: Error) {
+    func downloadManager(_ manager: DownloadManager, didFailDownloading resourceID: ResourceID, error: Error) {
         DispatchQueue.main.async {
             let center = NotificationCenter.default
             center.post(
                 name: Notification.Name.CloudServiceDidChangeResources,
                 object: self,
                 userInfo: [
-                    InsertedOrUpdatedResourcesKey: [resource],
+                    InsertedOrUpdatedResourcesKey: [resourceID],
                     DeletedResourcesKey: []
                 ]
             )

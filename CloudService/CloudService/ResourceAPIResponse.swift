@@ -1,5 +1,5 @@
 //
-//  CloudAPIResponse.swift
+//  ResourceAPIResponse.swift
 //  CloudService
 //
 //  Created by Tobias Kraentzer on 06.02.17.
@@ -9,22 +9,22 @@
 import Foundation
 import PureXML
 
-public struct CloudAPIResponse {
-    public let resources: [CloudAPIResource]
+public struct ResourceAPIResponse {
+    public let resources: [ResourceAPIResource]
     
     init(document: PXDocument, baseURL: URL) throws {
         guard
             document.root.qualifiedName == PXQName(name: "multistatus", namespace: "DAV:")
-        else { throw CloudAPIError.invalidResponse }
+        else { throw CloudServiceError.invalidResponse }
         
-        var resources: [CloudAPIResource] = []
+        var resources: [ResourceAPIResource] = []
         
         for node in document.root.nodes(forXPath: "./d:response", usingNamespaces: ["d": "DAV:"]) {
             guard
                 let element = node as? PXElement
             else { continue }
             
-            let resource = try CloudAPIResource(element: element, baseURL: baseURL)
+            let resource = try ResourceAPIResource(element: element, baseURL: baseURL)
             resources.append(resource)
         }
         
@@ -32,7 +32,7 @@ public struct CloudAPIResponse {
     }
 }
 
-public struct CloudAPIResource {
+public struct ResourceAPIResource {
     
     public let url: URL
     
@@ -49,7 +49,7 @@ public struct CloudAPIResource {
             let urlElement = element.nodes(forXPath: "./d:href", usingNamespaces: namespace).first as? PXElement,
             let urlString = urlElement.stringValue,
             let url = URL(string: urlString, relativeTo: baseURL)
-        else { throw CloudAPIError.invalidResponse }
+        else { throw CloudServiceError.invalidResponse }
         
         var properties: [PXQName: PXDocument] = [:]
         
@@ -58,7 +58,7 @@ public struct CloudAPIResource {
                 let propstats = element as? PXElement,
                 let statusElement = propstats.nodes(forXPath: "./d:status", usingNamespaces: namespace).first as? PXElement,
                 let statusString = statusElement.stringValue,
-                CloudAPIResource.makeStatus(with: statusString) == 200,
+                ResourceAPIResource.makeStatus(with: statusString) == 200,
                 let prop = propstats.nodes(forXPath: "./d:prop", usingNamespaces: namespace).first as? PXElement
             else { continue }
             
@@ -83,7 +83,7 @@ public struct CloudAPIResource {
     }
 }
 
-extension CloudAPIResource {
+extension ResourceAPIResource {
     
     public var etag: String? {
         guard
@@ -124,7 +124,7 @@ extension CloudAPIResource {
             let stringValue = element.stringValue
         else { return nil }
         
-        return CloudAPIResource.dateFormatter.date(from: stringValue)
+        return ResourceAPIResource.dateFormatter.date(from: stringValue)
     }
     
     private static var dateFormatter: DateFormatter = {
