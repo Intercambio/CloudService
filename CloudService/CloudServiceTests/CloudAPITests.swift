@@ -40,63 +40,7 @@ class CloudAPITests: XCTestCase, CloudAPIDelegate {
         
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
-    func testDownload() {
-        let api = CloudAPI(identifier: "CloudAPITests.testDownload", delegate: self)
-        
-        defer {
-            api.invalidateAndCancel()
-        }
-        
-        expectation(forNotification: "CloudAPITests.cloudAPI(_:didFinishDownloading:etag:to:)", object: self) { notification in
-            guard
-                let userInfo = notification.userInfo,
-                let url = userInfo["url"] as? URL,
-                let etag = userInfo["etag"] as? String,
-                let location = userInfo["location"] as? URL
-            else { return false }
-            
-            XCTAssertEqual(url, URL(string: "https://tobias-kraentzer.de/test/file.txt")!)
-            
-            do {
-                let content = try String(contentsOf: location)
-                XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
-            } catch {
-                XCTFail("\(error)")
-                return false
-            }
-            
-            return etag == "\"14823ab-250-5488e34064d9b\""
-        }
-        
-        let url = URL(string: "https://tobias-kraentzer.de/test/file.txt")!
-        api.download(url)
-        
-        waitForExpectations(timeout: 5.0, handler: nil)
-    }
-    
-    func testDownloadError() {
-        let api = CloudAPI(identifier: "CloudAPITests.testDownloadError", delegate: self)
-        
-        defer {
-            api.invalidateAndCancel()
-        }
-        
-        expectation(forNotification: "CloudAPITests.cloudAPI(_:didFailDownloading:error:)", object: self) { notification in
-            guard
-                let userInfo = notification.userInfo,
-                let url = userInfo["url"] as? URL
-            else { return false }
-            XCTAssertEqual(url, URL(string: "https://tobias-kraentzer.de/test/xx-file.txt")!)
-            return true
-        }
-        
-        let url = URL(string: "https://tobias-kraentzer.de/test/xx-file.txt")!
-        api.download(url)
-        
-        waitForExpectations(timeout: 5.0, handler: nil)
-    }
-    
+
     // MARK: - CloudAPIDelegate
     
     func cloudAPI(_: CloudAPI, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
