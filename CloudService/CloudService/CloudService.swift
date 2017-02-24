@@ -9,9 +9,12 @@
 import Foundation
 import Dispatch
 import KeyChain
+import PureXML
 
 public enum CloudServiceError: Error {
     case internalError
+    case invalidResponse
+    case unexpectedResponse(statusCode: Int, document: PXDocument?)
 }
 
 extension Notification.Name {

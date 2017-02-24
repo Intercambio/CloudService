@@ -1,5 +1,5 @@
 //
-//  CloudAPIResponseTests.swift
+//  ResourceAPIResponseTests.swift
 //  CloudServiceTests
 //
 //  Created by Tobias Kraentzer on 06.02.17.
@@ -10,11 +10,11 @@ import XCTest
 import PureXML
 @testable import CloudService
 
-class CloudAPIResponseTests: XCTestCase {
+class ResourceAPIResponseTests: XCTestCase {
     
     func testParseResponse() {
         guard
-            let document = PXDocument(named: "propfind.xml", in: Bundle(for: CloudAPIResponseTests.self)),
+            let document = PXDocument(named: "propfind.xml", in: Bundle(for: ResourceAPIResponseTests.self)),
             let baseURL = URL(string: "https://example.com/")
         else { XCTFail(); return }
         
@@ -25,7 +25,7 @@ class CloudAPIResponseTests: XCTestCase {
         
         do {
             
-            let response = try CloudAPIResponse(document: document, baseURL: baseURL)
+            let response = try ResourceAPIResponse(document: document, baseURL: baseURL)
             
             XCTAssertEqual(response.resources.count, 6)
             

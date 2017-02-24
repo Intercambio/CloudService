@@ -66,7 +66,8 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
                 pendingUpdate.completionHandlers.append(completion)
             } else {
                 let resourceURL = self.baseURL.appending(resourceID.path)
-                let task = self.session.dataTask(with: resourceURL, completionHandler: { (data, response, error) in
+                let request = self.makePropFindRequest(for: resourceURL)
+                let task = self.session.dataTask(with: request, completionHandler: { (data, response, error) in
                     self.handleResponse(data: data, response: response, error: error)
                 })
                 self.pendingUpdates[resourceID] = PendingUpdate(task: task, completionHandlers: [completion])
@@ -96,14 +97,14 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
                 
                 guard
                     let data = data
-                    else { throw CloudAPIError.internalError }
+                    else { throw CloudServiceError.internalError }
                 
                 switch httpResponse.statusCode {
                 case 207:
                     guard
                         let document = PXDocument(data: data)
-                        else { throw CloudAPIError.internalError }
-                    let result = try CloudAPIResponse(document: document, baseURL: url)
+                        else { throw CloudServiceError.internalError }
+                    let result = try ResourceAPIResponse(document: document, baseURL: url)
                     let changeSet = try self.updateResource(with: resourceID, using: result)
                     DispatchQueue.global().async {
                         self.delegate?.resourceManager(self, didChange: changeSet)
@@ -117,7 +118,7 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
                     
                 case let statusCode:
                     let document = PXDocument(data: data)
-                    throw CloudAPIError.unexpectedResponse(statusCode: statusCode, document: document)
+                    throw CloudServiceError.unexpectedResponse(statusCode: statusCode, document: document)
                 }
                 
                 DispatchQueue.global().async {
@@ -135,7 +136,7 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
         }
     }
     
-    private func updateResource(with resourceID: ResourceID, using response: CloudAPIResponse) throws -> StoreChangeSet {
+    private func updateResource(with resourceID: ResourceID, using response: ResourceAPIResponse) throws -> StoreChangeSet {
         
         var properties: Properties?
         var content: [String: Properties] = [:]
@@ -173,6 +174,19 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
             let path = url.makePath(relativeTo: baseURL)
             else { return nil }
         return ResourceID(accountID: accountID, path: path)
+    }
+    
+    private enum PropFindRequestDepth: String {
+        case resource = "0"
+        case collection = "1"
+        case tree = "infinity"
+    }
+    
+    private func makePropFindRequest(for url: URL, with depth: PropFindRequestDepth = .collection) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "PROPFIND"
+        request.setValue(depth.rawValue, forHTTPHeaderField: "Depth")
+        return request
     }
     
     // MARK: - URLSessionDelegate

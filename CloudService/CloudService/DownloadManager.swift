@@ -219,10 +219,10 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                     if let etag = response.allHeaderFields["Etag"] as? String {
                         try store.moveFile(at: location, withVersion: etag, toResourceWith: resourceID)
                     } else {
-                        throw CloudAPIError.invalidResponse
+                        throw CloudServiceError.invalidResponse
                     }
                 default:
-                    throw CloudAPIError.unexpectedResponse(statusCode: response.statusCode, document: nil)
+                    throw CloudServiceError.unexpectedResponse(statusCode: response.statusCode, document: nil)
                 }
             } catch {
                 let delegate = self.delegate
