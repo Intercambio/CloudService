@@ -7,82 +7,143 @@
 //
 
 import Foundation
+import PureXML
 
 protocol ResourceManagerDelegate: class {
-    func resourceManager(_ manager: ResourceManager, needsPasswordWith completionHandler: @escaping (String?) -> Void) -> Void
+    func resourceManager(_ manager: ResourceManager, needsCredentialWith completionHandler: @escaping (URLCredential?) -> Void) -> Void
     func resourceManager(_ manager: ResourceManager, didChange changeset: StoreChangeSet) -> Void
-    func resourceManager(_ manager: ResourceManager, didStartDownloading resourceID: ResourceID) -> Void
-    func resourceManager(_ manager: ResourceManager, didFailDownloading resourceID: ResourceID, error: Error) -> Void
-    func resourceManager(_ manager: ResourceManager, didFinishDownloading resourceID: ResourceID) -> Void
 }
 
-class ResourceManager: CloudAPIDelegate {
+class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
     
     weak var delegate: ResourceManagerDelegate?
     
-    let store: FileStore
-    let account: Account
-    let queue: DispatchQueue
-    lazy var api: CloudAPI = CloudAPI(identifier: self.account.url.absoluteString, delegate: self)
+    let accountID: AccountID
+    let baseURL: URL
+    let store: Store
     
-    init(store: FileStore, account: Account) {
-        self.store = store
-        self.account = account
-        self.queue = DispatchQueue(label: "CloudStore.ResourceManager")
+    private let operationQueue: OperationQueue
+    private let queue: DispatchQueue
+    private lazy var session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
+    }()
+    
+    private struct PendingUpdate {
+        let task: URLSessionDataTask
+        var completionHandlers: [((Error?) -> Void)]
     }
     
-    func resume(completion: ((Error?) -> Void)?) {
-        completion?(nil)
+    private var pendingUpdates: [ResourceID:PendingUpdate] = [:]
+    
+    init(accountID: AccountID, baseURL: URL, store: Store) {
+        self.accountID = accountID
+        self.baseURL = baseURL
+        self.store = store
+        
+        queue = DispatchQueue(label: "ResourceManager (\(accountID))")
+        operationQueue = OperationQueue()
+        operationQueue.underlyingQueue = queue
+        
+        super.init()
     }
     
     func finishTasksAndInvalidate() {
-        api.finishTasksAndInvalidate()
+        queue.async {
+            self.session.finishTasksAndInvalidate()
+        }
     }
     
     func invalidateAndCancel() {
-        api.invalidateAndCancel()
+        queue.async {
+            self.session.invalidateAndCancel()
+        }
     }
     
-    // MARK: Update Resource
-    
-    func updateResource(at path: Path, completion: ((Error?) -> Void)?) {
-        let url = account.url.appending(path)
-        self.api.retrieveProperties(of: url) { result, error in
-            do {
-                if let error = error {
-                    switch error {
-                    case CloudAPIError.unexpectedResponse(let statusCode, _) where statusCode == 404:
-                        let changeSet = try self.removeResource(at: path)
-                        if let delegate = self.delegate {
-                            delegate.resourceManager(self, didChange: changeSet)
-                        }
-                    default:
-                        throw error
-                    }
-                } else if let response = result {
-                    let changeSet = try self.updateResource(at: path, with: response)
-                    if let delegate = self.delegate {
-                        delegate.resourceManager(self, didChange: changeSet)
-                    }
-                } else {
-                    throw CloudServiceError.internalError
-                }
-                
-                completion?(nil)
-            } catch {
-                completion?(error)
+    func update(resourceWith resourceID: ResourceID, completion: @escaping ((Error?) -> Void)) {
+        queue.async {
+            if var pendingUpdate = self.pendingUpdates[resourceID] {
+                pendingUpdate.completionHandlers.append(completion)
+            } else {
+                let resourceURL = self.baseURL.appending(resourceID.path)
+                let request = self.makePropFindRequest(for: resourceURL)
+                let task = self.session.dataTask(with: request, completionHandler: { (data, response, error) in
+                    self.handleResponse(data: data, response: response, error: error)
+                })
+                self.pendingUpdates[resourceID] = PendingUpdate(task: task, completionHandlers: [completion])
+                task.resume()
             }
         }
     }
     
-    private func updateResource(at path: Path, with response: CloudAPIResponse) throws -> StoreChangeSet {
+    // MARK: -
+    
+    private func handleResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard
+            let httpResponse = response as? HTTPURLResponse,
+            let url = httpResponse.url,
+            let resourceID = makeResourceID(with: url)
+            else { return }
+        
+        if let pendingUpdate = self.pendingUpdates[resourceID] {
+            do {
+                defer {
+                    self.pendingUpdates[resourceID] = nil
+                }
+                
+                if let error = error {
+                    throw error
+                }
+                
+                guard
+                    let data = data
+                    else { throw CloudServiceError.internalError }
+                
+                switch httpResponse.statusCode {
+                case 207:
+                    guard
+                        let document = PXDocument(data: data)
+                        else { throw CloudServiceError.internalError }
+                    let result = try ResourceAPIResponse(document: document, baseURL: url)
+                    let changeSet = try self.updateResource(with: resourceID, using: result)
+                    DispatchQueue.global().async {
+                        self.delegate?.resourceManager(self, didChange: changeSet)
+                    }
+                    
+                case 404:
+                    let changeSet = try self.removeResource(with: resourceID)
+                    DispatchQueue.global().async {
+                        self.delegate?.resourceManager(self, didChange: changeSet)
+                    }
+                    
+                case let statusCode:
+                    let document = PXDocument(data: data)
+                    throw CloudServiceError.unexpectedResponse(statusCode: statusCode, document: document)
+                }
+                
+                DispatchQueue.global().async {
+                    for handler in pendingUpdate.completionHandlers {
+                        handler(nil)
+                    }
+                }
+            } catch {
+                DispatchQueue.global().async {
+                    for handler in pendingUpdate.completionHandlers {
+                        handler(error)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func updateResource(with resourceID: ResourceID, using response: ResourceAPIResponse) throws -> StoreChangeSet {
         
         var properties: Properties?
         var content: [String: Properties] = [:]
         
         for resource in response.resources {
             guard
-                let resourcePath = resource.url.makePath(relativeTo: self.account.url),
+                let responseResourceID = makeResourceID(with: resource.url),
                 let etag = resource.etag
             else { continue }
             
@@ -94,173 +155,71 @@ class ResourceManager: CloudAPIDelegate {
                 modified: resource.modified
             )
             
-            if resourcePath == path {
+            if responseResourceID == resourceID {
                 properties = resourceProperties
-            } else if resourcePath.components.starts(with: path.components)
-                && resourcePath.components.count == path.components.count + 1 {
-                let name = resourcePath.components[path.components.count]
+            } else if responseResourceID.isChild(of: resourceID) {
+                let name = responseResourceID.name
                 content[name] = resourceProperties
             }
         }
-        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
         return try store.update(resourceWith: resourceID, using: properties, content: content)
     }
     
-    private func removeResource(at path: Path) throws -> StoreChangeSet {
-        let resourceID = ResourceID(accountID: self.account.identifier, path: path)
+    private func removeResource(with resourceID: ResourceID) throws -> StoreChangeSet {
         return try store.update(resourceWith: resourceID, using: nil)
     }
-    
-    // MARK: Download Resource
-    
-    func downloadResource(at path: Path) -> Progress {
-        return queue.sync {
-            
-            let progress = self.makeProgress(for: path)
-            let url = self.account.url.appending(path)
-            self.api.download(url)
-            
-            let resourceID = ResourceID(accountID: self.account.identifier, path: path)
-            self.delegate?.resourceManager(self, didStartDownloading: resourceID)
 
-            return progress
-        }
-    }
-    
-    // MARK: Progress
-    
-    private var progresByPath: [Path: Progress] = [:]
-    
-    func progress() -> [Path: Progress] {
-        return queue.sync {
-            return progresByPath
-        }
-    }
-    
-    func progress(for path: Path) -> Progress? {
-        return queue.sync {
-            return progresByPath[path]
-        }
-    }
-    
-    private func makeProgress(for path: Path) -> Progress {
-        completeProgress(for: path)
-        
-        let progress = Progress(totalUnitCount: -1)
-        progresByPath[path] = progress
-        
-        progress.kind = ProgressKind.file
-        progress.setUserInfoObject(
-            Progress.FileOperationKind.downloading,
-            forKey: .fileOperationKindKey
-        )
-        progress.setUserInfoObject(
-            account.url.appending(path),
-            forKey: .fileURLKey
-        )
-        
-        return progress
-    }
-    
-    private func updateProgress(for path: Path, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        if let progress = progresByPath[path] {
-            progress.completedUnitCount = totalBytesWritten
-            progress.totalUnitCount = totalBytesExpectedToWrite
-        }
-    }
-    
-    private func cancelProgress(for path: Path) {
-        if let progress = progresByPath[path] {
-            progress.cancel()
-            progresByPath[path] = nil
-        }
-    }
-    
-    private func completeProgress(for path: Path) {
-        if let progress = progresByPath[path] {
-            progress.completedUnitCount = progress.totalUnitCount
-            
-            progresByPath[path] = nil
-        }
-    }
-    
-    // MARK: - CloudAPIDelegate
-    
-    func cloudAPI(
-        _: CloudAPI,
-        didReceive _: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
-    ) {
+    private func makeResourceID(with url: URL) -> ResourceID? {
         guard
-            let delegate = self.delegate
-        else {
-            completionHandler(.cancelAuthenticationChallenge, nil)
-            return
-        }
+            let path = url.makePath(relativeTo: baseURL)
+            else { return nil }
+        return ResourceID(accountID: accountID, path: path)
+    }
+    
+    private enum PropFindRequestDepth: String {
+        case resource = "0"
+        case collection = "1"
+        case tree = "infinity"
+    }
+    
+    private func makePropFindRequest(for url: URL, with depth: PropFindRequestDepth = .collection) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "PROPFIND"
+        request.setValue(depth.rawValue, forHTTPHeaderField: "Depth")
+        return request
+    }
+    
+    // MARK: - URLSessionDelegate
+    
+    func urlSession(_: URLSession, didBecomeInvalidWithError _: Error?) {
         
-        delegate.resourceManager(self) { password in
-            guard
-                let password = password
+    }
+    
+    // MARK: URLSessionTaskDelegate
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+        guard
+            session == self.session,
+            let url = task.originalRequest?.url,
+            let resourceID = makeResourceID(with: url)
             else {
                 completionHandler(.cancelAuthenticationChallenge, nil)
                 return
-            }
-            
-            let credentials = URLCredential(
-                user: self.account.username,
-                password: password,
-                persistence: .forSession
-            )
-            completionHandler(.useCredential, credentials)
         }
-    }
-    
-    func cloudAPI(_: CloudAPI, didFailDownloading url: URL, error _: Error) {
-        queue.async {
-            guard
-                let path = url.makePath(relativeTo: self.account.url)
-            else { return }
-            
-            self.cancelProgress(for: path)
-        }
-    }
-    
-    func cloudAPI(_: CloudAPI, didProgressDownloading url: URL, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        queue.async {
-            guard
-                let path = url.makePath(relativeTo: self.account.url)
-            else { return }
-            
-            self.updateProgress(
-                for: path,
-                totalBytesWritten: totalBytesWritten,
-                totalBytesExpectedToWrite: totalBytesExpectedToWrite
-            )
-            
-        }
-    }
-    
-    func cloudAPI(_: CloudAPI, didFinishDownloading url: URL, etag: String, to location: URL) {
-        do {
-            guard
-                let path = url.makePath(relativeTo: account.url)
-            else { return }
-            
-            let resourceID = ResourceID(accountID: account.identifier, path: path)
-            
-            do {
-                try store.moveFile(at: location, withVersion: etag, toResourceWith: resourceID)
-                delegate?.resourceManager(self, didFinishDownloading: resourceID)
-            } catch {
-                delegate?.resourceManager(self, didFailDownloading: resourceID, error: error)
+        
+        if pendingUpdates[resourceID] == nil {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        } else {
+            let delegate = self.delegate
+            DispatchQueue.global().async {
+                delegate?.resourceManager(self, needsCredentialWith: { credential in
+                    if credential != nil {
+                        completionHandler(.useCredential, credential)
+                    } else {
+                        completionHandler(.cancelAuthenticationChallenge, nil)
+                    }
+                })
             }
-            
-            self.queue.async {
-                self.completeProgress(for: path)
-            }
-            
-        } catch {
-            NSLog("Failed to sotre file: \(error)")
         }
     }
 }
