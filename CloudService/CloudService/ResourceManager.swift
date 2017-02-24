@@ -191,13 +191,13 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
     
     // MARK: - URLSessionDelegate
     
-    public func urlSession(_: URLSession, didBecomeInvalidWithError _: Error?) {
+    func urlSession(_: URLSession, didBecomeInvalidWithError _: Error?) {
         
     }
     
     // MARK: URLSessionTaskDelegate
     
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
         guard
             session == self.session,
             let url = task.originalRequest?.url,

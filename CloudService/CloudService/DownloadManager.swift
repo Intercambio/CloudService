@@ -138,7 +138,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     // MARK: URLSessionTaskDelegate
     
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
         guard
             session == self.session,
             let url = task.originalRequest?.url,
@@ -164,7 +164,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard
             session == self.session,
             let url = task.originalRequest?.url,
@@ -190,7 +190,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     // MARK: URLSessionDownloadDelegate
     
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard
             session == self.session,
             let url = downloadTask.originalRequest?.url,
@@ -204,7 +204,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         }
     }
     
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard
             session == self.session,
             let url = downloadTask.originalRequest?.url,
