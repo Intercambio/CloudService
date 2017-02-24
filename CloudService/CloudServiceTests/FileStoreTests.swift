@@ -431,4 +431,43 @@ class FileStoreTests: TestCase {
             XCTFail("\(error)")
         }
     }
+    
+    func testDeleteFile() {
+        guard
+            let store = self.store
+            else { XCTFail(); return }
+        
+        do {
+            let url = URL(string: "https://example.com/api/")!
+            let account = try store.addAccount(with: url, username: "romeo")
+            let path = Path(components: ["a", "b", "c"])
+            let resourceID = ResourceID(accountID: account.identifier, path: path)
+            
+            let properties = Properties(isCollection: false, version: "123", contentType: nil, contentLength: nil, modified: nil)
+            let fileURL = Bundle(for: FileStoreTests.self).url(forResource: "file", withExtension: "txt")!
+            let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            let tempFileURL = tempDirectory.appendingPathComponent("file.txt")
+            try? FileManager.default.copyItem(at: fileURL, to: tempFileURL)
+            
+            _ = try store.update(resourceWith: resourceID, using: properties)
+            
+            try store.moveFile(at: tempFileURL, withVersion: "123", toResourceWith: resourceID)
+            
+            var resource = try store.resource(with: resourceID)
+            XCTAssertNotNil(resource!.fileURL)
+            if let url = resource!.fileURL {
+                let content = try String(contentsOf: url)
+                XCTAssertTrue(content.contains("Lorem ipsum dolor sit amet"))
+            }
+            
+            try store.deleteFile(ofResourceWith: resourceID)
+            
+            resource = try store.resource(with: resourceID)
+            XCTAssertEqual(resource!.fileState, .none)
+            XCTAssertFalse(FileManager.default.fileExists(atPath: resource!.fileURL!.path))
+            
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
 }

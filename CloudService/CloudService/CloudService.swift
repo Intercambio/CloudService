@@ -182,6 +182,10 @@ public class CloudService {
         }
     }
     
+    public func deleteFileForResource(with resourceID: ResourceID) throws {
+        return try store.deleteFile(ofResourceWith: resourceID)
+    }
+    
     // MARK: - Manage Credentials
     
     public func password(for account: Account) -> String? {

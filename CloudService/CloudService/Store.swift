@@ -28,4 +28,5 @@ public protocol Store {
     func update(resourceWith resourceID: ResourceID, using properties: Properties?, content: [String: Properties]?) throws -> StoreChangeSet
     
     func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID) throws -> Void
+    func deleteFile(ofResourceWith resourceID: ResourceID) throws -> Void
 }

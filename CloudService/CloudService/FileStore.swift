@@ -219,13 +219,25 @@ class FileStore: NSObject, Store, FileManagerDelegate {
     }
     
     func moveFile(at url: URL, withVersion version: String, toResourceWith resourceID: ResourceID) throws {
-        return try queue.sync {
+        try queue.sync {
             guard
                 let db = self.db
             else { throw FileStoreError.notSetup }
             
             try db.transaction {
                 try self.moveFile(at: url, withVersion: version, toResourceWith: resourceID, in: db)
+            }
+        }
+    }
+    
+    func deleteFile(ofResourceWith resourceID: ResourceID) throws {
+        try queue.sync {
+            guard
+                let db = self.db
+                else { throw FileStoreError.notSetup }
+            
+            try db.transaction {
+                try self.deleteFile(ofResourceWith: resourceID, in: db)
             }
         }
     }
@@ -550,6 +562,35 @@ class FileStore: NSObject, Store, FileManagerDelegate {
             }
         } else {
             throw FileStoreError.resourceDoesNotExist
+        }
+    }
+    
+    private func deleteFile(ofResourceWith resourceID: ResourceID, in db: SQLite.Connection) throws {
+        let accountID = resourceID.accountID
+        let href = resourceID.path.href
+        let fileURL = makeLocalFileURL(with: resourceID)
+        
+        let query = FileStoreSchema.resource.filter(
+            FileStoreSchema.account_identifier == accountID && FileStoreSchema.href == href
+        )
+        
+        try db.run(query.update(FileStoreSchema.file_version <- nil))
+        
+        var coordinatorSuccess = false
+        var coordinatorError: NSError?
+        fileCoordinator.coordinate(writingItemAt: fileURL, options: .forDeleting, error: &coordinatorError) { fileURL in
+            do {
+                try self.fileManager.removeItem(at: fileURL)
+                coordinatorSuccess = true
+            } catch {
+                coordinatorError = error as NSError
+            }
+        }
+        
+        if let error = coordinatorError {
+            throw error
+        } else if coordinatorSuccess == false {
+            throw FileStoreError.internalError
         }
     }
     
