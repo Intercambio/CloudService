@@ -11,6 +11,7 @@ import Foundation
 protocol DownloadManagerDelegate: class {
     func downloadManager(_ manager: DownloadManager, needsCredentialWith completionHandler: @escaping (URLCredential?) -> Void) -> Void
     func downloadManager(_ manager: DownloadManager, didStartDownloading resourceID: ResourceID) -> Void
+    func downloadManager(_ manager: DownloadManager, didCancelDownloading resourceID: ResourceID) -> Void
     func downloadManager(_ manager: DownloadManager, didFailDownloading resourceID: ResourceID, error: Error) -> Void
     func downloadManager(_ manager: DownloadManager, didFinishDownloading resourceID: ResourceID) -> Void
 }
@@ -68,6 +69,11 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                     progress.setUserInfoObject(url, forKey: .fileURLKey)
                     self.pendingDownloads[resourceID] = PendingDownload(task: task, progress: progress)
                     
+                    progress.cancellationHandler = { [weak task] in
+                        guard let task = task else { return }
+                        task.cancel()
+                    }
+                    
                     let delegate = self.delegate
                     DispatchQueue.global().async {
                         delegate?.downloadManager(self, didStartDownloading: resourceID)
@@ -88,6 +94,11 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                 progress.setUserInfoObject(resourceURL, forKey: .fileURLKey)
                 self.pendingDownloads[resourceID] = PendingDownload(task: task, progress: progress)
                 task.resume()
+                
+                progress.cancellationHandler = { [weak task] in
+                    guard let task = task else { return }
+                    task.cancel()
+                }
                 
                 let delegate = self.delegate
                 DispatchQueue.global().async {
@@ -178,8 +189,12 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
             let delegate = self.delegate
             DispatchQueue.global().async {
                 if let downloadError = error {
-                    progress.cancel()
-                    delegate?.downloadManager(self, didFailDownloading: resourceID, error: downloadError)
+                    if (downloadError as NSError).domain == NSURLErrorDomain &&
+                        (downloadError as NSError).code == NSURLErrorCancelled {
+                        delegate?.downloadManager(self, didCancelDownloading: resourceID)
+                    } else {
+                        delegate?.downloadManager(self, didFailDownloading: resourceID, error: downloadError)
+                    }
                 } else {
                     progress.completedUnitCount = progress.totalUnitCount
                     delegate?.downloadManager(self, didFinishDownloading: resourceID)
