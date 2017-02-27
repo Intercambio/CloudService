@@ -183,7 +183,18 @@ public class CloudService {
     }
     
     public func deleteFileForResource(with resourceID: ResourceID) throws {
-        return try store.deleteFile(ofResourceWith: resourceID)
+        try store.deleteFile(ofResourceWith: resourceID)
+        DispatchQueue.main.async {
+            let center = NotificationCenter.default
+            center.post(
+                name: Notification.Name.CloudServiceDidChangeResources,
+                object: self,
+                userInfo: [
+                    InsertedOrUpdatedResourcesKey: [resourceID],
+                    DeletedResourcesKey: []
+                ]
+            )
+        }
     }
     
     // MARK: - Manage Credentials
