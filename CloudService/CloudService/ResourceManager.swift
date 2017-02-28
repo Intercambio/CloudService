@@ -25,7 +25,7 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
     private lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.default
+        let configuration = URLSessionConfiguration.ephemeral
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
     }()
     
@@ -64,11 +64,12 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
         queue.async {
             if var pendingUpdate = self.pendingUpdates[resourceID] {
                 pendingUpdate.completionHandlers.append(completion)
+                self.pendingUpdates[resourceID] = pendingUpdate
             } else {
                 let resourceURL = self.baseURL.appending(resourceID.path)
                 let request = self.makePropFindRequest(for: resourceURL)
                 let task = self.session.dataTask(with: request, completionHandler: { (data, response, error) in
-                    self.handleResponse(data: data, response: response, error: error)
+                    self.handleResponse(for: resourceID, data: data, response: response, error: error)
                 })
                 self.pendingUpdates[resourceID] = PendingUpdate(task: task, completionHandlers: [completion])
                 task.resume()
@@ -78,59 +79,56 @@ class ResourceManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
     
     // MARK: -
     
-    private func handleResponse(data: Data?, response: URLResponse?, error: Error?) {
+    private func handleResponse(for resourceID: ResourceID, data: Data?, response: URLResponse?, error: Error?) {
         guard
-            let httpResponse = response as? HTTPURLResponse,
-            let url = httpResponse.url,
-            let resourceID = makeResourceID(with: url)
+            let pendingUpdate = self.pendingUpdates[resourceID]
             else { return }
         
-        if let pendingUpdate = self.pendingUpdates[resourceID] {
-            do {
-                defer {
-                    self.pendingUpdates[resourceID] = nil
-                }
-                
-                if let error = error {
-                    throw error
-                }
-                
+        self.pendingUpdates[resourceID] = nil
+        
+        do {
+            guard
+                let httpResponse = response as? HTTPURLResponse
+                else {
+                    throw error ?? CloudServiceError.internalError
+            }
+            
+            switch httpResponse.statusCode {
+            case 207:
                 guard
-                    let data = data
+                    let documentData = data,
+                    let document = PXDocument(data: documentData)
                     else { throw CloudServiceError.internalError }
+                let result = try ResourceAPIResponse(document: document, baseURL: baseURL)
+                let changeSet = try self.updateResource(with: resourceID, using: result)
+                DispatchQueue.global().async {
+                    self.delegate?.resourceManager(self, didChange: changeSet)
+                }
                 
-                switch httpResponse.statusCode {
-                case 207:
-                    guard
-                        let document = PXDocument(data: data)
-                        else { throw CloudServiceError.internalError }
-                    let result = try ResourceAPIResponse(document: document, baseURL: url)
-                    let changeSet = try self.updateResource(with: resourceID, using: result)
-                    DispatchQueue.global().async {
-                        self.delegate?.resourceManager(self, didChange: changeSet)
-                    }
-                    
-                case 404:
-                    let changeSet = try self.removeResource(with: resourceID)
-                    DispatchQueue.global().async {
-                        self.delegate?.resourceManager(self, didChange: changeSet)
-                    }
-                    
-                case let statusCode:
-                    let document = PXDocument(data: data)
+            case 404:
+                let changeSet = try self.removeResource(with: resourceID)
+                DispatchQueue.global().async {
+                    self.delegate?.resourceManager(self, didChange: changeSet)
+                }
+                
+            case let statusCode:
+                if let documentData = data, let document = PXDocument(data: documentData) {
                     throw CloudServiceError.unexpectedResponse(statusCode: statusCode, document: document)
+                } else {
+                    throw CloudServiceError.unexpectedResponse(statusCode: statusCode, document: nil)
                 }
-                
-                DispatchQueue.global().async {
-                    for handler in pendingUpdate.completionHandlers {
-                        handler(nil)
-                    }
+            }
+            
+            DispatchQueue.global().async {
+                for handler in pendingUpdate.completionHandlers {
+                    handler(nil)
                 }
-            } catch {
-                DispatchQueue.global().async {
-                    for handler in pendingUpdate.completionHandlers {
-                        handler(error)
-                    }
+            }
+            
+        } catch {
+            DispatchQueue.global().async {
+                for handler in pendingUpdate.completionHandlers {
+                    handler(error)
                 }
             }
         }
