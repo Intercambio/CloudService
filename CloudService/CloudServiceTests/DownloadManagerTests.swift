@@ -154,6 +154,13 @@ class DownloadManagerTests: CloudServiceTests, DownloadManagerDelegate {
                     userInfo: ["manager": manager, "resourceID": resourceID])
     }
     
+    func downloadManager(_ manager: DownloadManager, didCancelDownloading resourceID: ResourceID) {
+        let center = NotificationCenter.default
+        center.post(name: Notification.Name(rawValue: "DownloadManagerDelegate.downloadManager(_:didCancelDownloading:)"),
+                    object: self,
+                    userInfo: ["manager": manager, "resourceID": resourceID])
+    }
+    
     func downloadManager(_ manager: DownloadManager, didFinishDownloading resourceID: ResourceID) {
         let center = NotificationCenter.default
         center.post(name: Notification.Name(rawValue: "DownloadManagerDelegate.downloadManager(_:didFinishDownloading:)"),
