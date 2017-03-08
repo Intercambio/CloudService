@@ -23,12 +23,14 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     let accountID: AccountID
     let baseURL: URL
     let store: Store
+    let sharedContainerIdentifier: String?
     
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
     private lazy var session: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.accountID)")
         configuration.networkServiceType = .background
+        configuration.sharedContainerIdentifier = self.sharedContainerIdentifier
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
     }()
     
@@ -39,10 +41,11 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     private var pendingDownloads: [ResourceID:PendingDownload] = [:]
     
-    init(accountID: AccountID, baseURL: URL, store: Store) {
+    init(accountID: AccountID, baseURL: URL, store: Store, sharedContainerIdentifier: String? = nil) {
         self.accountID = accountID
         self.baseURL = baseURL
         self.store = store
+        self.sharedContainerIdentifier = sharedContainerIdentifier
         
         queue = DispatchQueue(label: "DownloadManager (\(accountID))")
         operationQueue = OperationQueue()

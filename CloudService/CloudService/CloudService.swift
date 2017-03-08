@@ -42,10 +42,12 @@ public class CloudService {
     fileprivate let store: FileStore
     private let keyChain: KeyChain
     private let queue: DispatchQueue
+    private let sharedContainerIdentifier: String?
     
-    public init(directory: URL, keyChain: KeyChain) {
+    public init(directory: URL, keyChain: KeyChain, sharedContainerIdentifier: String? = nil) {
         self.store = FileStore(directory: directory)
         self.keyChain = keyChain
+        self.sharedContainerIdentifier = sharedContainerIdentifier
         self.queue = DispatchQueue(label: "CloudService")
     }
     
@@ -258,7 +260,7 @@ public class CloudService {
         } else {
             do {
                 if let account = try store.account(with: accountID) {
-                    let manager = DownloadManager(accountID: account.identifier, baseURL: account.url, store: store)
+                    let manager = DownloadManager(accountID: account.identifier, baseURL: account.url, store: store, sharedContainerIdentifier: sharedContainerIdentifier)
                     manager.delegate = self
                     downloadManager[accountID] = manager
                     return manager
