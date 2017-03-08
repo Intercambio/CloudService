@@ -140,13 +140,17 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     // MARK: - URLSessionDelegate
     
-    public func urlSession(_: URLSession, didBecomeInvalidWithError _: Error?) {
-        
+    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        #if DEBUG
+        NSLog("Session \(session) did become invalid with error: \(error)")
+        #endif
     }
     
     #if os(iOS) || os(tvOS) || os(watchOS)
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-    
+        #if DEBUG
+        NSLog("Session \(session) did finish events for background.")
+        #endif
     }
     #endif
     
@@ -184,6 +188,10 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
             let url = task.originalRequest?.url,
             let resourceID = makeResourceID(with: url)
             else { return }
+        
+        #if DEBUG
+        NSLog("Session \(session) did complete task \(task) with error: \(error)")
+        #endif
         
         if let pendingDownload = pendingDownloads[resourceID], pendingDownload.task == task {
             let progress = pendingDownload.progress
