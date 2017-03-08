@@ -22,7 +22,7 @@ class CloudServiceTests: TestCase, CloudServiceDelegate {
         else { XCTFail(); return }
         
         let keyChain = KeyChain(serviceName: "CloudServiceTests")
-        let service = CloudService(directory: directory, keyChain: keyChain)
+        let service = CloudService(directory: directory, keyChain: keyChain, bundleIdentifier: "test")
         service.delegate = self
         
         let expectation = self.expectation(description: "Start")

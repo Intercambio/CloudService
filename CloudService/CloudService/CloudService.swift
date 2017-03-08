@@ -42,11 +42,13 @@ public class CloudService {
     fileprivate let store: FileStore
     private let keyChain: KeyChain
     private let queue: DispatchQueue
+    private let bundleIdentifier: String
     private let sharedContainerIdentifier: String?
     
-    public init(directory: URL, keyChain: KeyChain, sharedContainerIdentifier: String? = nil) {
+    public init(directory: URL, keyChain: KeyChain, bundleIdentifier: String, sharedContainerIdentifier: String? = nil) {
         self.store = FileStore(directory: directory)
         self.keyChain = keyChain
+        self.bundleIdentifier = bundleIdentifier
         self.sharedContainerIdentifier = sharedContainerIdentifier
         self.queue = DispatchQueue(label: "CloudService")
     }
@@ -70,6 +72,19 @@ public class CloudService {
                         completion?(error)
                     }
                 }
+            }
+        }
+    }
+    
+    public func handleEvents(forBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        queue.async {
+            do {
+                for account in try self.store.allAccounts() {
+                    let manager = self.downloadManager(for: account.identifier)
+                    manager?.handleEvents(forBackgroundURLSession: identifier, completionHandler: completionHandler)
+                }
+            } catch {
+                completionHandler()
             }
         }
     }
@@ -260,7 +275,11 @@ public class CloudService {
         } else {
             do {
                 if let account = try store.account(with: accountID) {
-                    let manager = DownloadManager(accountID: account.identifier, baseURL: account.url, store: store, sharedContainerIdentifier: sharedContainerIdentifier)
+                    let manager = DownloadManager(accountID: account.identifier,
+                                                  baseURL: account.url,
+                                                  store: store,
+                                                  bundleIdentifier: bundleIdentifier,
+                                                  sharedContainerIdentifier: sharedContainerIdentifier)
                     manager.delegate = self
                     downloadManager[accountID] = manager
                     return manager

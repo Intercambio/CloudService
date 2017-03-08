@@ -23,12 +23,14 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     let accountID: AccountID
     let baseURL: URL
     let store: Store
+    let bundleIdentifier: String
     let sharedContainerIdentifier: String?
     
     private let operationQueue: OperationQueue
     private let queue: DispatchQueue
     private lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: "download.\(self.accountID)")
+        let sessionIdentifier = DownloadSessionIdentifier(accountID: self.accountID, bundleIdentifier: self.bundleIdentifier)
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifier.stringValue)
         configuration.networkServiceType = .background
         configuration.sharedContainerIdentifier = self.sharedContainerIdentifier
         return URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
@@ -39,12 +41,55 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         let progress: Progress
     }
     
+    private struct DownloadSessionIdentifier: Equatable, Hashable {
+        let accountID: AccountID
+        let bundleIdentifier: String
+        
+        var stringValue: String {
+            return "download::\(accountID)::\(bundleIdentifier)"
+        }
+        
+        init(accountID: AccountID, bundleIdentifier: String) {
+            self.accountID = accountID
+            self.bundleIdentifier = bundleIdentifier
+        }
+        
+        init?(string: String) {
+            let components = string.components(separatedBy: "::")
+            guard
+                components.count == 3,
+                components[0] == "download",
+                components[1].isEmpty == false,
+                components[2].isEmpty == false
+                else { return nil }
+            accountID = components[1]
+            bundleIdentifier = components[2]
+        }
+        
+        static func ==(lhs: DownloadSessionIdentifier, rhs: DownloadSessionIdentifier) -> Bool {
+            return lhs.stringValue == rhs.stringValue
+        }
+        
+        var hashValue: Int { return stringValue.hashValue }
+    }
+    
+    private struct SessionCompletionHandler {
+        let session: URLSession
+        let completion: () -> Void
+    }
+    
+    private var temporarySessions: [DownloadSessionIdentifier:SessionCompletionHandler] = [:]
+    private var eventsCompletionHandler: (() -> Void)?
+    
     private var pendingDownloads: [ResourceID:PendingDownload] = [:]
     
-    init(accountID: AccountID, baseURL: URL, store: Store, sharedContainerIdentifier: String? = nil) {
+    init(accountID: AccountID, baseURL: URL, store: Store, bundleIdentifier: String, sharedContainerIdentifier: String? = nil) {
+        precondition(!accountID.contains("::"))
+        precondition(!bundleIdentifier.contains("::"))
         self.accountID = accountID
         self.baseURL = baseURL
         self.store = store
+        self.bundleIdentifier = bundleIdentifier
         self.sharedContainerIdentifier = sharedContainerIdentifier
         
         queue = DispatchQueue(label: "DownloadManager (\(accountID))")
@@ -84,6 +129,29 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
                 }
             }
         })
+    }
+    
+    func handleEvents(forBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        queue.async {
+            guard
+                let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+                sessionIdentifier.accountID == self.accountID
+                else { return }
+            #if os(iOS) || os(tvOS) || os(watchOS)
+                if sessionIdentifier.bundleIdentifier == self.bundleIdentifier {
+                    self.eventsCompletionHandler = completionHandler
+                } else {
+                    let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifier.stringValue)
+                    configuration.networkServiceType = .background
+                    configuration.sharedContainerIdentifier = self.sharedContainerIdentifier
+                    let session = URLSession(configuration: configuration, delegate: self, delegateQueue: self.operationQueue)
+                    let handler = SessionCompletionHandler(session: session, completion: completionHandler)
+                    self.temporarySessions[sessionIdentifier] = handler
+                }
+            #else
+                completionHandler()
+            #endif
+        }
     }
     
     func download(resourceWith resourceID: ResourceID) {
@@ -151,6 +219,23 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
         #if DEBUG
         NSLog("Session \(session) did finish events for background.")
         #endif
+        
+        guard
+            let identifier = session.configuration.identifier,
+            let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+            sessionIdentifier.accountID == self.accountID
+            else { return }
+        
+        if sessionIdentifier.bundleIdentifier == self.bundleIdentifier {
+            eventsCompletionHandler?()
+            eventsCompletionHandler = nil
+        } else {
+            if let handler = temporarySessions[sessionIdentifier] {
+                temporarySessions[sessionIdentifier] = nil
+                handler.completion()
+                handler.session.finishTasksAndInvalidate()
+            }
+        }
     }
     #endif
     
@@ -158,7 +243,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
         guard
-            session == self.session,
+            let identifier = session.configuration.identifier,
+            let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+            sessionIdentifier.accountID == self.accountID,
             let url = task.originalRequest?.url,
             let resourceID = makeResourceID(with: url)
             else {
@@ -184,7 +271,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard
-            session == self.session,
+            let identifier = session.configuration.identifier,
+            let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+            sessionIdentifier.accountID == self.accountID,
             let url = task.originalRequest?.url,
             let resourceID = makeResourceID(with: url)
             else { return }
@@ -218,7 +307,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard
-            session == self.session,
+            let identifier = session.configuration.identifier,
+            let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+            sessionIdentifier.accountID == self.accountID,
             let url = downloadTask.originalRequest?.url,
             let resourceID = makeResourceID(with: url)
             else { return }
@@ -232,7 +323,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate, URL
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard
-            session == self.session,
+            let identifier = session.configuration.identifier,
+            let sessionIdentifier = DownloadSessionIdentifier(string: identifier),
+            sessionIdentifier.accountID == self.accountID,
             let url = downloadTask.originalRequest?.url,
             let resourceID = makeResourceID(with: url),
             let response = downloadTask.response as? HTTPURLResponse

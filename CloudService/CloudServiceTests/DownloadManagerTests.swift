@@ -52,7 +52,8 @@ class DownloadManagerTests: CloudServiceTests, DownloadManagerDelegate {
         
         let manager = DownloadManager(accountID: account.identifier,
                                       baseURL: account.url,
-                                      store: store)
+                                      store: store,
+                                      bundleIdentifier: "test")
         manager.delegate = self
         
         expectation(forNotification: "DownloadManagerDelegate.downloadManager(_:needsCredentialWith:)", object: self) { (notification) -> Bool in
@@ -100,7 +101,8 @@ class DownloadManagerTests: CloudServiceTests, DownloadManagerDelegate {
 
         let manager = DownloadManager(accountID: account.identifier,
                                       baseURL: account.url,
-                                      store: store)
+                                      store: store,
+                                      bundleIdentifier: "test")
         manager.delegate = self
         
         expectation(forNotification: "DownloadManagerDelegate.downloadManager(_:needsCredentialWith:)", object: self) { (notification) -> Bool in
